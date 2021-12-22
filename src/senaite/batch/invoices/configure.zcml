@@ -42,4 +42,16 @@
 
   <!-- -*- extra stuff goes here -*- -->
 
+  <!-- SuperModel -->
+  <adapter
+      for="bika.lims.interfaces.IBatch"
+      name="Batch"
+      factory="senaite.batch.invoices.batchinvoice.model.SuperModel"/>
+
+  <!-- Needed for bika.lims.ManageBika permission -->
+  <include package="bika.lims" file="permissions.zcml" />
+
+  <!-- AR specific Reports -->
+  <include package=".batchinvoice" />
+
 </configure>

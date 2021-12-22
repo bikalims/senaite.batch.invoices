@@ -1,0 +1,35 @@
+<configure
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:browser="http://namespaces.zope.org/browser"
+        i18n_domain="senaite.batch.invoices">
+
+
+  <!-- Ajax Publish View : ajax_templates -->
+<!--
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ajax_templates"
+      class="senaite.batch.invoices.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+-->
+
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ajax_render_reports"
+      class="senaite.batch.invoices.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Ajax Publish Controller View -->
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ajax_publish"
+      class="senaite.batch.invoices.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+</configure>
