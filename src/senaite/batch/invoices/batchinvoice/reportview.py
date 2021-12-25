@@ -7,7 +7,7 @@ from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
 
 
-SINGLE_TEMPLATE = Template("""<!-- Single Report -->
+SINGLE_TEMPLATE = Template("""<!-- Batch Invoice Report -->
 <div class="report" uids="${uids}" client_uid="${client_uid}">
   <script type="text/javascript">
     console.log("*** BEFORE TEMPLATE RENDER ***");

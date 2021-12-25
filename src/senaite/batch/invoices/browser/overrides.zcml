@@ -4,17 +4,6 @@
         i18n_domain="senaite.batch.invoices">
 
 
-  <!-- Ajax Publish View : ajax_templates -->
-<!--
-  <browser:page
-      for="bika.lims.interfaces.IBatch"
-      name="ajax_templates"
-      class="senaite.batch.invoices.ajax.AjaxPublishView"
-      permission="zope.Public"
-      layer="senaite.impress.interfaces.ILayer"
-      />
--->
-
   <browser:page
       for="bika.lims.interfaces.IBatch"
       name="ajax_render_reports"
