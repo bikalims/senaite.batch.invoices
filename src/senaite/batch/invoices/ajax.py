@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import StringIO
-import csv
-from bika.coa import logger
-from bika.lims import api
-from DateTime import DateTime
-from senaite.app.supermodel.interfaces import ISuperModel
-from senaite.impress.interfaces import IPdfReportStorage
-from senaite.impress.interfaces import ITemplateFinder
+from pkg_resources import resource_filename
 from senaite.impress.ajax import AjaxPublishView as AP
+from senaite.impress.interfaces import IReportView
 from zope.component import getMultiAdapter
-from zope.component import getAdapter
-from zope.component import getUtility
+from zope.component import queryMultiAdapter
 
 
 class AjaxPublishView(AP):
@@ -21,15 +14,7 @@ class AjaxPublishView(AP):
         self.request = request
         self.traverse_subpath = []
 
-    def ajax_templates(self):
-        """Returns the available templates
-        """
-        finder = getUtility(ITemplateFinder)
-        templates = finder.get_templates(extensions=[".pt", ".html"])
-        return sorted([item[0] for item in templates if 'bika' in item[0]])
-
     def ajax_render_reports(self, *args):
-        super(AjaxPublishView, self).ajax_render_reports(self)
         """Renders all reports and returns the html
 
         This method also groups the reports by client
@@ -46,8 +31,8 @@ class AjaxPublishView(AP):
         collection = self.get_collection([self.context.UID()])
 
         # Lookup the requested template
-        template = '/home/lunga/workspace/plone/bika/src/senaite.batch.invoices/src/senaite/batch/invoices/browser/batch/templates/BatchInvoice.pt'
-        is_multi_template = self.is_multi_template(template)
+        path = "browser/batch/templates/BatchInvoice.pt"
+        template = resource_filename("senaite.batch.invoices", path)
 
         htmls = []
 
@@ -66,3 +51,44 @@ class AjaxPublishView(AP):
                 htmls.append(html)
 
         return "\n".join(htmls)
+
+    def render_report(self, model, template, paperformat, orientation, **kw):
+        """Render a SuperModel to HTML
+        """
+        # get the report view controller
+        view = self.get_report_view_controller(model, IReportView)
+
+        options = kw
+        # pass through the calculated dimensions to the template
+        options.update(self.calculate_dimensions(paperformat, orientation))
+        template = self.read_template(template, view, **options)
+        return view.render(template, **options)
+
+    def get_report_view_controller(self, model_or_collection, interface):
+        """Get a suitable report view controller
+
+        Query the controller view as a multi-adapter to allow 3rd party
+        overriding with a browser layer.
+        """
+        name = self.get_report_type()
+
+        context = self.context
+        request = self.request
+
+        # Give precedence to multiadapters that adapt the context as well
+        view = queryMultiAdapter(
+            (context, model_or_collection, request), interface, name=name)
+        if view is None:
+            # Return the default multiadapter
+            return getMultiAdapter(
+                (model_or_collection, request), interface, name=name)
+        return view
+
+    def get_report_type(self):
+        """Returns the (portal-) for the report
+        """
+        # We fall back to AnalysisRequest here, because this is the primary
+        # report object we need at the moment.
+        # However, we can later easy provide with this mechanism reports for
+        # any other content type as well.
+        return self.request.form.get("type", "Batch")
