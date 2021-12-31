@@ -5,6 +5,7 @@
 
   <configure zcml:condition="installed AccessControl.security">
   <!-- -*- extra stuff goes here -*- -->
+    <permission id="senaite.batch.invoices.permissions.AddBatchInvoice" title="senaite.batch.invoices: Add BatchInvoice"/>
 
 
   </configure>
