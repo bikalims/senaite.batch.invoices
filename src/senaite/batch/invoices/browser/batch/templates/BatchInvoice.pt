@@ -37,8 +37,8 @@
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table { border-color: black; }
-     .report table td, .report table th { border-top: 1px solid black; border-bottom: 1px solid black; }
-     .report table th { border-bottom: 1px solid black; }
+     .report table td, .report table th { border: 1px solid black;}
+     .report table thead tr th {}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { height: 35px; margin: 20px 0; }
@@ -68,11 +68,6 @@
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
                            ch python:float(content_height);">
-     /* Ensure that the images stay within the borders */
-     .report .section-attachments img {
-       max-width: <tal:t replace="python:'{:.2f}mm'.format(cw / attachments_per_row)"/>;
-       max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
-     }
      .report .section-resultsinterpretation img {
        max-width: <tal:t replace="python:'{:.2f}mm'.format(cw)"/>;
        max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
@@ -134,9 +129,11 @@
                   <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
                 </div>
               </div>
-              <div class="lab-url">
-                <a tal:attributes="href laboratory/LabURL"
-                   tal:content="laboratory/LabURL"></a>
+              <div class="lab-tel">
+                Tel: <span tal:content="laboratory/Phone">Tel:</span>
+              </div>
+              <div class="lab-email">
+                Email: <span tal:content="laboratory/EmailAddress">Email</span>
               </div>
             </address>
 
@@ -220,9 +217,10 @@
               </colgroup>
               <thead>
                 <tr class="small">
-                  <th class="analysis">
+                  <th>
+                  &nbsp;
                   </th>
-                  <th class="analysis">
+                  <th class="">
                     <span class="font-weight-bold" >Client SID</span>
                   </th>
                   <th class="text-right result">
