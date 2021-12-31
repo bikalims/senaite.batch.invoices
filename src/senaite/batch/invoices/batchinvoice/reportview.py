@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from string import Template
-
 from decimal import Decimal
+from DateTime import DateTime
+
+from bika.lims import api
 from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
 
@@ -78,3 +80,28 @@ class BatchInvoiceReportView(ReportView):
             batch_data["total_price"] += sample.getTotalPrice()
 
         return {"samples": data, "batch_data": batch_data}
+
+    def get_batch_invoice_number(self, model):
+        client = instance.getClient()
+        today = DateTime()
+        query = {
+            'portal_type': 'BatchInvoice',
+            # 'path': {
+            #     'query': api.get_path(client)
+            # },
+            'created': {
+                'query': today.Date(),
+                'range': 'min'
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
+        brains = api.search(query, 'portal_catalog')
+        num = 1
+        if len(brains):
+            coa = brains[0]
+            num = coa.Title.split('-')[-1]
+            num = int(num)
+            num += 1
+        coa_num = '{}-INV-{:02d}'.format(instance.getId(), num)
+        return coa_num

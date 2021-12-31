@@ -108,7 +108,7 @@
               </td>
               <!-- Client -->
               <td>
-                <a href="#"
+                <a href="#" tal:condition="model/Client"
                    tal:attributes="href string:${model/Client/absolute_url}">
                   <span tal:content="model/Client/Name"/>
                 </a>

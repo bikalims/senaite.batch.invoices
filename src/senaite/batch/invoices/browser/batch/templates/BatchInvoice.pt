@@ -4,6 +4,7 @@
           laboratory view/laboratory;
           client model/Client;
           data python:view.get_samples(model);
+          batch_invoice_number python:view.get_batch_invoice_number(model);
           samples python:data['samples'];
           batch_data python:data['batch_data'];
           footer python:view.get_footer_text();
@@ -137,7 +138,7 @@
               </div>
             </address>
 
-            <address class="client-address">
+            <address class="client-address" condition="client">
               <div class="client-street">
                 <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
               </div>
@@ -167,7 +168,7 @@
     <div class="clearfix"></div>
   <div class="row section-info no-gutters">
     <div class="w-100" style="text-align: center">
-        <div>Tax Invoice <span tal:replace="client/Phone|nothing"></span></div>
+        <div>Tax Invoice <span tal:content="batch_invoice_number"></span></div>
     </div>
     </div>
   </div>
@@ -177,8 +178,7 @@
 
   <!-- SUMMARY -->
   <tal:render condition="python:True"
-              define="client model/Client;
-                      reporter python:view.current_user;">
+              define="reporter python:view.current_user;">
     <div class="row section-summary no-gutters">
         <div>Date <span tal:replace="client/Phone|nothing"></span></div>
         <div class="clearfix"></div>
