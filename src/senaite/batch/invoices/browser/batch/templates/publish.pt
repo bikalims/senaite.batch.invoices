@@ -1,12 +1,12 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
-      i18n:domain="senaite.impress" lang="en">
+      i18n:domain="senaite.batch.invoices" lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title i18n:translate="">SENAITE IMPRESS</title>
+    <title i18n:translate="">SENAITE IMPRESS BATCH INVOICE</title>
     <!-- SENAITE Impress HTML Head -->
     <div tal:replace="structure provider:senaite.impress.htmlhead" />
     <!-- CUSTOM JS

@@ -50,6 +50,7 @@ class BatchInvoiceReportView(ReportView):
         samples = model_or_collection.instance.getAnalysisRequests()
         data = []
         batch_data = {
+            "date": self.to_localized_time(self.timestamp, **{"long_format": False}),
             "total_subtotal": Decimal("0.0"),
             "total_discount": Decimal("0.0"),
             "total_vat": Decimal("0.0"),
@@ -60,7 +61,7 @@ class BatchInvoiceReportView(ReportView):
                 "ClientSID": sample.getClientSampleID(),
                 "SampleID": sample.getId(),
                 "SampleTypeTitle": sample.getSampleTypeTitle(),
-                "DateReceived": sample.getDateReceived(),
+                "DateReceived": self.to_localized_time(sample.getDateReceived()),
                 "Description": sample.description,
                 "Subtotal": sample.getSubtotal(),
                 "TotalPrice": sample.getTotalPrice(),
@@ -78,6 +79,11 @@ class BatchInvoiceReportView(ReportView):
             batch_data["VAT"] = "{}% VAT".format(self.setup.getVAT())
             batch_data["total_vat"] += sample.getVATAmount()
             batch_data["total_price"] += sample.getTotalPrice()
+
+        batch_data["total_subtotal"] = "{:.2f}".format(batch_data['total_subtotal'])
+        batch_data["total_discount"] = "{:.2f}".format(batch_data['total_discount'])
+        batch_data["total_vat"] = "{:.2f}".format(batch_data['total_vat'])
+        batch_data["total_price"] ="{:.2f}".format(batch_data['total_price'])
 
         return {"samples": data, "batch_data": batch_data}
 

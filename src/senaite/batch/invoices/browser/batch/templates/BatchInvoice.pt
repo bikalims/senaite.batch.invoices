@@ -180,7 +180,7 @@
   <tal:render condition="python:True"
               define="reporter python:view.current_user;">
     <div class="row section-summary no-gutters">
-        <div>Date <span tal:replace="client/Phone|nothing"></span></div>
+        <div>Date <span tal:content="batch_data/date"></span></div>
         <div class="clearfix"></div>
         <div>Batch: <span tal:content="model/ClientBatchID"></span>,
           <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
