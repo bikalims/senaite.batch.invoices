@@ -82,6 +82,7 @@ class BatchInvoiceReportView(ReportView):
         return {"samples": data, "batch_data": batch_data}
 
     def get_batch_invoice_number(self, model):
+        instance = model.instance
         client = instance.getClient()
         today = DateTime()
         query = {

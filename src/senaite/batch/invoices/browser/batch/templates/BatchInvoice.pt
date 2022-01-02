@@ -189,12 +189,10 @@
     </div>
   </tal:render>
 
-  <!-- RESULTS -->
+  <!-- BATCH INVOICE -->
   <tal:render condition="python:True">
     <div class="row section-results no-gutters">
       <div class="w-100">
-        <h1 i18n:translate="">Results</h1>
-
         <!-- Point of Capture -->
         <tal:poc>
 
