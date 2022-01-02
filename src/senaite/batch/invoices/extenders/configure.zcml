@@ -1,0 +1,11 @@
+<configure xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.batch.invoices">
+
+    <include package="archetypes.schemaextender"/>
+
+    <adapter name='senaite.batch.invoices'
+             provides="archetypes.schemaextender.interfaces.ISchemaExtender"
+             factory=".bikasetup.BikaSetupSchemaExtender"/>
+
+</configure>
