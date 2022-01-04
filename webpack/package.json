@@ -1,8 +1,8 @@
 {
-  "name": "senaite.impress",
-  "version": "2.0.1",
+  "name": "senaite.batch.invoices",
+  "version": "1.0.1",
   "description": "",
-  "main": "app/senaite.impress.coffee",
+  "main": "app/senaite.batch.invoices.coffee",
   "scripts": {
     "build": "mode=production webpack",
     "watch": "mode=development webpack --watch",
