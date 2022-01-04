@@ -23,3 +23,6 @@ class BatchInvoiceView(PV):
         """Parse the UIDs from the request `items` parameter
         """
         return [self.context.UID()]
+
+    def setup(self):
+        return self.portal.bika_setup

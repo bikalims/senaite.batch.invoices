@@ -45,7 +45,7 @@
      .report .section-header img.logo { height: 35px; margin: 20px 0; }
      .report .section-header img.logo-bottom {
          background-repeat: repeat-x;
-         background-image: url(++resource++bika.coa.images/bikalimslogo.pn)g}
+         background-image: url(++resource++bika.coa.images/bikalimslogo.png)}
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {

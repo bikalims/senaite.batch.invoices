@@ -12,4 +12,22 @@
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
     />
 
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ajax_render_reports"
+      class="senaite.batch.invoices.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
+      />
+
+  <!-- Ajax Publish Controller View -->
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="ajax_publish"
+      class="senaite.batch.invoices.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
+      />
+
+
 </configure>
