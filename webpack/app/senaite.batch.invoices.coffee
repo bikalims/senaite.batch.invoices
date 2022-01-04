@@ -293,8 +293,8 @@ class PublishController extends React.Component
      * Publication UI
     ###
 
-    print_mode = location.pathname.endsWith "invoice"
-    publish_mode =  location.pathname.endsWith "publish"
+    print_mode = location.pathname.endsWith "print"
+    publish_mode =  location.pathname.endsWith "invoice"
 
     <div className="col-sm-12">
       <form name="publishform" onSubmit={this.handleSubmit}>
