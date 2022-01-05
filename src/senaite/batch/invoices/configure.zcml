@@ -3,6 +3,7 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="senaite.batch.invoices">
 
   <i18n:registerTranslations directory="locales" />
@@ -55,5 +56,31 @@
 
   <!-- AR specific Reports -->
   <include package=".batchinvoice" />
+
+  <!-- Static Resources Viewlet -->
+  <browser:viewlet
+      name="senaite.batch.invoices.static"
+      manager=".interfaces.ISenaiteImpressBatchInvoiceHtmlHead"
+      class="senaite.impress.resources.ResourcesViewlet"
+      permission="zope2.View"
+      template="static/resources.pt"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
+      />
+
+  <!-- Viewlet Manager -->
+   <browser:viewletManager
+       name="senaite.batch.invoices.htmlhead"
+       provides=".interfaces.ISenaiteImpressBatchInvoiceHtmlHead"
+       permission="zope2.View"
+       class="plone.app.viewletmanager.manager.BaseOrderedViewletManager"
+       />
+
+  <!-- Static directory for js, css and image resources -->
+  <plone:static
+      directory="static"
+      type="plone"
+      name="senaite.batch.invoices.static"
+      />
+
 
 </configure>

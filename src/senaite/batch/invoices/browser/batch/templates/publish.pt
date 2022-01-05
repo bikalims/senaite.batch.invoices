@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title i18n:translate="">SENAITE IMPRESS BATCH INVOICE</title>
     <!-- SENAITE Impress HTML Head -->
-    <div tal:replace="structure provider:senaite.impress.htmlhead" />
+    <div tal:replace="structure provider:senaite.batch.invoices.htmlhead" />
     <!-- CUSTOM JS
          N.B. we render the JS inline, because traversal seems to not work for plone:static resouces!
     -->

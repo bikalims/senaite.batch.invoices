@@ -3,6 +3,7 @@
 
 from zope.interface import Interface
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.viewlet.interfaces import IViewletManager
 
 
 class ISenaiteBatchInvoicesLayer(IDefaultBrowserLayer):
@@ -14,5 +15,8 @@ class IInvoice(Interface):
     """
 
 class IInvoices(Interface):
+    """Invoice
+    """
+class ISenaiteImpressBatchInvoiceHtmlHead(IViewletManager):
     """Invoice
     """

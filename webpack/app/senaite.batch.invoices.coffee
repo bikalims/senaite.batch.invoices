@@ -14,8 +14,6 @@ import PaperFormatSelection from "./components/PaperFormatSelection.js"
 import Preview from "./components/Preview.js"
 import ReportHTML from "./components/ReportHTML.js"
 import ReportOptions from "./components/ReportOptions.js"
-import TemplateSelection from "./components/TemplateSelection.js"
-
 
 # DOCUMENT READY ENTRY POINT
 document.addEventListener "DOMContentLoaded", ->
@@ -300,7 +298,6 @@ class PublishController extends React.Component
       <form name="publishform" onSubmit={this.handleSubmit}>
         <div className="form-group">
           <div className="input-group">
-            <TemplateSelection api={@api} onChange={@handleChange} value={@state.template} className="custom-select" name="template" />
             <PaperFormatSelection api={@api} onChange={@handleChange} value={@state.format} className="custom-select" name="format" />
             <OrientationSelection api={@api} onChange={@handleChange} value={@state.orientation} className="custom-select" name="orientation" />
             <div className="input-group-append">
