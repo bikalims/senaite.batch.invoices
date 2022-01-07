@@ -245,9 +245,6 @@ class PublishController extends React.Component
     ###
     console.debug "PublishController::componentDidUpdate"
 
-    # render the barcodes
-    @api.render_barcodes()
-
     # render range graphs
     @api.render_ranges()
 
@@ -291,9 +288,6 @@ class PublishController extends React.Component
      * Publication UI
     ###
 
-    print_mode = location.pathname.endsWith "print"
-    publish_mode =  location.pathname.endsWith "invoice"
-
     <div className="col-sm-12">
       <form name="publishform" onSubmit={this.handleSubmit}>
         <div className="form-group">
@@ -302,9 +296,9 @@ class PublishController extends React.Component
             <OrientationSelection api={@api} onChange={@handleChange} value={@state.orientation} className="custom-select" name="orientation" />
             <div className="input-group-append">
               <Button name="reload" title="↺" onClick={@loadReports} className="btn btn-outline-success"/>
-              {publish_mode and <Button name="email" title="Email" onClick={@saveReports} className="btn btn-outline-secondary" />}
-              {publish_mode and <Button name="save" title="Save" onClick={@saveReports} className="btn btn-outline-secondary" />}
-              {print_mode and <Button name="" title="PDF" onClick={@printReports} className="btn btn-outline-secondary" />}
+              <Button name="email" title="Email" onClick={@saveReports} className="btn btn-outline-secondary" />
+              <Button name="save" title="Save" onClick={@saveReports} className="btn btn-outline-secondary" />
+              <Button name="" title="PDF" onClick={@printReports} className="btn btn-outline-secondary" />
             </div>
           </div>
         </div>

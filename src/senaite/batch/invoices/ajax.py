@@ -29,6 +29,7 @@ class AjaxPublishView(AP):
 
         # Create a collection of the requested UIDs
         collection = self.get_collection([self.context.UID()])
+        model  = collection[0] if collection else None
 
         # Lookup the requested template
         path = "browser/batch/templates/BatchInvoice.pt"
@@ -36,19 +37,12 @@ class AjaxPublishView(AP):
 
         htmls = []
 
-        # always group ARs by client
-        grouped_by_client = self.group_items_by("getClientUID", collection)
-
-        # iterate over the ARs of each client
-        for client_uid, collection in grouped_by_client.items():
-            # render single report
-            for model in collection:
-                html = self.render_report(model,
-                                          template,
-                                          paperformat=paperformat,
-                                          orientation=orientation,
-                                          report_options=report_options)
-                htmls.append(html)
+        html = self.render_report(model,
+                                  template,
+                                  paperformat=paperformat,
+                                  orientation=orientation,
+                                  report_options=report_options)
+        htmls.append(html)
 
         return "\n".join(htmls)
 
