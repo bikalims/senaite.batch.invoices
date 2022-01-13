@@ -8,4 +8,12 @@
              provides="archetypes.schemaextender.interfaces.ISchemaExtender"
              factory=".bikasetup.BikaSetupSchemaExtender"/>
 
+    <adapter name='senaite.batch.invoices'
+             provides="archetypes.schemaextender.interfaces.ISchemaExtender"
+             factory=".laboratory.LaboratorySchemaExtender"/>
+
+    <adapter name='senaite.batch.invoices'
+             provides="archetypes.schemaextender.interfaces.ISchemaExtender"
+             factory=".client.ClientSchemaExtender"/>
+
 </configure>
