@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.batch.invoices">
+
+ <genericsetup:upgradeStep
+     title="Upgrade to SENATE.BATCH.INVOICES 1.0.1"
+     description="Adds Invoice and Invoices Issued buttons on Batch"
+     source="1.0.0"
+     destination="1.0.1"
+     handler="senaite.batch.invoices.upgrade.v01_00_001.upgrade"
+     profile="senaite.batch.invoices:default"/>
+
+</configure>
