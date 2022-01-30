@@ -55,6 +55,8 @@ class BatchInvoiceReportView(ReportView):
             "total_discount": Decimal("0.0"),
             "total_vat": Decimal("0.0"),
             "total_price": Decimal("0.0"),
+            "MemberDiscount": "{}% Discount".format(self.setup.getMemberDiscount()),
+            "VAT": "{}% VAT".format(self.setup.getVAT()),
         }
         for sample in samples:
             sample_data = {
@@ -68,47 +70,36 @@ class BatchInvoiceReportView(ReportView):
                 "Total": sample.getTotal(),
                 "VATAmount": sample.getVATAmount(),
                 "DiscountAmount": sample.getDiscountAmount(),
-                "VAT": self.setup.getVAT(),
             }
             data.append(sample_data)
             batch_data["total_subtotal"] += sample.getSubtotal()
             batch_data["total_discount"] += sample.getDiscountAmount()
-            batch_data["MemberDiscount"] = "{}% Discount".format(
-                self.setup.getMemberDiscount()
-            )
-            batch_data["VAT"] = "{}% VAT".format(self.setup.getVAT())
             batch_data["total_vat"] += sample.getVATAmount()
             batch_data["total_price"] += sample.getTotalPrice()
 
-        batch_data["total_subtotal"] = "{:.2f}".format(batch_data['total_subtotal'])
-        batch_data["total_discount"] = "{:.2f}".format(batch_data['total_discount'])
-        batch_data["total_vat"] = "{:.2f}".format(batch_data['total_vat'])
-        batch_data["total_price"] ="{:.2f}".format(batch_data['total_price'])
+        batch_data["total_subtotal"] = "{:.2f}".format(batch_data["total_subtotal"])
+        batch_data["total_discount"] = "{:.2f}".format(batch_data["total_discount"])
+        batch_data["total_vat"] = "{:.2f}".format(batch_data["total_vat"])
+        batch_data["total_price"] = "{:.2f}".format(batch_data["total_price"])
 
         return {"samples": data, "batch_data": batch_data}
 
     def get_batch_invoice_number(self, model):
         instance = model.instance
-        client = instance.getClient()
         today = DateTime()
         query = {
-            'portal_type': 'BatchInvoice',
-            # 'path': {
-            #     'query': api.get_path(client)
-            # },
-            'created': {
-                'query': today.Date(),
-                'range': 'min'
-            },
+            "portal_type": "BatchInvoice",
+            "path": {"query": api.get_path(instance)},
+            "created": {"query": today.Date(), "range": "min"},
             "sort_on": "created",
             "sort_order": "descending",
         }
-        brains = api.search(query, 'portal_catalog')
+        brains = api.search(query, "portal_catalog")
         num = 1
         if len(brains):
             coa = brains[0]
-            num = coa.Title.split('-')[-1]
+            num = coa.Title.split("-INV")[-1]
             num = int(num)
             num += 1
-        coa_num = '{}-INV-{:02d}'.format(instance.getId(), num)
+        coa_num = "{}-INV{:02d}".format(instance.getId(), num)
         return coa_num

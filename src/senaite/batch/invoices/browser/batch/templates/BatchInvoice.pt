@@ -168,7 +168,7 @@
     <div class="clearfix"></div>
   <div class="row section-info no-gutters">
     <div class="w-100" style="text-align: center">
-        <div>Tax Invoice <span tal:content="batch_invoice_number"></span></div>
+        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
     </div>
     </div>
   </div>

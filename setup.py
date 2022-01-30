@@ -14,7 +14,7 @@ long_description = '\n\n'.join([
 
 setup(
     name='senaite.batch.invoices',
-    version='1.0a1',
+    version='1.0.1',
     description="Senaite Batch Invoices",
     long_description=long_description,
     # Get more from https://pypi.org/classifiers/
@@ -53,6 +53,7 @@ setup(
         'plone.api>=1.8.4',
         'plone.restapi',
         'plone.app.dexterity',
+        "archetypes.schemaextender",
     ],
     extras_require={
         'test': [

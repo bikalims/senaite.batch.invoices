@@ -17,12 +17,13 @@
   <include package=".browser" />
   <include package=".content"/>
   <include package=".extenders"/>
+  <include package=".upgrade"/>
 
   <include file="permissions.zcml" />
 
   <genericsetup:registerProfile
       name="default"
-      title="senaite.batch.invoices"
+      title="SENAITE BATCH INVOICES"
       directory="profiles/default"
       description="Installs the senaite.batch.invoices add-on."
       provides="Products.GenericSetup.interfaces.EXTENSION"
@@ -31,7 +32,7 @@
 
   <genericsetup:registerProfile
       name="uninstall"
-      title="senaite.batch.invoices (uninstall)"
+      title="SENAITE BATCH INVOICES (uninstall)"
       directory="profiles/uninstall"
       description="Uninstalls the senaite.batch.invoices add-on."
       provides="Products.GenericSetup.interfaces.EXTENSION"
