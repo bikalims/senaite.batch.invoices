@@ -15,7 +15,7 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="BatchInvoice"/>
+  <element value="batch-invoice"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
@@ -78,10 +78,10 @@
  <action title="Invoice"
          action_id="invoice"
          category="object"
-         condition_expr=""
          icon_expr="string:${portal_url}/senaite_theme/icon/batchbook"
          link_target=""
          url_expr="string:${object_url}/invoice"
+         condition_expr="python:context.bika_setup.Schema()['Financials'].getAccessor(context.bika_setup)()"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
@@ -90,7 +90,7 @@
  <action title="Invoices Issued"
          action_id="invoices-issued"
          category="object"
-         condition_expr=""
+         condition_expr="python:context.bika_setup.Schema()['Financials'].getAccessor(context.bika_setup)()"
          icon_expr="string:${portal_url}/senaite_theme/icon/batchbook"
          link_target=""
          url_expr="string:${object_url}/invoices-issued"
