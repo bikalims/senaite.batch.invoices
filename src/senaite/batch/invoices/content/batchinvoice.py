@@ -11,10 +11,11 @@ from plone.formwidget.contenttree import ObjPathSourceBinder
 from zope import schema
 from zope.interface import implementer
 from z3c.relationfield.schema import RelationChoice
+from plone.namedfile.field import NamedBlobFile
 
 
 class IBatchInvoice(model.Schema):
-    batch_invoice_pdf = schema.NamedFile(title=_(u"Batch Invoice PDF"))
+    invoice_pdf = NamedBlobFile(title=_(u"Batch Invoice PDF"))
     client = RelationChoice(
         title=_(u"Client"),
         source=ObjPathSourceBinder(object_provides=IClient.__identifier__),

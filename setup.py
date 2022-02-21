@@ -54,6 +54,8 @@ setup(
         'plone.restapi',
         'plone.app.dexterity',
         "archetypes.schemaextender",
+        'plone.namedfile',
+        'plone.formwidget.namedfile',
     ],
     extras_require={
         'test': [

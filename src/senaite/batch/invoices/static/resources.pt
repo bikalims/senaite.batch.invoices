@@ -21,8 +21,8 @@
 
 <!-- senaite.impress: main js/css -->
 
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.batch.invoices.static/bundles/main.js"></script>
+<script tal:attributes="src string:${view/site_url}//++plone++senaite.batch.invoices.static/bundles/main.js"></script>
 
 
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.batch.invoices.static/bundles/main.css" />
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}//++plone++senaite.batch.invoices.static/bundles/main.css" />
 

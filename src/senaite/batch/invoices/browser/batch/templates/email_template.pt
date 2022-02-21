@@ -1,0 +1,32 @@
+<tal:email_template
+  tal:define="client_name python:view.client_name;
+              laboratory python:context.bika_setup.laboratory;
+              batch_id python:view.batch_id;
+              batch_url python:view.batch_url;
+              client_batch_id python:view.client_batch_id;
+              batch_description python:view.batch_description"
+  i18n:domain="senaite.core">
+<tal:p i18n:translate="">
+Dear Sir/ Madam
+</tal:p>
+<tal:p i18n:translate="">
+Please find attached an invoice for the analysis of the samples included in
+batch <span tal:replace="batch_id">Batch ID</span>
+<span tal:replace="client_batch_id">Client Batch ID</span><span tal:replace="batch_description">Batch Description</span>.
+</tal:p>
+
+<tal:p i18n:translate="">
+This report was sent to the following contacts:
+</tal:p>
+
+$recipients
+
+<tal:p i18n:translate="">
+Much appreciated
+</tal:p>
+<tal:laboratory tal:replace="python:laboratory.getName() or 'SENAITE LIMS'"/>
+
+<tal:p i18n:translate="">
+*** This is an automatically generated email, please do not reply to this message. ***
+</tal:p>
+</tal:email_template>

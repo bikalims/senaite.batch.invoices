@@ -297,8 +297,6 @@ class PublishController extends React.Component
             <div className="input-group-append">
               <Button name="reload" title="↺" onClick={@loadReports} className="btn btn-outline-success"/>
               <Button name="email" title="Email" onClick={@saveReports} className="btn btn-outline-secondary" />
-              <Button name="save" title="Save" onClick={@saveReports} className="btn btn-outline-secondary" />
-              <Button name="" title="PDF" onClick={@printReports} className="btn btn-outline-secondary" />
             </div>
           </div>
         </div>

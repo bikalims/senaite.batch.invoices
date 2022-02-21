@@ -29,5 +29,31 @@
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
       />
 
+  <!-- Email View -->
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="email"
+      class=".emailview.EmailView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
+      />
+
+  <!-- PDF Report Storage Adapter -->
+  <adapter
+      for="bika.lims.interfaces.IBatch
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="senaite.batch.invoices.storage.PdfReportStorageAdapter"
+      provides="senaite.impress.interfaces.IPdfReportStorage"
+      permission="zope2.View"/>
+
+  <!-- Issued Invoices listing view -->
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="invoices-issued"
+      class=".batchinvoice_listing.ReportsListingView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
 
 </configure>
