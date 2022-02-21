@@ -141,7 +141,6 @@ class ReportsListingView(BikaListingView):
         """Augment folder listing item
         """
 
-        import pdb; pdb.set_trace()
         obj = api.get_object(obj)
         # ar = obj.getAnalysisRequest()
         uid = api.get_uid(obj)
@@ -243,4 +242,3 @@ class ReportsListingView(BikaListingView):
         # cc_emails = filter(None, map(recipient_from_email, cc_emails))
 
         # return to + cc + cc_emails
-
