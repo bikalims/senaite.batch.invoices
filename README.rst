@@ -78,19 +78,20 @@ and then running ``bin/buildout``
 Contribute
 ----------
 
-- Issue Tracker: https://github.com/collective/senaite.batch.invoices/issues
+Issue Tracker: https://jira.bikalabs.com/
 
-- Documentation: https://www.bikalims.org/manual/17-billing
+Documentation: https://www.bikalims.org/manual/17-billing
 
 
 Support
 -------
 
-If you are having issues, please let us know.
-We have a mailing list located at: project@example.com
+Please post questions to the Bika Slack channels, request access at info@bikalims.org
+
+User group https://users.bikalims.org/
+
+The project is licensed under the GPLv2 and sponsored by Geoangol, https://www.geoangol.site/ member of the Bika Open Source Collective, https://www.bikalims.org/
 
 
-License
--------
 
-The project is licensed under the GPLv2.
+
