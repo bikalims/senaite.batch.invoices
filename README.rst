@@ -28,18 +28,22 @@
 senaite.batch.invoices
 ======================
 
-This function makes it possible for the lab to compile an ivoice to the client for a LIMS Batch, keep it current and up to date, and email it to the Clioent and saving it to the Client's Invoices folder
+This function makes it possible for the lab to compile an invoice to the client for a LIMS Batch, keep it current and up to date, email it to the Client and save it to the Client's Invoices folder
 
 Features
 --------
 
-Batches feature an Invoices tab where the cost of the analysis required for the Batch's Samples are reflected, one Sample per Invoice Line, and totalled at the bottom. All on an formal lab letterhead and Invoice format
+This feature is enabled by checking the box for Batch Invoices  on the Financials tab in the LIMS setup
 
-Price per Sample includes both that of the Profiles as well as individual Analsysis Services not in Profiles. The Invoice line description, is aconcatenation of the price items used, Profile and Analysis Service titles
+Batches have an Invoices tab where the cost of the analysis required for the Batch's Samples are reflected, one Sample per Invoice Line, and totalled at the bottom. All on an formal lab letterhead and Invoice format
 
-The Invoice is available throughout the Batch's life and can be issued before any work was done in the lab - some labs prefer to be paid upfront. If Analyses are added or removed from Samples, the prices are updated. Everytime the Invoice is issued it gets a unique sequnce number based on the Batch ID
+Price per Sample includes both that of the Profiles as well as individual Analysis Services not in Profiles. The Invoice line description, is a concatenation of the price items used, Profile and Analysis Service titles
 
-Invoices are issued by clicking the [Invoice] button on the Batch's Invoice tab. The system brings up a preview and the optioin to email the Invoice
+The Invoice is available throughout the Batch's life and can be issued before any work is done in the lab - some labs prefer to be paid upfront. If Analyses are added or removed from Samples, the prices are updated. Everytime the Invoice is issued it gets a unique sequence number based on the Batch ID
+
+Invoices are issued by clicking the [Invoice] button on the Batch's Invoice tab. The system brings up a preview and the option to email the Invoice. Clicking through, an email template is displayed that can be edited before the Invoice is sent
+
+The Invoice is saved to the Client’s Invoices folder where it can be looked up by both the lab and Client
 
 Examples
 --------
@@ -51,15 +55,8 @@ This add-on can be seen in action at the following sites:
 Documentation
 -------------
 
-Full documentation for end users can be found in the "docs" folder, and is also available online at http://docs.plone.org/foo/bar
+The Batch Invoice feature is discussed in more detail on the manual page https://www.bikalims.org/manual/17-billing
 
-
-Translations
-------------
-
-This product has been translated into
-
-- Klingon (thanks, K'Plai)
 
 
 Installation
@@ -82,8 +79,8 @@ Contribute
 ----------
 
 - Issue Tracker: https://github.com/collective/senaite.batch.invoices/issues
-- Source Code: https://github.com/collective/senaite.batch.invoices
-- Documentation: https://docs.plone.org/foo/bar
+
+- Documentation: https://www.bikalims.org/manual/17-billing
 
 
 Support
