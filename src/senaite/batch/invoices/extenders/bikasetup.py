@@ -7,7 +7,7 @@ from archetypes.schemaextender.interfaces import ISchemaExtender
 from zope.component import adapts
 from zope.interface import implementer
 
-from bika.lims.fields import ExtBooleanField
+from .fields import ExtBooleanField
 from bika.lims.interfaces import IBikaSetup
 from senaite.batch.invoices import _
 from senaite.batch.invoices.interfaces import ISenaiteBatchInvoicesLayer
