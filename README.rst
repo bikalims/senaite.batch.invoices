@@ -92,6 +92,6 @@ User group https://users.bikalims.org/
 
 The project is licensed under the GPLv2 and sponsored by Geoangol, https://www.geoangol.site/ member of the Bika Open Source Collective, https://www.bikalims.org/
 
-
+Copyright (C) 2019 Bika Lab Systems https://www.bikalabs.com/
 
 
