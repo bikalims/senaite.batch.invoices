@@ -5,7 +5,7 @@
               batch_url python:view.batch_url;
               client_batch_id python:view.client_batch_id;
               batch_description python:view.batch_description"
-  i18n:domain="senaite.core">
+  i18n:domain="senaite.batch.invoices">
 <tal:p i18n:translate="">
 Dear Sir/ Madam
 </tal:p>

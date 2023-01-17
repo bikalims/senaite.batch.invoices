@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from Products.Archetypes.Widget import BooleanWidget
-from Products.CMFCore.permissions import View
 from archetypes.schemaextender.interfaces import IBrowserLayerAwareExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from zope.component import adapts
@@ -19,7 +18,18 @@ financials_field = ExtBooleanField(
     widget=BooleanWidget(
         label=_(u"Finacials"),
         description=_(u"Enables batch invoicing functionality"),
-        ))
+    )
+)
+
+email_invoices_field = ExtBooleanField(
+    "EmailInvoices",
+    mode="rw",
+    schemata="Notifications",
+    widget=BooleanWidget(
+        label=_(u"Email Invoices to Client Y/N"),
+        description=_(u"Enable to email invoices directly to the client's billing email address"),
+    )
+)
 
 
 @implementer(ISchemaExtender, IBrowserLayerAwareExtender)
@@ -29,6 +39,7 @@ class BikaSetupSchemaExtender(object):
 
     fields = [
         financials_field,
+        email_invoices_field,
     ]
 
     def __init__(self, context):
