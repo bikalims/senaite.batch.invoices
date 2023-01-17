@@ -69,9 +69,8 @@ class PdfReportStorageAdapter(PRSA):
 
         # Create the report object
         filename = u"{}.pdf".format(coa_num)
-        report = api.create(parent, portal_type="BatchInvoice",
-            **{"title":coa_num,
-               "client": parent.getClient()})
+        params = {"client":parent.getClient()}
+        report = api.create(parent, "BatchInvoice", title=coa_num, **params)
         report.batch_invoice_pdf = NamedBlobFile(pdf, filename=filename)
             # Html=html,
             # CSV=csv_text,
