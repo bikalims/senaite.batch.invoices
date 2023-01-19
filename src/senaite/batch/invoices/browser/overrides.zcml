@@ -3,5 +3,6 @@
         xmlns:browser="http://namespaces.zope.org/browser"
         i18n_domain="senaite.batch.invoices">
 
+     <include package=".overrides" file="overrides.zcml" />
 
 </configure>
