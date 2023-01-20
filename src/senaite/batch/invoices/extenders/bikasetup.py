@@ -16,7 +16,7 @@ financials_field = ExtBooleanField(
     mode="rw",
     schemata="Accounting",
     widget=BooleanWidget(
-        label=_(u"Finacials"),
+        label=_(u"Financials"),
         description=_(u"Enables batch invoicing functionality"),
     )
 )

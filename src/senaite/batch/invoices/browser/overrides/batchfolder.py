@@ -20,6 +20,7 @@
 
 import collections
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.batchfolder import BatchFolderContentsView as BFCV
 from senaite.core.catalog import SENAITE_CATALOG
@@ -91,11 +92,6 @@ class BatchFolderContentsView(BFCV):
                 "transitions": [],
                 "columns": self.columns.keys(),
             }, {
-                "id": "invoiced",
-                "title": _("Invoiced"),
-                "columns": self.columns.keys(),
-                "contentFilter": {"review_state": "invoiced"},
-            }, {
                 "id": "closed",
                 "contentFilter": {"review_state": "closed"},
                 "title": _("Closed"),
@@ -114,3 +110,10 @@ class BatchFolderContentsView(BFCV):
                 "columns": self.columns.keys(),
             },
         ]
+        if api.get_setup().Schema()['Financials'].getAccessor(api.get_setup())():
+            invoiced = {"id": "invoiced",
+                        "title": _("Invoiced"),
+                        "columns": self.columns.keys(),
+                        "contentFilter": {"review_state": "invoiced"}
+                        }
+            self.review_states.insert(1, invoiced)
