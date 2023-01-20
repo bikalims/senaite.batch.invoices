@@ -37,6 +37,7 @@ class AjaxPublishView(AP):
         model = collection[0] if collection else None
 
         # Lookup the requested template
+        import pdb; pdb.set_trace()
         path = "browser/batch/templates/BatchInvoice.pt"
         template = resource_filename("senaite.batch.invoices", path)
 
