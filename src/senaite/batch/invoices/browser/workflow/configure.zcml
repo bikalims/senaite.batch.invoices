@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.batch.invoices">
+
+  <!-- Batch: "invoice"
+  Note this applies wide, cause at the moment, this action only exists
+  for Batch and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_invoice"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".batch.WorkflowActionInvoiceAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+</configure>

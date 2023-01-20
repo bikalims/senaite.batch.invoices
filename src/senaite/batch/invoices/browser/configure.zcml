@@ -8,6 +8,8 @@
   <include package="z3c.jbot" file="meta.zcml" />
 
   <include package=".batch" />
+  <include package=".workflow"/>
+
   <browser:jbot
       directory="overrides"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
