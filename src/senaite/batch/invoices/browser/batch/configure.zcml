@@ -12,6 +12,14 @@
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IBatchFolder"
+      name="invoice"
+      class=".invoice.BatchInvoiceView"
+      permission="zope2.View"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
+    />
+
   <browser:page
       for="bika.lims.interfaces.IBatch"
       name="ajax_render_reports"

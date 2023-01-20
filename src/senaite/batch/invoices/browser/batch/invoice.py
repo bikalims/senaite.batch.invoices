@@ -19,10 +19,5 @@ class BatchInvoiceView(PV):
         self.request.set("disable_border", 1)
         return self.template()
 
-    def get_uids(self):
-        """Parse the UIDs from the request `items` parameter
-        """
-        return [self.context.UID()]
-
     def setup(self):
         return self.portal.bika_setup

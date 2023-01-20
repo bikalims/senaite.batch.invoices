@@ -26,7 +26,7 @@ from zope.interface import implements
 
 
 class WorkflowActionInvoiceAdapter(RequestContextAware):
-    """Adapter in charge of Batch Requests 'invoice'-like actions
+    """Adapter in charge of Batch 'invoice'-like actions
     """
     implements(IWorkflowActionUIDsAdapter)
 
