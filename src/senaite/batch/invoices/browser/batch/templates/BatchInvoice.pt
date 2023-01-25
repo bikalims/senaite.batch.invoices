@@ -1,12 +1,12 @@
 <tal:report
   i18n:domain="senaite.impress"
-  define="model python:view.model;
+  define="collection view/collection;
+          model python:view.model;
           laboratory view/laboratory;
-          client model/Client;
           data python:view.get_samples(model);
           batch_invoice_number python:view.get_batch_invoice_number(model);
-          samples python:data['samples'];
-          batch_data python:data['batch_data'];
+          samples python:data.get('samples');
+          batch_data python:data.get('batch_data');
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           show_remarks python:bool(report_options.get('show_remarks', False));
@@ -138,6 +138,7 @@
               </div>
             </address>
 
+          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
             <address class="client-address" condition="client">
               <div class="client-street">
                 <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
@@ -161,6 +162,7 @@
                 <div>Client email address: <span tal:replace="client/EmailAddress|nothing"></span></div>
               </div>
             </address>
+          </tal:by_client>
     </div>
     <!-- Clear Floats
          https://github.com/Kozea/WeasyPrint/issues/36

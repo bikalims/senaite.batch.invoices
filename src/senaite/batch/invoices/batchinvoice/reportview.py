@@ -7,6 +7,7 @@ from DateTime import DateTime
 from bika.lims import api
 from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
+from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 
 
 SINGLE_TEMPLATE = Template(
@@ -19,6 +20,16 @@ SINGLE_TEMPLATE = Template(
 </div>
 """
 )
+
+
+MULTI_TEMPLATE = Template("""<!-- Multi Report -->
+<div class="report" uids="${uids}" client_uid="${client_uid}">
+  <script type="text/javascript">
+    console.log("*** BEFORE MULTI TEMPLATE RENDER ***");
+  </script>
+  ${template}
+</div>
+""")
 
 
 class BatchInvoiceReportView(ReportView):
@@ -36,17 +47,10 @@ class BatchInvoiceReportView(ReportView):
         template = Template(template).safe_substitute(context)
         return SINGLE_TEMPLATE.safe_substitute(context, template=template)
 
-    def get_template_context(self, model, **kw):
-        context = {
-            "uids": model.UID(),
-            "client_uid": model.getClientUID(),
-        }
-        context.update(kw)
-        return context
-
     def get_samples(self, model_or_collection):
         """Returns a flat list of all analyses for the given model or collection
         """
+        return {}
         samples = model_or_collection.instance.getAnalysisRequests()
         data = []
         batch_data = {
@@ -103,3 +107,66 @@ class BatchInvoiceReportView(ReportView):
             num += 1
         coa_num = "{}-INV{:02d}".format(instance.getId(), num)
         return coa_num
+
+
+class MultiReportView(MRV):
+    """View for Multi Reports
+    """
+
+    def __init__(self, collection, request):
+        logger.info("MultiReportView::__init__:collection={}"
+                    .format(collection))
+        super(MultiReportView, self).__init__(collection, request)
+        self.collection = collection
+        self.request = request
+
+    def render(self, template, **kw):
+        """Wrap the template and render
+        """
+        context = self.get_template_context(self.collection, **kw)
+        template = Template(template).safe_substitute(context)
+        return MULTI_TEMPLATE.safe_substitute(context, template=template)
+
+    def get_pages(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 5
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 8
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 5
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+    def to_localized_date(self, date):
+        return self.to_localized_time(date)[:10]
+
+    def get_template_context(self, collection, **kw):
+        if not collection:
+            return {}
+        uids = map(lambda m: m.uid, collection)
+        client_uid = collection[0].getClientUID()
+        context = {
+            "uids": ",".join(uids),
+            "client_uid": client_uid,
+        }
+        context.update(kw)
+        return context

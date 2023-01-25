@@ -5,12 +5,23 @@
     i18n_domain="senaite.impress">
 
   <!-- View for Single Reports -->
+<!--
   <adapter
       for="zope.interface.Interface
            zope.publisher.interfaces.browser.IBrowserRequest"
       name="Batch"
       factory=".reportview.BatchInvoiceReportView"
       provides="senaite.impress.interfaces.IReportView"
+      permission="zope2.View"/>
+      -->
+
+  <!-- View for Multi Reports -->
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      name="Batch"
+      factory=".reportview.MultiReportView"
+      provides="senaite.impress.interfaces.IMultiReportView"
       permission="zope2.View"/>
 
   <!-- SuperModel -->

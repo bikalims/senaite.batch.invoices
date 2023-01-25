@@ -2,7 +2,7 @@
 
 from pkg_resources import resource_filename
 from senaite.impress.ajax import AjaxPublishView as AP
-from senaite.impress.interfaces import IReportView
+from senaite.impress.interfaces import IMultiReportView
 from senaite.impress.decorators import timeit
 from zope.component import getMultiAdapter
 from zope.component import queryMultiAdapter
@@ -33,17 +33,17 @@ class AjaxPublishView(AP):
         report_options = data.get("report_options", {})
 
         # Create a collection of the requested UIDs
-        collection = self.get_collection([self.context.UID()])
+        collection = self.get_collection(data.get("items"))
         model = collection[0] if collection else None
+        uids = data.get("items", [])
 
         # Lookup the requested template
-        import pdb; pdb.set_trace()
-        path = "browser/batch/templates/BatchInvoice.pt"
+        path = "browser/batch/templates/MultiBatchInvoice.pt"
         template = resource_filename("senaite.batch.invoices", path)
 
         htmls = []
 
-        html = self.render_report(model,
+        html = self.render_report(collection,
                                   template,
                                   paperformat=paperformat,
                                   orientation=orientation,
@@ -56,7 +56,7 @@ class AjaxPublishView(AP):
         """Render a SuperModel to HTML
         """
         # get the report view controller
-        view = self.get_report_view_controller(model, IReportView)
+        view = self.get_report_view_controller(model, IMultiReportView)
 
         options = kw
         # pass through the calculated dimensions to the template
