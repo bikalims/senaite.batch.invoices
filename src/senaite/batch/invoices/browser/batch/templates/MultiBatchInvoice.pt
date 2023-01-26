@@ -1,15 +1,15 @@
 <tal:report
-  i18n:domain="senaite.batch.invoices"
+  i18n:domain="senaite.impress"
   define="collection view/collection;
           laboratory view/laboratory;
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
+          show_remarks python:bool(report_options.get('show_remarks', False));
           page_width options/page_width|nothing;
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
-          content_height options/content_height|nothing;
-          pages python:view.get_pages(options);
-      ">
+          content_height options/content_height|nothing;">
+
 
   <script type="text/javascript">
    console.info("######################################################################");
@@ -24,8 +24,6 @@
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
-     .report p { margin:0 }
-     .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
      .report .font-size-100 { font-size: 100%; }
@@ -34,10 +32,15 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report table { border-color: black; }
+     .report table td, .report table th { border: 1px solid black;}
+     .report table thead tr th {}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
-     .report .label { padding-right: 0.3rem; font-size: 130% }
-     .report .section-header h1 { font-size: 150%; }
-     .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
+     .report .section-header h1 { font-size: 175%; }
+     .report .section-header img.logo { height: 35px; margin: 20px 0; }
+     .report .section-header img.logo-bottom {
+         background-repeat: repeat-x;
+         background-image: url(++resource++bika.coa.images/bikalimslogo.png)}
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
@@ -61,6 +64,10 @@
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
                            ch python:float(content_height);">
+     .report .section-resultsinterpretation img {
+       max-width: <tal:t replace="python:'{:.2f}mm'.format(cw)"/>;
+       max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
+     }
      </tal:block>
      @page {
        @bottom-right {
@@ -70,6 +77,15 @@
          content: "<tal:t i18n:translate=''>Page</tal:t> " counter(page) " <tal:t i18n:translate=''>of</tal:t> " counter(pages);
        }
      }
+     @page {
+       @bottom-center {
+         vertical-align: top;
+         margin-top: 2mm;
+         font-size: 9pt;
+         color: red;
+         content: "<tal:t i18n:translate=''>Confidential</tal:t> ";
+       }
+     }
     </style>
   </tal:css>
 
@@ -77,38 +93,254 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-      <div class="col-6">
-                 
-          <!-- Header Left -->
-          <h1>Certificate of Analysis</h1>
+      <div class="w-100 mb-2">
+              <img class="logo"
+                   tal:attributes="src string:++plone++senaite.core.static/images/senaite.svg"/>
       </div>
     </div>
   </tal:render>
   <!-- /HEADER -->
 
-
-  <!-- SAMPLES -->
-    <div class="row section-results no-gutters">
-      <div class="w-100">
-        <h1 i18n:translate="">Samples</h1>
-
-      </div>
-    </div>
-
-
-
-  <!-- END OF REPORT-->
+  <!-- INFO -->
   <tal:render condition="python:True">
-    <div class="row section-results no-gutters">
-      <div class="w-100 text-center">
-        <h1 i18n:translate="">End of  Report</h1>
-        <h1></h1>
-      </div>
+  <div class="row section-info no-gutters">
+    <div class="w-100">
+      <!-- Client Info -->
+            <!-- Laboratory Info -->
+            <address class="laboratory-address">
+              <div class="lab-title font-weight-bold">
+                <div tal:replace="laboratory/title|nothing"/>
+              </div>
+              <div class="lab-address">
+                <div class="lab-street">
+                  <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
+                </div>
+                <span class="lab-zip">
+                  <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
+                </span>
+                <span class="lab-city">
+                  <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
+                </span>
+                <div class="lab-country">
+                  <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
+                </div>
+              </div>
+              <div class="lab-tel">
+                Tel: <span tal:content="laboratory/Phone">Tel:</span>
+              </div>
+              <div class="lab-email">
+                Email: <span tal:content="laboratory/EmailAddress">Email</span>
+              </div>
+            </address>
+
+          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+            <address class="client-address" condition="client">
+              <div class="client-street">
+                <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
+              </div>
+              <div class="client-street">
+                <div>Client address: <span tal:replace="client/PostalAddress/address|nothing"></span></div>
+              </div>
+              <span class="client-zip">
+                <div tal:replace="client/PostalAddress/zip|nothing"></div>
+              </span>
+              <span class="client-city">
+                <div tal:replace="client/PostalAddress/city|nothing"></div>
+              </span>
+              <div class="client-country">
+                <div tal:replace="client/PostalAddress/country|nothing"></div>
+              </div>
+              <div class="client-street">
+                <div>Client telephone #: <span tal:replace="client/Phone|nothing"></span></div>
+              </div>
+              <div class="client-street">
+                <div>Client email address: <span tal:replace="client/EmailAddress|nothing"></span></div>
+              </div>
+            </address>
+          </tal:by_client>
     </div>
+    <!-- Clear Floats
+         https://github.com/Kozea/WeasyPrint/issues/36
+    -->
+    <div class="clearfix"></div>
+  <div class="row section-info no-gutters">
+    <div class="w-100" style="text-align: center">
+        <!--
+        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
+        -->
+    </div>
+    </div>
+  </div>
     <div class="clearfix"></div>
   </tal:render>
-  <!-- /END OF REPORT-->
 
+
+  <!-- SUMMARY -->
+  <tal:render condition="python:True"
+              define="reporter python:view.current_user;">
+    <div class="row section-summary no-gutters">
+        <!--
+        <div>Date <span tal:content="batch_data/date"></span></div>
+        <div class="clearfix"></div>
+        <div>Batch: <span tal:content="model/ClientBatchID"></span>,
+          <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
+        </div>
+        <div><span tal:content="model/Description"></span></div>
+        -->
+    </div>
+  </tal:render>
+
+  <!-- BATCH INVOICE -->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <!-- Point of Capture -->
+        <tal:poc>
+
+            <!-- Analysis in POC and Category -->
+            <table class="table table-sm table-condensed">
+              <colgroup>
+                <!-- Counter -->
+                <col style="width: 5%;">
+                <!-- Client SID -->
+                <col style="width: 15%;">
+                <!-- Sample ID -->
+                <col style="width: 15%;">
+                <!-- Sample Type -->
+                <col style="width: 15%;">
+                <!-- Date Received -->
+                <col style="width: 20%">
+                <!-- Description -->
+                <col style="width: 20%">
+                <!-- Amount -->
+              </colgroup>
+              <thead>
+                <tr class="small">
+                  <th>
+                  &nbsp;
+                  </th>
+                  <th class="">
+                    <span class="font-weight-bold" >Client SID</span>
+                  </th>
+                  <th class="text-right result">
+                    <span i18n:translate="">Sample ID</span>
+                  </th>
+                  <th class="text-left unit">
+                    <span i18n:translate="">Sample Type</span>
+                  </th>
+                  <th class="specs">
+                    <span i18n:translate="">Date Received</span>
+                  </th>
+                  <th class="outofrange">
+                    <span i18n:translate="">Description</span>
+                  </th>
+                  <th class="outofrange">
+                    <span i18n:translate="">Amount</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!--
+                <tal:analyses tal:repeat="sample samples">
+                  <tr>
+                    <td class="sample">
+                        <span class="font-weight-normal" tal:content="repeat/sample/number"></span>
+                    </td>
+                    <td class="sample">
+                        <span class="font-weight-normal" tal:content="sample/ClientSID"></span>
+                    </td>
+                    <td class="text-right">
+                      <span class="result" tal:content="sample/SampleID">23</span>
+                    </td>
+                    <td class="text-left text-muted font-italic">
+                      <span class="units" tal:content="sample/SampleTypeTitle"></span>
+                    </td>
+                    <td class="specs">
+                      <span tal:content="sample/DateReceived">50 - 60</span>
+                    </td>
+                    <td class="text-center align-middle">
+                      <span tal:content="sample/Description">50 - 60</span>
+                    </td>
+                    <td class="text-center align-middle">
+                      <span tal:content="sample/Subtotal">50 - 60</span>
+                    </td>
+                  </tr>
+                </tal:analyses>
+                -->
+              </tbody>
+              <tfoot>
+                <!--
+                <tr>
+                  <td colspan="6" style="text-align:right">
+                    <div class="category_comments">
+                      <span>Subtotal</span>
+                    </div>
+                  </td>
+                  <td colspan="1">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/total_subtotal">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="6" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/MemberDiscount">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/total_discount">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="6" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/VAT">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/total_vat">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="6" style="text-align:right">
+                    <div class="category_comments">
+                      <span>Total</span>
+                    </div>
+                  </td>
+                  <td colspan="1">
+                    <div class="category_comments">
+                      <span tal:content="batch_data/total_price">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+              -->
+              </tfoot>
+            </table>
+        </tal:poc>
+      </div>
+    </div>
+  </tal:render>
+  <tal:render condition="python:True">
+    <div>
+      <strong>Bank Account Details:</strong>
+    </div>
+    <div>
+      <span tal:content="laboratory/AccountType">Account Type</span>
+      <span tal:content="laboratory/AccountNumber">Account Number</span>
+    </div>
+  </tal:render>
+  <tal:render condition="python:True">
+    <div class="row section-footer no-gutters"
+        style="background-image:url(++resource++bika.coa.images/bikalimslogo.png);background-repeat:repeat-x; width:100%;height:10px">
+      <!-- Header Table -->
+      .
+    </div>
+  </tal:render>
 
   <!-- CUSTOM FOOTER -->
   <tal:render condition="python:footer">
@@ -116,38 +348,6 @@
       <!-- Footer Line -->
       <div id="footer-line"></div>
       <div tal:replace="structure footer"/>
-    </div>
-  </tal:render>
-
-  <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:not footer"
-              define="laboratory python:view.laboratory;">
-    <div class="row section-footer no-gutters">
-      <!-- Footer Line -->
-      <div id="footer-line"></div>
-      <table class="w-100">
-        <tr>
-          <td>
-            <div>
-              <strong tal:content="laboratory/Name">Lab Name</strong>
-              • <span tal:content="laboratory/PhysicalAddress/address">Lab Street and Number</span>
-              • <span tal:content="laboratory/PhysicalAddress/zip">Lab ZIP</span>
-                <span tal:content="laboratory/PhysicalAddress/city">Lab City</span>
-              • <span tal:content="laboratory/PhysicalAddress/country">Lab Country</span>
-            </div>
-            <div>
-              <span i18n:translate="">Phone</span>:
-              <span tal:content="laboratory/Phone">Lab Phone Number</span>
-              • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
-                <span tal:content="laboratory/EmailAddress">Lab Email</span>
-              </a>
-              • <a href="#" tal:attributes="href laboratory/LabURL">
-                <span tal:content="laboratory/LabURL">Lab URL</span>
-              </a>
-            </div>
-          </td>
-        </tr>
-      </table>
     </div>
   </tal:render>
 
