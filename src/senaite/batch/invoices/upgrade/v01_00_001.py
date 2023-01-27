@@ -44,8 +44,8 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
-    # Remove queue dispatcher utility, that is no longer used
     setup.runImportStepFromProfile(PROFILE_ID, "typeinfo")
+    setup.runImportStepFromProfile(PROFILE_ID, "workflow")
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True

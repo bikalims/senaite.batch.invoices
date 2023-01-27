@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
-    <property name="title">Workflow definitions for bika.cannabis</property>
+    <property name="title">Workflow definitions for senaite.batch.invoices</property>
+    <object name="senaite_sample_workflow" meta_type="Workflow"/>
     <bindings>
         <type type_id="BatchInvoice">
             <bound-workflow workflow_id="senaite_one_state_workflow"/>
         </type>
         <type type_id="BatchInvoices">
             <bound-workflow workflow_id="senaite_one_state_workflow"/>
+        </type>
+        <type type_id="AnalysisRequest">
+          <bound-workflow workflow_id="senaite_sample_workflow"/>
         </type>
     </bindings>
 </object>
