@@ -24,11 +24,8 @@
 
  <property name="default_view_fallback">False</property>
  <property name="add_permission">cmf.AddPortalContent</property>
+ <property name="schema">senaite.batch.invoices.content.batchinvoice.IBatchInvoiceSchema</property>
  <property name="klass">senaite.batch.invoices.content.batchinvoice.BatchInvoice</property>
- <property
-    name="schema">senaite.batch.invoices.content.batchinvoice.IBatchInvoice</property>
- <property name="model_source"></property>
- <property name="model_file"></property>
 
  <property name="behaviors">
   <element value="bika.lims.interfaces.IAutoGenerateID"/>

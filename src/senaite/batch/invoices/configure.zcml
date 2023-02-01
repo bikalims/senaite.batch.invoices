@@ -52,6 +52,15 @@
       name="Batch"
       factory="senaite.batch.invoices.batchinvoice.model.SuperModel"/>
 
+  <!-- PDF Report Storage Adapter -->
+  <adapter
+      for="bika.lims.interfaces.IBatchFolder
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".storage.PdfReportStorageAdapter"
+      provides="senaite.impress.interfaces.IPdfReportStorage"
+      permission="zope2.View"/>
+
+
   <!-- Needed for bika.lims.ManageBika permission -->
   <include package="bika.lims" file="permissions.zcml" />
 

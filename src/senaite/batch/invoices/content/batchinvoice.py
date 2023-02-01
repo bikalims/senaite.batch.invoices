@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims.interfaces import IBatch, IClient
 from senaite.batch.invoices import _
 from senaite.core.interfaces import IHideActionsMenu
@@ -13,10 +14,11 @@ from zope import schema
 from zope.interface import implementer
 from z3c.relationfield.schema import RelationChoice
 from plone.namedfile.field import NamedBlobFile
+from senaite.batch.invoices.interfaces import IBatchInvoice
 
 
-class IBatchInvoice(model.Schema):
-    invoice_pdf = NamedBlobFile(title=_(u"Batch Invoice PDF"))
+class IBatchInvoiceSchema(model.Schema):
+    invoice_pdf = NamedBlobFile(title=_(u"Batch Invoice PDF"), required=False)
     client = RelationChoice(
         title=_(u"Client"),
         source=ObjPathSourceBinder(object_provides=IClient.__identifier__),
@@ -34,7 +36,7 @@ class IBatchInvoice(model.Schema):
     # )
 
 
-@implementer(IBatchInvoice, IHideActionsMenu)
+@implementer(IBatchInvoice, IBatchInvoiceSchema, IHideActionsMenu)
 class BatchInvoice(Item):
     _catalogs = ['portal_catalog']
     security = ClassSecurityInfo()

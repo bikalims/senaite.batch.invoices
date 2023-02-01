@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from cStringIO import StringIO
 import transaction
 from plone import api as ploneapi
 from bika.lims import api
@@ -14,12 +15,11 @@ class PdfReportStorageAdapter(PRSA):
     """Storage adapter for PDF batchinvoices
     """
 
-    def store(self, pdf, html, uid, metadata=None, csv_text=None, coa_num=None):
+    def store(self, pdf, html, uids, metadata=None):
         """Store the PDF
 
-        :param pdf: generated PDF batchinvoice (binary)
+        :param pdf: generated PDF report (binary)
         :param html: report HTML (string)
-        :param csv: report CSV (string)
         :param uids: UIDs of the objects contained in the PDF
         :param metadata: dict of metadata to store
         """
@@ -28,12 +28,21 @@ class PdfReportStorageAdapter(PRSA):
             metadata = {}
 
         # get the contained objects
-        obj = api.get_object_by_uid(uid)
+        objs = map(api.get_object_by_uid, uids)
 
-        report = self.create_report(
-            obj, pdf, html, uid, metadata, csv_text=csv_text, coa_num=coa_num)
+        # handle primary object storage
+        if not self.store_multireports_individually():
+            # reduce the list to the primary object only
+            objs = [self.get_primary_report(objs)]
 
-        return report
+        # generate the reports
+        reports = []
+        for obj in objs:
+            report = self.create_report(obj, pdf, html, uids, metadata)
+            reports.append(report)
+
+        return reports
+
 
     @synchronized(max_connections=1)
     def create_report(self, parent, pdf, html, uid, metadata, csv_text=None, coa_num=None):
@@ -70,8 +79,10 @@ class PdfReportStorageAdapter(PRSA):
         # Create the report object
         filename = u"{}.pdf".format(coa_num)
         params = {"client":parent.getClient()}
-        report = api.create(parent, "BatchInvoice", title=coa_num, **params)
-        report.batch_invoice_pdf = NamedBlobFile(pdf, filename=filename)
+        report = api.create(
+                parent, "BatchInvoice",
+                title=coa_num, batch=api.get_uid(parent),)
+        report.invoice_pdf = NamedBlobFile(data=pdf, contentType='application/pdf',filename=filename)
             # Html=html,
             # CSV=csv_text,
             # Metadata=metadata)

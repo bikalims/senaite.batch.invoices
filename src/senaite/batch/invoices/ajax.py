@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
 from pkg_resources import resource_filename
 from senaite.impress.ajax import AjaxPublishView as AP
 from senaite.impress.interfaces import IMultiReportView
+from senaite.impress.interfaces import IReportWrapper
 from senaite.impress.decorators import timeit
 from zope.component import getMultiAdapter
 from zope.component import queryMultiAdapter
@@ -19,6 +21,14 @@ class AjaxPublishView(AP):
         self.request = request
         self.traverse_subpath = []
 
+    def get_report_template(self, template=None):
+        """Returns the path of report template
+        """
+        # TODO: create a utility template as done in senaite.impress
+        path = "browser/batch/templates/MultiBatchInvoice.pt"
+        template = resource_filename("senaite.batch.invoices", path)
+        return template
+
     def ajax_render_reports(self, *args):
         """Renders all reports and returns the html
 
@@ -27,30 +37,25 @@ class AjaxPublishView(AP):
         # update the request form with the parsed json data
         data = self.get_json()
 
+        uids = data.get("items", [])
+        template = data.get("template")
+        # Lookup the requested template
+        path = "browser/batch/templates/MultiBatchInvoice.pt"
+        template = resource_filename("senaite.batch.invoices", path)
         paperformat = data.get("format", "A4")
         orientation = data.get("orientation", "portrait")
         # custom report options
         report_options = data.get("report_options", {})
 
-        # Create a collection of the requested UIDs
-        collection = self.get_collection(data.get("items"))
-        model = collection[0] if collection else None
-        uids = data.get("items", [])
+        # generate the reports
+        reports = self.generate_reports_for(uids,
+                                            group_by="getClientUID",
+                                            template=template,
+                                            paperformat=paperformat,
+                                            orientation=orientation,
+                                            report_options=report_options)
 
-        # Lookup the requested template
-        path = "browser/batch/templates/MultiBatchInvoice.pt"
-        template = resource_filename("senaite.batch.invoices", path)
-
-        htmls = []
-
-        html = self.render_report(collection,
-                                  template,
-                                  paperformat=paperformat,
-                                  orientation=orientation,
-                                  report_options=report_options)
-        htmls.append(html)
-
-        return "\n".join(htmls)
+        return "\n".join(map(lambda r: r.html, reports))
 
     def render_report(self, model, template, paperformat, orientation, **kw):
         """Render a SuperModel to HTML
@@ -109,7 +114,8 @@ class AjaxPublishView(AP):
         action = data.get("action", "save")
 
         # get the selected template
-        template = data.get("template")
+        path = "browser/batch/templates/MultiBatchInvoice.pt"
+        template = resource_filename("senaite.batch.invoices", path)
 
         # get the selected paperformat
         paperformat = data.get("format")
@@ -118,7 +124,7 @@ class AjaxPublishView(AP):
         orientation = data.get("orientation", "portrait")
 
         # get a timestamp
-        timestamp = DateTime().ISO8601()
+        timestamp = DateTime().ISO()
 
         # Generate the print CSS with the set format/orientation
         css = self.get_print_css(
@@ -130,49 +136,59 @@ class AjaxPublishView(AP):
         # add the generated CSS to the publisher
         publisher.add_inline_css(css)
 
-        # get batch_invoice_number 
-        parser = publisher.get_parser(html)
-        batch_invoice_number = parser.find_all(attrs={'name': 'batch_invoice_number'})
-        batch_invoice_number = batch_invoice_number.pop()
-        batch_invoice_number = batch_invoice_number.text.strip()
-
         # split the html per report
         # NOTE: each report is an instance of <bs4.Tag>
-        html_report = publisher.parse_reports(html)
-
-        # generate a PDF for each HTML report
-        pdf_reports = map(publisher.write_pdf, html_report)
+        html_reports = publisher.parse_reports(html)
 
         # extract the UIDs of each HTML report
         # NOTE: UIDs are injected in `.analysisrequest.reportview.render`
-        # TODO: uids returns list should be single uid
-        batch_invoice_uid = html_report[0].get("uids", "").split(",")[0]
+        report_uids = map(
+            lambda report: report.get("uids", "").split(","), html_reports)
 
         # get the storage multi-adapter to save the generated PDFs
         storage = getMultiAdapter(
             (self.context, self.request), IPdfReportStorage)
 
         report_groups = []
-        pdf, html = pdf_reports, html_report
-        # prepare some metadata
-        # NOTE: We are doing it in the loop to ensure a new dictionary is
-        #       created for each report.
-        metadata = {
-            "template": template,
-            "paperformat": paperformat,
-            "orientation": orientation,
-            "timestamp": timestamp,
-        }
-        # ensure we have valid UIDs here
-        uid = api.is_uid(batch_invoice_uid)
-        # convert the bs4.Tag back to pure HTML
-        # TODO: html returns a list
-        html = publisher.to_html(html[0])
-        # BBB: inject contained UIDs into metadata
-        metadata["contained_requests"] = batch_invoice_uid
-        # store the report(s)
-        objs = storage.store(pdf[0], html, batch_invoice_uid, metadata=metadata, coa_num=batch_invoice_number)
-        exit_url = "{}/{}?uids={}".format(
-            api.get_url(self.context), action, ",".join([objs.UID()]))
+        for html, uids in zip(html_reports, report_uids):
+            # ensure we have valid UIDs here
+            uids = filter(api.is_uid, uids)
+            # convert the bs4.Tag back to pure HTML
+            html = publisher.to_html(html)
+            # wrap the report
+            report = getMultiAdapter((html,
+                                      map(self.to_model, uids),
+                                      template,
+                                      paperformat,
+                                      orientation,
+                                      None,
+                                      publisher), interface=IReportWrapper)
 
+            # BBB: inject contained UIDs into metadata
+            metadata = report.get_metadata(
+                contained_requests=uids, timestamp=timestamp)
+            # store the report(s)
+            objs = storage.store(report.pdf, html, uids, metadata=metadata)
+            # append the generated reports to the list
+            report_groups.append(objs)
+
+        # NOTE: The reports might be stored in multiple places (clients),
+        #       which makes it difficult to redirect to a single exit URL
+        #       based on the action the users clicked (save/email)
+        exit_urls = map(lambda reports: self.get_exit_url_for(
+            reports, action=action), report_groups)
+
+        if not exit_urls:
+            return api.get_url(self.context)
+
+        # Group the urls by path. This makes possible to at least return a
+        # single url for multiple uids when the base path (e.g. client) is the
+        # same. This is required for Single Reports, for which there are as many
+        # report groups as samples, regardless of clients
+        groups = OrderedDict()
+        for url in exit_urls:
+            base_path, uids = url.split("?uids=")
+            path_uids = groups.get(base_path, "")
+            groups[base_path] = ",".join(filter(None, [path_uids, uids]))
+        exit_url = "{}/{}?uids={}".format(api.get_url(self.context), action, uids)
         return exit_url

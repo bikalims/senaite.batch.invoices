@@ -14,6 +14,10 @@ class IInvoice(Interface):
     """Invoice
     """
 
+class IBatchInvoice(Interface):
+    """Marker interface for sample containers
+    """
+
 class IInvoices(Interface):
     """Invoice
     """
