@@ -3,11 +3,8 @@
   xmlns:zcml="http://namespaces.zope.org/zcml"
   i18n_domain="plone">
 
-  <configure zcml:condition="installed AccessControl.security">
-  <!-- -*- extra stuff goes here -*- -->
-    <permission id="senaite.batch.invoices.permissions.AddBatchInvoice" title="senaite.batch.invoices: Add BatchInvoice"/>
+  <permission id="senaite.batch.invoices.permissions.AddBatchInvoice" title="senaite.batch.invoices: Add BatchInvoice"/>
+  <permission id="senaite.batch.invoices.permissions.TransitionInvoice" title="senaite.batch.invoices: Transition: Invoice"/>
 
-
-  </configure>
 
 </configure>

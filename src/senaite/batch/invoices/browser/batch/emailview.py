@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 
-import six
-from collections import OrderedDict
+# import six
+# from collections import OrderedDict
+import transaction
 from Products.CMFPlone.utils import safe_unicode
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.memoize import view
+# from plone.memoize import view
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
 from bika.lims.interfaces import IBatch
 from bika.lims.api import mail as mailapi
-from bika.lims.utils import to_utf8
+# from bika.lims.utils import to_utf8
 from bika.lims.browser.publish.emailview import EmailView as EV
 
 from senaite.batch.invoices import _
+from senaite.batch.invoices import logger
 
 
 class EmailView(EV):
@@ -29,28 +32,6 @@ class EmailView(EV):
         super(EmailView, self).__init__(context, request)
 
     @property
-    @view.memoize
-    def reports(self):
-        """Return the objects from the UIDs given in the request
-        """
-        # Create a mapping of source ARs for copy
-        uids = self.request.form.get("uids", [])
-        # handle 'uids' GET parameter coming from a redirect
-        if isinstance(uids, six.string_types):
-            uids = uids.split(",")
-        uids = filter(api.is_uid, uids)
-        unique_uids = OrderedDict().fromkeys(uids).keys()
-        # TODO: uids
-        return self.get_object_by_uid(uids[0])
-
-    @property
-    def reports_data(self):
-        """Returns a list of report data dictionaries
-        """
-        reports = self.reports
-        return [self.get_report_data(reports)]
-
-    @property
     def exit_url(self):
         """Exit URL for redirect
         """
@@ -60,17 +41,19 @@ class EmailView(EV):
         return "{}/{}".format(
             api.get_url(self.context), endpoint)
 
-    def get_recipients_data(self, batch):
+    def get_recipients_data(self, batches):
         """Recipients data to be used in the template
         """
 
-        if not batch:
+        if not batches:
             return []
 
         recipients = []
         recipient_names = []
 
-        samples = batch.getAnalysisRequests()
+        samples = []
+        for batch in batches:
+            samples.extend(batch.getAnalysisRequests())
 
         for num, sample in enumerate(samples):
             report_recipient_names = []
@@ -111,7 +94,7 @@ class EmailView(EV):
             # get client from the sample
             client_billing_email = sample.aq_parent.Schema()['BillingEmailAddress'].getAccessor(sample.aq_parent)()
             if client_billing_email:
-                name = "{} Billing EmailAddress".format(sample.getName()) 
+                name = "{} Billing EmailAddress".format(sample.getName())
                 address = mailapi.to_email_address(client_billing_email, name=name)
                 record = {
                     "name": name,
@@ -123,16 +106,19 @@ class EmailView(EV):
                 break
         return recipients
 
-    def get_responsibles_data(self, batch):
+    def get_responsibles_data(self, batches):
         """Responsibles data to be used in the template
         """
-        if not batch:
+        if not batches:
             return []
 
         recipients = []
         recipient_names = []
 
-        samples = batch.getAnalysisRequests()
+        samples = []
+        for batch in batches:
+            samples.extend(batch.getAnalysisRequests())
+
         for num, sample in enumerate(samples):
             # recipient names of this report
             report_recipient_names = []
@@ -167,8 +153,8 @@ class EmailView(EV):
         """Report data to be used in the template
         """
         # TODO: BUG
-        pdf = report.batch_invoice_pdf
-        filesize = "{} Kb".format(self.get_filesize(pdf))
+        pdf = report.invoice_pdf
+        filesize = "{} Kb".format(pdf.getSize())
         filename = "{}.pdf".format(report.id)
 
         return {
@@ -214,4 +200,58 @@ class EmailView(EV):
         if subject is not None:
             return subject
         subject = self.context.translate(_("Batch Invoice {}"))
-        return subject.format(_(self.reports.Title()))
+        return subject.format(_(self.reports[0].Title()))
+
+    def publish_samples(self):
+        """Invoice all batches of the reports
+        """
+
+        # collect primary + contained samples of the reports
+        # invoice all batches + their samples
+        for batch in self.reports:
+            self.invoice_batches(batch)
+
+    def invoice_batches(self, obj):
+        """Set status to prepublished/published/republished
+        """
+        wf = api.get_tool("portal_workflow")
+        status = wf.getInfoFor(batch, "review_state")
+        transitions = {"open": "invoice"}
+        transition = transitions.get(status, "invoice")
+        logger.info("Transitioning sample {}: {} -> {}".format(
+            api.get_id(batch), status, transition))
+        try:
+            # Manually update the view on the database to avoid conflict errors
+            batch.getClient()._p_jar.sync()
+            # Perform WF transition
+            wf.doActionFor(batch, transition)
+            # Commit the changes
+            transaction.commit()
+        except WorkflowException as e:
+            logger.error(e)
+
+    @property
+    def email_attachments(self):
+        attachments = []
+
+        # Convert report PDFs -> email attachments
+        for report in self.reports:
+            pdf = report.invoice_pdf
+            if pdf is None:
+                logger.error("Skipping empty PDF for report {}"
+                             .format(report.getId()))
+                continue
+            filename = pdf.filename
+            filedata = pdf.data
+            attachments.append(
+                mailapi.to_email_attachment(filedata, filename))
+
+        # Convert additional attachments
+        for attachment in self.attachments:
+            af = attachment.getAttachmentFile()
+            filedata = af.data
+            filename = af.filename
+            attachments.append(
+                mailapi.to_email_attachment(filedata, filename))
+
+        return attachments

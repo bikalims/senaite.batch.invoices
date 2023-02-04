@@ -8,3 +8,8 @@ ADD_CONTENT_PERMISSIONS = {
 def setup_default_permissions(portal):
     mp = portal.manage_permission
     mp(AddBatchInvoice, ['Manager', 'LabManager', 'LabClerk'], True)
+
+
+# Transition permissions
+# ======================
+TransitionInvoice = "senaite.batch.invoices: Transition: Invoice"
