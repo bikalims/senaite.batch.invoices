@@ -55,7 +55,7 @@
 
   <!-- Email View -->
   <browser:page
-      for="bika.lims.interfaces.IBatch"
+      for="bika.lims.interfaces.IBatchFolder"
       name="email"
       class=".emailview.EmailView"
       permission="senaite.core.permissions.ManageAnalysisRequests"
