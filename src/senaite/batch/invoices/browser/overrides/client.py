@@ -18,6 +18,10 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.browser.client.views.analysisrequests import \
+    ClientAnalysisRequestsView as CARV
+
+from senaite.batch.invoices import _
 from .batchfolder import BatchFolderContentsView
 
 
@@ -27,3 +31,14 @@ class ClientBatchesView(BatchFolderContentsView):
         super(ClientBatchesView, self).__init__(context, request)
         self.view_url = self.context.absolute_url() + "/batches"
         self.contentFilter['getClientUID'] = self.context.UID()
+
+
+class ClientAnalysisRequestsView(CARV):
+    def __init__(self, context, request):
+        super(ClientAnalysisRequestsView, self).__init__(context, request)
+        invoiced = {"id": "to_be_invoiced",
+                    "title": _("To be invoiced"),
+                    "columns": self.columns.keys(),
+                    "contentFilter": {"review_state": "to_be_invoiced"}
+                    }
+        self.review_states.append(invoiced)
