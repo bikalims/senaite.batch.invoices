@@ -21,6 +21,16 @@ financials_field = ExtBooleanField(
     )
 )
 
+invoiceforpublishedsamplesonly_field= ExtBooleanField(
+    "InvoiceForPublishedSamplesOnly",
+    mode="rw",
+    schemata="Accounting",
+    widget=BooleanWidget(
+        label=_(u"Invoice for published samples only"),
+        description=_(u"If left disabled, samples can be invoiced for in any state"),
+    )
+)
+
 email_invoices_field = ExtBooleanField(
     "EmailInvoices",
     mode="rw",
@@ -40,6 +50,7 @@ class BikaSetupSchemaExtender(object):
     fields = [
         financials_field,
         email_invoices_field,
+        invoiceforpublishedsamplesonly_field,
     ]
 
     def __init__(self, context):

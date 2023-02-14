@@ -18,6 +18,10 @@
   <include package=".content"/>
   <include package=".extenders"/>
   <include package=".upgrade"/>
+  <include package=".monkeys" />
+  <!--
+      <include package=".workflow"/>
+  -->
 
   <include file="permissions.zcml" />
 

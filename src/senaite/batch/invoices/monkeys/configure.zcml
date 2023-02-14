@@ -1,0 +1,12 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.batch.invoices">
+
+  <monkey:patch
+    description="Transition to to_be_invoiced"
+    class="bika.lims.browser.analysisrequest.add2.ajaxAnalysisRequestAddView"
+    original="ajax_submit"
+    ignoreOriginal="True"
+    replacement=".analysisrequest.ajax_submit" />
+</configure>
