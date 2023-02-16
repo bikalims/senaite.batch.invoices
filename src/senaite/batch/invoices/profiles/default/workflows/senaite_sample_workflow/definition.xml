@@ -371,7 +371,6 @@
 
   <!-- *** TRANSITIONS *** -->
   <transition transition_id="invoice" title="Invoice" new_state="invoiced" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Invoice</action>
     <guard>
       <guard-permission>senaite.core: Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("publish")</guard-expression>
