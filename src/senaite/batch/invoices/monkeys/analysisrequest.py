@@ -188,7 +188,7 @@ def ajax_submit(self):
 
     actions.resume()
 
-    self.transition_batch()
+    batch_msg = transition_batch(self.context)
     level = "info"
     if len(ARs) == 0:
         message = _('No Samples could be created.')
@@ -209,7 +209,7 @@ def ajax_submit(self):
     return self.handle_redirect(ARs.values(), message)
 
 
-def transition_batch(self)
+def transition_batch(context):
     setup = api.get_setup()
     schema = setup.Schema()
     financials = schema['Financials'].getAccessor(setup)()
@@ -220,7 +220,7 @@ def transition_batch(self)
         # transition batch
         # TODO: check for other conditions
         # alsoProvides(self.context, IBatch) not working
-        if self.context.portal_type == 'Batch':
-            batch = self.context
+        if context.portal_type == 'Batch':
+            batch = context
             success, message = doActionFor(batch, "to_be_invoiced")
-    return message
+    return batch_msg

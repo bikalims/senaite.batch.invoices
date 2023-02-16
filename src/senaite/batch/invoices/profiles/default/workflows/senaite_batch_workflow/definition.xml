@@ -109,6 +109,7 @@
   <!-- State: invoiced -->
   <state state_id="invoiced" title="Invoiced" i18n:attributes="title">
     <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="invoice" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
@@ -147,7 +148,6 @@
 
   <!-- Transition: to_be_invoiced -->
   <transition transition_id="to_be_invoiced" title="To be invoiced" new_state="to_be_invoiced" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">To be Invoiced</action>
     <guard>
     </guard>
   </transition>
