@@ -4,8 +4,11 @@ import six
 from collections import OrderedDict
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
+from zope.interface import alsoProvides
 
 from bika.lims import api
+from bika.lims.interfaces import IBatch
+from bika.lims.workflow import doActionFor
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.workflow import ActionHandlerPool
 
@@ -185,18 +188,39 @@ def ajax_submit(self):
 
     actions.resume()
 
+    self.transition_batch()
     level = "info"
     if len(ARs) == 0:
         message = _('No Samples could be created.')
         level = "error"
     elif len(ARs) > 1:
-        message = _('Samples ${ARs} were successfully created.',
-                    mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
+        message = _('Samples ${ARs} were successfully created. ${batch_msg}',
+                    mapping={'ARs': safe_unicode(', '.join(ARs.keys())),
+                             "batch_msg": batch_msg}
+                    )
     else:
-        message = _('Sample ${AR} was successfully created.',
-                    mapping={'AR': safe_unicode(ARs.keys()[0])})
+        message = _('Sample ${AR} was successfully created. ${batch_msg}',
+                    mapping={'AR': safe_unicode(ARs.keys()[0]),
+                             "batch_msg": batch_msg})
 
     # Display a portal message
     self.context.plone_utils.addPortalMessage(message, level)
 
     return self.handle_redirect(ARs.values(), message)
+
+
+def transition_batch(self)
+    setup = api.get_setup()
+    schema = setup.Schema()
+    financials = schema['Financials'].getAccessor(setup)()
+    invfor = schema['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
+    batch_msg = ''
+    if financials and invfor:
+        batch_msg = "Batch transitioned to To Be Invoiced."
+        # transition batch
+        # TODO: check for other conditions
+        # alsoProvides(self.context, IBatch) not working
+        if self.context.portal_type == 'Batch':
+            batch = self.context
+            success, message = doActionFor(batch, "to_be_invoiced")
+    return message

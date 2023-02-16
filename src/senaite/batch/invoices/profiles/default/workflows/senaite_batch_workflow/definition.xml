@@ -22,7 +22,7 @@
   <state state_id="open" title="Open" i18n:attributes="title">
     <exit-transition transition_id="cancel" />
     <exit-transition transition_id="close" />
-    <exit-transition transition_id="invoice" />
+    <exit-transition transition_id="to_be_invoiced" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
@@ -145,14 +145,13 @@
     </guard>
   </transition>
 
-  <!-- Transition: open -->
-  <transition transition_id="open" title="Open" new_state="to_be_invoiced" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Open</action>
+  <!-- Transition: to_be_invoiced -->
+  <transition transition_id="to_be_invoiced" title="To be invoiced" new_state="to_be_invoiced" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be Invoiced</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Reopen</guard-permission>
-      <guard-expression>python:here.guard_handler("open")</guard-expression>
     </guard>
   </transition>
+
 
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
