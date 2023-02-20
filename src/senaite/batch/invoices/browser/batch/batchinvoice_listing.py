@@ -7,7 +7,6 @@ from ZODB.POSException import POSKeyError
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
 from senaite.app.listing import ListingView
@@ -35,7 +34,7 @@ class ReportsListingView(ListingView):
         self.title = t(_("Batch Invoices"))
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/report_big.png"
+            "++resource++bika.lims.images/invoice.png"
         )
         self.context_actions = {}
 
@@ -120,7 +119,7 @@ class ReportsListingView(ListingView):
         """Compute the filesize of the PDF
         """
         try:
-            filesize = float(pdf.get_size())
+            filesize = float(pdf.getSize())
             return filesize / 1024
         except (POSKeyError, TypeError):
             return 0
@@ -134,7 +133,7 @@ class ReportsListingView(ListingView):
         """Get the report PDF
         """
         try:
-            return obj.batch_invoice_pdf # obj.getPdf()
+            return obj.invoice_pdf # obj.getPdf()
         except (POSKeyError, TypeError):
             return None
 
@@ -151,7 +150,7 @@ class ReportsListingView(ListingView):
         # Report Info Popup
         # see: bika.lims.site.coffee for the attached event handler
         item["Info"] = get_link(
-            "analysisreport_info?report_uid={}".format(uid),
+            "invoicepdf_info?invoice_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
             css_class="service_info")
 
@@ -159,16 +158,16 @@ class ReportsListingView(ListingView):
             obj.absolute_url(), value=obj.Title()
         )
 
-        # pdf = self.get_pdf(obj)
-        # filesize = self.get_filesize(pdf)
-        # if filesize > 0:
-        #     url = "{}/download_pdf".format(obj.absolute_url())
-        #     item["replace"]["PDF"] = get_link(
-        #         url, value="PDF", target="_blank")
+        pdf = self.get_pdf(obj)
+        filesize = self.get_filesize(pdf)
+        if filesize > 0:
+            url = "{}/@@download/invoice_pdf".format(obj.absolute_url())
+            item["replace"]["PDF"] = get_link(
+                url, value="PDF", target="_blank")
 
         item["State"] = _BMF(status_title)
         item["state_class"] = "state-{}".format(review_state)
-        # item["FileSize"] = "{:.2f} Kb".format(filesize)
+        item["FileSize"] = "{:.2f} Kb".format(filesize)
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())

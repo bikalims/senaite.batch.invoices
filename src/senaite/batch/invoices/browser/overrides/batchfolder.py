@@ -110,10 +110,19 @@ class BatchFolderContentsView(BFCV):
                 "columns": self.columns.keys(),
             },
         ]
-        if api.get_setup().Schema()['Financials'].getAccessor(api.get_setup())():
+        setup = api.get_setup()
+        finacials = setup.Schema()['Financials'].getAccessor(setup)()
+        if finacials:
             invoiced = {"id": "invoiced",
                         "title": _("Invoiced"),
                         "columns": self.columns.keys(),
                         "contentFilter": {"review_state": "invoiced"}
                         }
             self.review_states.insert(1, invoiced)
+
+            to_be_invoiced = {"id": "to_be_invoiced",
+                              "title": _("To be invoiced"),
+                              "columns": self.columns.keys(),
+                              "contentFilter": {"review_state": "to_be_invoiced"}
+                              }
+            self.review_states.insert(1, to_be_invoiced)
