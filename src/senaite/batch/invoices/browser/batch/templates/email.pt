@@ -2,7 +2,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="senaite.core">
+      i18n:domain="senaite.invoices.batch">
   <head>
     <metal:block fill-slot="javascript_head_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
@@ -146,7 +146,7 @@
                   <a href="#"
                      class="report-link"
                      target="_blank"
-                     tal:attributes="href string:${report/obj/absolute_url}/@@download/batch_invoice_pdf/${report/obj/batch_invoice_pdf/filename}">
+                    >
                     <img tal:attributes="alt report/filename;
                                          title string:${report/filename}(${report/filesize})"
                          src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />

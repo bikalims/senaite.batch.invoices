@@ -11,5 +11,5 @@ class IBatchInvoices(model.Schema):
 
 
 @implementer(IBatchInvoices, IHideActionsMenu)
-class IBatchInvoices(Container):
+class BatchInvoices(Container):
     pass

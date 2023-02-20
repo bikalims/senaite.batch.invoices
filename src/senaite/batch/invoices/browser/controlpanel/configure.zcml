@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <include package="bika.lims" file="permissions.zcml" />
+
+  <!-- Batch Invoices -->
+  <browser:page
+      for="senaite.batch.invoices.content.batchinvoices.IBatchInvoices"
+      name="view"
+      class=".batchinvoices.BatchInvoicesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
+
+</configure>

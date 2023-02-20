@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import collections
+from Products.CMFPlone.utils import safe_unicode
+from ZODB.POSException import POSKeyError
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
@@ -8,11 +10,10 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
-from Products.CMFPlone.utils import safe_unicode
-from ZODB.POSException import POSKeyError
+from senaite.app.listing import ListingView
 
 
-class ReportsListingView(BikaListingView):
+class ReportsListingView(ListingView):
     """Listing view of all generated reports
     """
 
@@ -28,10 +29,10 @@ class ReportsListingView(BikaListingView):
             "sort_on": "created",
             "sort_order": "descending",
         }
-
         self.form_id = "batchinvoice_listing"
-        self.title = _("Batch Invoices")
 
+        t = self.context.translate
+        self.title = t(_("Batch Invoices"))
         self.icon = "{}/{}".format(
             self.portal_url,
             "++resource++bika.lims.images/report_big.png"

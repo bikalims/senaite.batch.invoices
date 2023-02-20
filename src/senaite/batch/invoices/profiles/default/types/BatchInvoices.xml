@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object name="batch-invoices" meta_type="Dexterity FTI" i18n:domain="plone"
+<object name="BatchInvoices" meta_type="Dexterity FTI" i18n:domain="plone"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <property name="title" i18n:translate="">BatchInvoices</property>
  <property name="description"
     i18n:translate="">Folder for all batch invoices</property>
  <property name="icon_expr">string:${portal_url}/document_icon.png</property>
- <property name="factory">batch-invoices</property>
+ <property name="factory">BatchInvoices</property>
  <property
-    name="add_view_expr">string:${folder_url}/++add++batch-invoices</property>
+    name="add_view_expr">string:${folder_url}/++add++BatchInvoices</property>
+
  <property name="link_target"></property>
  <property name="immediate_view">view</property>
  <property name="global_allow">True</property>
@@ -18,22 +19,17 @@
  <property name="view_methods">
   <element value="view"/>
  </property>
+
  <property name="default_view_fallback">False</property>
  <property name="add_permission">cmf.AddPortalContent</property>
+ <property name="schema">senaite.batch.invoices.content.batchinvoices.IBatchInvoices</property>
+ <property name="klass">senaite.batch.invoices.content.batchinvoices.BatchInvoices</property>
  <property name="klass">plone.dexterity.content.Container</property>
  <property name="behaviors">
   <element value="plone.dublincore"/>
   <element value="plone.namefromtitle"/>
  </property>
- <property
-    name="schema">senaite.batch.invoices.content.batchinvoices</property>
- <property name="model_source">
-  &lt;model xmlns=&quot;http://namespaces.plone.org/supermodel/schema&quot;&gt;
-  &lt;schema&gt;
-  &lt;/schema&gt;
-  &lt;/model&gt;</property>
- <property name="model_file"></property>
- <property name="schema_policy">dexterity</property>
+
  <alias from="(Default)" to="(dynamic view)"/>
  <alias from="edit" to="@@edit"/>
  <alias from="sharing" to="@@sharing"/>

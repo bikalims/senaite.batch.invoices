@@ -211,7 +211,7 @@ class EmailView(EV):
         for batch in self.reports:
             self.invoice_batches(batch)
 
-    def invoice_batches(self, obj):
+    def invoice_batches(self, batch):
         """Set status to prepublished/published/republished
         """
         wf = api.get_tool("portal_workflow")

@@ -21,6 +21,7 @@
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
+from senaite.batch.invoices.setuphandlers import add_dexterity_setup_items
 
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -46,6 +47,7 @@ def upgrade(tool):
 
     setup.runImportStepFromProfile(PROFILE_ID, "typeinfo")
     setup.runImportStepFromProfile(PROFILE_ID, "workflow")
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True

@@ -43,6 +43,15 @@
       post_handler=".setuphandlers.uninstall"
       />
 
+  <genericsetup:importStep
+    name="senaite.batch.invoices.setup_handler"
+    title="SENAITE BATCH INVOICES: Setup Handler"
+    description="Run various configuration actions"
+    handler=".setuphandlers.setup_handler">
+    <depends name="typeinfo"/>
+    <depends name="workflow"/>
+  </genericsetup:importStep>
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="senaite.batch.invoices-hiddenprofiles"
