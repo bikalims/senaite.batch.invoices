@@ -29,7 +29,6 @@ class PublishController extends React.Component
 
   constructor: (props) ->
     super(props)
-    console.log "PublishController::constructor:props=", props
 
     @api = new PublishAPI()
 
@@ -297,6 +296,7 @@ class PublishController extends React.Component
             <div className="input-group-append">
               <Button name="reload" title="↺" onClick={@loadReports} className="btn btn-outline-success"/>
               <Button name="email" title="Email" onClick={@saveReports} className="btn btn-outline-secondary" />
+              <Button name="save" title="Save" onClick={@saveReports} className="btn btn-outline-secondary" />
             </div>
           </div>
         </div>
