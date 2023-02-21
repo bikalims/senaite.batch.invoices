@@ -215,7 +215,7 @@ def transition_batch(context):
     financials = schema['Financials'].getAccessor(setup)()
     invfor = schema['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
     batch_msg = ''
-    if financials and invfor:
+    if financials and not invfor:
         batch_msg = "Batch transitioned to To Be Invoiced."
         # transition batch
         # TODO: check for other conditions

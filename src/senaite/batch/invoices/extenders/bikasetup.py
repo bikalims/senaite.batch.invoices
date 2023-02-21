@@ -21,13 +21,13 @@ financials_field = ExtBooleanField(
     )
 )
 
-invoiceforpublishedsamplesonly_field= ExtBooleanField(
+invoiceforpublishedsamplesonly_field = ExtBooleanField(
     "InvoiceForPublishedSamplesOnly",
     mode="rw",
     schemata="Accounting",
     widget=BooleanWidget(
         label=_(u"Invoice for published samples only"),
-        description=_(u"If left disabled, samples can be invoiced for in any state"),
+        description=_(u"If left disabled, samples will be invoiced after registration"),
     )
 )
 
