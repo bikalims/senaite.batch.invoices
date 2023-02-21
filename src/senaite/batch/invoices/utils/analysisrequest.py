@@ -120,10 +120,13 @@ def create_analysisrequest(client, request, values, analyses=None,
             return ar
 
     # Try first with to_be_invoiced transition, cause it is the most common config
-    schema = api.get_setup().Schema()
-    if schema['InvoiceForPublishedSamplesOnly'].getAccessor(api.get_setup())():
+    setup = api.get_setup()
+    schema = setup.Schema()
+    financials = schema['Financials'].getAccessor(setup)()
+    invfor = schema['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
+    if financials and not invfor:
         success, message = doActionFor(ar, "to_be_invoiced")
-    else:
+    elif financials and invfor:
         success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:
         doActionFor(ar, "to_be_sampled")
