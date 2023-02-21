@@ -133,7 +133,7 @@ class ReportsListingView(ListingView):
         """Get the report PDF
         """
         try:
-            return obj.invoice_pdf # obj.getPdf()
+            return obj.invoice_pdf  # obj.getPdf()
         except (POSKeyError, TypeError):
             return None
 
@@ -150,7 +150,7 @@ class ReportsListingView(ListingView):
         # Report Info Popup
         # see: bika.lims.site.coffee for the attached event handler
         item["Info"] = get_link(
-            "invoicepdf_info?invoice_uid={}".format(uid),
+            "analysisreport_info?report_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
             css_class="service_info")
 
