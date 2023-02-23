@@ -8,12 +8,12 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 # from plone.memoize import view
 from zope.interface import implements
+from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import api
 from bika.lims.api import mail as mailapi
 from bika.lims.interfaces import IBatch
-from bika.lims.workflow import doActionFor as do_action_for
 # from bika.lims.utils import to_utf8
 from bika.lims.browser.publish.emailview import EmailView as EV
 
@@ -216,18 +216,13 @@ class EmailView(EV):
     def invoice_batch(self, batch):
         """Set status to prepublished/published/republished
         """
-        wf = api.get_tool("portal_workflow")
-        status = wf.getInfoFor(batch, "review_state")
-        transitions = {"to_be_invoiced": "invoice"}
-        transition = transitions.get(status, "invoice")
-        logger.info("Transitioning sample {}: {} -> {}".format(
-            api.get_id(batch), status, transition))
+        logger.info("Invoicing batch {}".format(api.get_id(batch)))
         try:
             # Manually update the view on the database to avoid conflict errors
             batch.getClient()._p_jar.sync()
-            # Perform WF transition
-            wf.doActionFor(batch, transition)
-            self.do_action_to_samples(batch, transition)
+            batch.batch_invoiced_state = "invoiced"
+            batch.reindexObject()
+            self.do_action_to_samples(batch)
             # Commit the changes
             transaction.commit()
         except WorkflowException as e:
@@ -259,11 +254,13 @@ class EmailView(EV):
 
         return attachments
 
-    def do_action_to_samples(self, batch, transition_id):
+    def do_action_to_samples(self, batch):
         """Cascades the transition to the analysis request analyses. If all_analyses
         is set to True, the transition will be triggered for all analyses of this
         analysis request, those from the descendant partitions included.
         """
         samples = batch.getAnalysisRequests()
         for sample in samples:
-            do_action_for(sample, transition_id)
+            sample.invoiced_state = "invoiced"
+            sample.reindexObject()
+            modified(sample)

@@ -9,9 +9,6 @@
         <type type_id="BatchInvoices">
             <bound-workflow workflow_id="senaite_one_state_workflow"/>
         </type>
-        <type type_id="AnalysisRequest">
-          <bound-workflow workflow_id="senaite_sample_workflow"/>
-        </type>
     </bindings>
 </object>
 

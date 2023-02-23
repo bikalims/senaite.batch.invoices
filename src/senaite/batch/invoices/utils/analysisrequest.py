@@ -119,20 +119,20 @@ def create_analysisrequest(client, request, values, analyses=None,
             # In "received" state already
             return ar
 
-    # Try first with to_be_invoiced transition, cause it is the most common config
-    setup = api.get_setup()
-    schema = setup.Schema()
-    financials = schema['Financials'].getAccessor(setup)()
-    invfor = schema['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
-    if financials and not invfor:
-        success, message = doActionFor(ar, "to_be_invoiced")
-    elif financials and invfor:
-        success, message = doActionFor(ar, "no_sampling_workflow")
+    # Try first with no sampling transition, cause it is the most common config
+    success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:
         doActionFor(ar, "to_be_sampled")
 
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
         do_rejection(ar)
+
+    setup = api.get_setup()
+    schema = setup.Schema()
+    financials = schema['Financials'].getAccessor(setup)()
+    if financials:
+        ar.invoiced_state = "uninvoiced"
+        modified(ar)
 
     return ar

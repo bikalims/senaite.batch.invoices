@@ -8,7 +8,6 @@ from zope.interface import alsoProvides
 
 from bika.lims import api
 from bika.lims.interfaces import IBatch
-from bika.lims.workflow import doActionFor
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.workflow import ActionHandlerPool
 
@@ -213,14 +212,11 @@ def transition_batch(context):
     setup = api.get_setup()
     schema = setup.Schema()
     financials = schema['Financials'].getAccessor(setup)()
-    invfor = schema['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
-    batch_msg = ''
-    if financials and not invfor:
-        batch_msg = "Batch transitioned to To Be Invoiced."
+    if financials:
         # transition batch
         # TODO: check for other conditions
         # alsoProvides(self.context, IBatch) not working
         if context.portal_type == 'Batch':
             batch = context
-            success, message = doActionFor(batch, "to_be_invoiced")
-    return batch_msg
+            batch.batch_invoiced_state = "uninvoiced"
+            batch.reindexObject()

@@ -19,6 +19,7 @@
   <include package=".extenders"/>
   <include package=".upgrade"/>
   <include package=".monkeys" />
+  <include package=".catalog" />
   <!--
       <include package=".workflow"/>
   -->

@@ -18,10 +18,13 @@
 # Copyright 2019-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from senaite.core.catalog import SAMPLE_CATALOG, SENAITE_CATALOG
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
 from senaite.batch.invoices.setuphandlers import add_dexterity_setup_items
+from senaite.batch.invoices.setuphandlers import setup_catalogs
 
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -48,6 +51,55 @@ def upgrade(tool):
     setup.runImportStepFromProfile(PROFILE_ID, "typeinfo")
     setup.runImportStepFromProfile(PROFILE_ID, "workflow")
     add_dexterity_setup_items(portal)
+    setup_catalogs(portal)
+    add_sample_invoiced_state(portal)
+    add_batch_invoiced_state(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
+
+
+def add_batch_invoiced_state(portal):
+    logger.info("Fix Batches...")
+    query = {
+        "portal_type": "Batch",
+    }
+    batches = api.search(query, SENAITE_CATALOG)
+    total = len(batches)
+    for num, batch in enumerate(batches):
+        if num and num % 10 == 0:
+            logger.info("Processed batches: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this batch
+        batch = api.get_object(batch)
+        # Reindex both the partition and parent(s)
+        if not hasattr(batch, 'batch_invoiced_state'):
+            batch.reindexObject()
+        else:
+            if not batch.batch_invoiced_state:
+                batch.reindexObject()
+
+
+def add_sample_invoiced_state(portal):
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest ...")
+    query = {
+        "portal_type": "AnalysisRequest",
+    }
+    samples = api.search(query, SAMPLE_CATALOG)
+    total = len(samples)
+    for num, sample in enumerate(samples):
+        if num and num % 10 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this sample
+        sample = api.get_object(sample)
+        batch = sample.getBatch()
+        if not batch:
+            # Not in a batch Processed already
+            continue
+        # Reindex both the partition and parent(s)
+        if not hasattr(sample, 'invoiced_state'):
+            sample.reindexObject()
+        else:
+            if not sample.invoiced_state:
+                sample.reindexObject()

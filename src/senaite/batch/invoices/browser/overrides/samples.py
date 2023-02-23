@@ -10,34 +10,21 @@ class SamplesView(SV):
         super(SamplesView, self).__init__(context, request)
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        inv_pub = setup.Schema()['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
-        if finacials and not inv_pub:
+        if finacials:
+            invoice_allowed_states = ("sample_due", "sample_received")
             invoiced = {"id": "invoiced",
                         "title": _("Invoiced"),
                         "columns": self.columns.keys(),
-                        "contentFilter": {"review_state": "invoiced"}
+                        "contentFilter": {
+                            "invoiced_state": "invoiced",
+                            "review_state": invoice_allowed_states},
                         }
-            self.review_states.insert(1, invoiced)
-
-            to_be_invoiced = {"id": "to_be_invoiced",
+            to_be_invoiced = {"id": "uninvoiced",
                               "title": _("To be invoiced"),
                               "columns": self.columns.keys(),
-                              "contentFilter": {"review_state": "to_be_invoiced"}
+                              "contentFilter": {
+                                  "invoiced_state": "uninvoiced",
+                                  "review_state": invoice_allowed_states},
                               }
-            self.review_states.insert(1, to_be_invoiced)
-
-        if finacials and inv_pub:
-            invoiced = {"id": "invoiced",
-                        "title": _("Invoiced"),
-                        "columns": self.columns.keys(),
-                        "contentFilter": {"review_state": "invoiced"}
-                        }
-            index = self.review_states.index([state  for state in self.review_states if state['id']=='published'][0])
-            self.review_states.insert(1+index, invoiced)
-
-            to_be_invoiced = {"id": "to_be_invoiced",
-                              "title": _("To be invoiced"),
-                              "columns": self.columns.keys(),
-                              "contentFilter": {"review_state": "to_be_invoiced"}
-                              }
-            self.review_states.insert(1+index, to_be_invoiced)
+            self.review_states.append(to_be_invoiced)
+            self.review_states.append(invoiced)

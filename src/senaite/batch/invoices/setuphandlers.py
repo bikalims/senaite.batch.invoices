@@ -7,8 +7,20 @@ from bika.lims import api
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
-from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import add_dexterity_items, setup_other_catalogs
+from senaite.core.catalog import SAMPLE_CATALOG, SENAITE_CATALOG
 
+# Tuples of (catalog, index_name, index_attribute, index_type)
+INDEXES = [
+    (SAMPLE_CATALOG, "invoiced_state", "", "FieldIndex"),
+    (SENAITE_CATALOG, "batch_invoiced_state", "", "FieldIndex"),
+]
+
+# Tuples of (catalog, column_name)
+COLUMNS = [
+    (SAMPLE_CATALOG, "invoiced_state"),
+    (SENAITE_CATALOG, "batch_invoiced_state"),
+]
 
 ID_FORMATTING = [
     # An array of dicts. Each dict represents an ID formatting configuration
@@ -39,6 +51,7 @@ def post_install(portal_setup):
     portal = context.getSite()  # noqa
 
     add_dexterity_setup_items(portal)
+    setup_catalogs(portal)
     setup_id_formatting(portal)
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -46,6 +59,11 @@ def post_install(portal_setup):
 def uninstall(context):
     """Uninstall script"""
     # Do something at the end of the uninstallation of this package.
+
+
+def setup_catalogs(portal):
+    """Setup catalogs"""
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
 
 
 def setup_id_formatting(portal, format=None):
