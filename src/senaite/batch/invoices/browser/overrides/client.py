@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.utils import t
+from bika.lims.utils import get_image
 from bika.lims.browser.client.views.analysisrequests import \
     ClientAnalysisRequestsView as CARV
 
@@ -39,34 +41,19 @@ class ClientAnalysisRequestsView(CARV):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        inv_pub = setup.Schema()['InvoiceForPublishedSamplesOnly'].getAccessor(setup)()
-        if finacials and not inv_pub:
+        if finacials:
             invoiced = {"id": "invoiced",
-                        "title": _("Invoiced"),
+                        "title": get_image("invoiced.png",
+                                           title=t(_("Invoiced"))),
                         "columns": self.columns.keys(),
                         "contentFilter": {"review_state": "invoiced"}
                         }
-            self.review_states.insert(1, invoiced)
 
             to_be_invoiced = {"id": "to_be_invoiced",
-                              "title": _("To be invoiced"),
+                              "title": get_image("uninvoiced.png",
+                                                 title=t(_("To be invoiced"))),
                               "columns": self.columns.keys(),
                               "contentFilter": {"review_state": "to_be_invoiced"}
                               }
-            self.review_states.insert(1, to_be_invoiced)
-
-        if finacials and inv_pub:
-            invoiced = {"id": "invoiced",
-                        "title": _("Invoiced"),
-                        "columns": self.columns.keys(),
-                        "contentFilter": {"review_state": "invoiced"}
-                        }
-            index = self.review_states.index([state  for state in self.review_states if state['id']=='published'][0])
-            self.review_states.insert(1+index, invoiced)
-
-            to_be_invoiced = {"id": "to_be_invoiced",
-                              "title": _("To be invoiced"),
-                              "columns": self.columns.keys(),
-                              "contentFilter": {"review_state": "to_be_invoiced"}
-                              }
-            self.review_states.insert(1+index, to_be_invoiced)
+            self.review_states.append(invoiced)
+            self.review_states.append(to_be_invoiced)

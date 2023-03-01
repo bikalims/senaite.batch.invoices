@@ -20,8 +20,10 @@
 
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
+from bika.lims.utils import get_image
 from bika.lims.browser.batchfolder import BatchFolderContentsView as BFCV
+from senaite.batch.invoices import _
 
 
 class BatchFolderContentsView(BFCV):
@@ -35,12 +37,14 @@ class BatchFolderContentsView(BFCV):
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
         if finacials:
             invoiced = {"id": "invoiced",
-                        "title": _("Invoiced"),
+                        "title": get_image("invoiced.png",
+                                           title=t(_("Invoiced"))),
                         "columns": self.columns.keys(),
                         "contentFilter": {"batch_invoiced_state": "invoiced"}
                         }
             to_be_invoiced = {"id": "uninvoiced",
-                              "title": _("To be invoiced"),
+                              "title": get_image("uninvoiced.png",
+                                                 title=t(_("To be invoiced"))),
                               "columns": self.columns.keys(),
                               "contentFilter": {"batch_invoiced_state": "uninvoiced"}
                               }
