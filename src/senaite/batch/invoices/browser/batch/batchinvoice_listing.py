@@ -34,7 +34,7 @@ class ReportsListingView(ListingView):
         self.title = t(_("Batch Invoices"))
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/invoice.png"
+            "++resource++bika.lims.images/invoiced.png"
         )
         self.context_actions = {}
 
