@@ -24,7 +24,6 @@
  <property name="add_permission">cmf.AddPortalContent</property>
  <property name="schema">senaite.batch.invoices.content.batchinvoices.IBatchInvoices</property>
  <property name="klass">senaite.batch.invoices.content.batchinvoices.BatchInvoices</property>
- <property name="klass">plone.dexterity.content.Container</property>
  <property name="behaviors">
   <element value="plone.dublincore"/>
   <element value="plone.namefromtitle"/>

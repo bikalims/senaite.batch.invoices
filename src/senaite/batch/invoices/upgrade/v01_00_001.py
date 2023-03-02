@@ -50,6 +50,7 @@ def upgrade(tool):
 
     setup.runImportStepFromProfile(PROFILE_ID, "typeinfo")
     setup.runImportStepFromProfile(PROFILE_ID, "workflow")
+    setup.runImportStepFromProfile(PROFILE_ID, "plone.app.registry")
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
     add_sample_invoiced_state(portal)

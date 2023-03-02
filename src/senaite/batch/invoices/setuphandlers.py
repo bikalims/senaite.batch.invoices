@@ -109,12 +109,18 @@ def add_dexterity_setup_items(portal):
     """
     # Tuples of ID, Title, FTI
     items = [
-        ("batch_invoices",  # ID
-         "Batch Invoices",  # Title
-         "BatchInvoices"),  # FTI
+        ("batch_invoices", "Batch Invoices", "BatchInvoices"),
     ]
     setup = api.get_setup()
+    # ##############ADD ITEMS IN PORTAL NAVIGATION#############
     add_dexterity_items(portal, items)
+    # Move BatchInvoices after Methods nav item
+    position = portal.getObjectPosition("methods")
+    portal.moveObjectToPosition("batch_invoices", position + 1)
+    ###########################################################
+
+    # Reindex order
+    portal.plone_utils.reindexOnReorder(portal)
     add_dexterity_items(setup, items)
 
 
