@@ -51,6 +51,7 @@ class EmailView(EV):
 
         recipients = []
         recipient_names = []
+        setup = api.get_setup()
 
         samples = []
         for batch in batches:
@@ -94,7 +95,8 @@ class EmailView(EV):
         for sample in samples:
             # get client from the sample
             client_billing_email = sample.aq_parent.Schema()['BillingEmailAddress'].getAccessor(sample.aq_parent)()
-            if client_billing_email:
+            email_invoices = setup.Schema()['EmailInvoices'].getAccessor(setup)()
+            if client_billing_email and email_invoices:
                 name = "{} Billing EmailAddress".format(sample.getName())
                 address = mailapi.to_email_address(client_billing_email, name=name)
                 record = {
@@ -264,3 +266,23 @@ class EmailView(EV):
             sample.invoiced_state = "invoiced"
             sample.reindexObject()
             modified(sample)
+
+    def form_action_send(self):
+        """Send form handler
+        """
+        # send email to the selected recipients and responsibles
+        success = self.send_email(self.email_recipients_and_responsibles,
+                                  self.email_subject,
+                                  self.email_body,
+                                  attachments=self.email_attachments)
+
+        if success:
+            message = _(u"Message sent to {}".format(
+                ", ".join(self.email_recipients_and_responsibles)))
+            self.add_status_message(message, "info")
+        else:
+            message = _("Failed to send Email(s)")
+            self.add_status_message(message, "error")
+
+        self.request.response.redirect(self.exit_url)
+

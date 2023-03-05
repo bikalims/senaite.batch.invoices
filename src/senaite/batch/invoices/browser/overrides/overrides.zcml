@@ -22,29 +22,11 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="base_view"
-      class=".client.ClientAnalysisRequestsView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IBatch"
       name="analysisrequests"
       class=".batch.AnalysisRequestsView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
-  <browser:page
-      for="senaite.core.interfaces.ISamples"
-      name="view"
-      class=".samples.SamplesView"
-      permission="cmf.ListFolderContents"
-      layer="senaite.core.interfaces.ISenaiteCore"
-  />
-
-
 
 </configure>

@@ -1,0 +1,20 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+    <!-- main and batch samples lists -->
+    <subscriber
+            for="senaite.core.browser.samples.view.SamplesView
+                 zope.interface.Interface"
+            provides="senaite.app.listing.interfaces.IListingViewAdapter"
+            factory=".samples.SamplesListingViewAdapter"/>
+
+
+    <!-- client samples list -->
+    <subscriber
+            for="bika.lims.interfaces.IClient
+                 zope.interface.Interface"
+            provides="senaite.app.listing.interfaces.IListingViewAdapter"
+            factory=".samples.SamplesListingViewAdapter"/>
+
+</configure>
+

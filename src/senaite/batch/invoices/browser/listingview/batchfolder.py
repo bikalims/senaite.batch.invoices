@@ -19,27 +19,36 @@
 # Some rights reserved, see README and LICENSE.
 
 
-from Products.CMFCore.permissions import ModifyPortalContent
+from bika.lims.api.security import check_permission
+
+from zope.component import adapts
+from zope.interface import implements
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
 from bika.lims.utils import t
 from bika.lims.utils import get_image
-from bika.lims.browser.batchfolder import BatchFolderContentsView as BFCV
+from senaite.app.listing.interfaces import IListingView
+from senaite.app.listing.interfaces import IListingViewAdapter
 from senaite.batch.invoices import _
+from senaite.batch.invoices import is_installed
 
 
-class BatchFolderContentsView(BFCV):
-    """Listing view for Batches
-    """
+class BatchFolderViewAdapter(object):
+    adapts(IListingView)
+    implements(IListingViewAdapter)
 
-    def __init__(self, context, request):
-        super(BatchFolderContentsView, self).__init__(context, request)
+    def __init__(self, listing, context):
+        self.listing = listing
+        self.context = context
 
+    def update(self):
+        """Before template render hook
+        """
+        import pdb; pdb.set_trace()
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        can_view = check_permission(ModifyPortalContent, context)
-        if finacials and can_view:
+        can_view = True  # check_permission(ModifyPortalContent, self.context)
+        if is_installed and finacials and can_view:
             invoiced = {"id": "invoiced",
                         "title": get_image("invoiced.png",
                                            title=t(_("Invoiced"))),
@@ -52,5 +61,12 @@ class BatchFolderContentsView(BFCV):
                               "columns": self.columns.keys(),
                               "contentFilter": {"batch_invoiced_state": "uninvoiced"}
                               }
-            self.review_states.append(invoiced)
-            self.review_states.append(to_be_invoiced)
+            self.listing.review_states.append(invoiced)
+            self.listing.review_states.append(to_be_invoiced)
+
+
+    def folder_item(self, obj, item, index):
+        if not is_installed():
+            return item
+        super(BatchFolderViewAdapter, self).update(obj, item, index)
+        return item
