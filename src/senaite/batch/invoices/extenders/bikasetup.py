@@ -34,10 +34,10 @@ invoiceforpublishedsamplesonly_field = ExtBooleanField(
 email_invoices_field = ExtBooleanField(
     "EmailInvoices",
     mode="rw",
-    schemata="Notifications",
+    schemata="Accounting",
     widget=BooleanWidget(
         label=_(u"Email Invoices to Client Y/N"),
-        description=_(u"Enable to email invoices directly to the client's billing email address"),
+        description=_(u"Enable emailing invoices directly to the client's billing email address"),
     )
 )
 
