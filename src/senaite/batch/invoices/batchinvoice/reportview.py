@@ -52,26 +52,6 @@ class BatchInvoiceReportView(ReportView):
         template = Template(template).safe_substitute(context)
         return SINGLE_TEMPLATE.safe_substitute(context, template=template)
 
-    def get_batch_invoice_number(self, model):
-        instance = model.instance
-        today = DateTime()
-        query = {
-            "portal_type": "BatchInvoice",
-            "path": {"query": api.get_path(instance)},
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-Inv")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "{}-Inv{:02d}".format(instance.getId(), num)
-        return coa_num
-
 
 class MultiReportView(MRV):
     """View for Multi Reports
@@ -85,10 +65,25 @@ class MultiReportView(MRV):
         self.request = request
 
     def get_batch_invoice_number(self, model):
-        query = {"portal_type": "BatchInvoice"}
+        query = {"portal_type": "BatchInvoice",
+                 "sort_on": "created",
+                 "sort_order": "descending",
+                 }
         brains = api.search(query, "portal_catalog")
-        coa_num = "Inv-{:04d}".format(len(brains) + 1)
+        if len(brains):
+            coa = brains[0]
+            title_split = coa.getId.split("-")
+            if len(title_split) == 2 and len(title_split[-1]) == 5:
+                string = title_split[0]
+                num = int(title_split[-1])
+                num += 1
+                coa_num = u"{}-{:04d}".format(string, num)
+            else:
+                coa_num = "Invalid Number, please check IDServer"
         return coa_num
+
+    def get_client(self, collection):
+        return collection[0].getClient()
 
     def get_coa_styles(self):
         registry = getUtility(IRegistry)

@@ -144,10 +144,10 @@
     </div>
     <div class="w-50 col-6">
 
-      <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+      <tal:by_client define="client python:view.get_client( collection)">
         <address class="client-address" condition="client">
           <div class="client-street">
-            <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
+            <div>Client name: <span tal:content="client/Name|nothing"></span></div>
           </div>
           <div class="client-street">
             <div>Client address: <span tal:replace="client/PostalAddress/address|nothing"></span></div>

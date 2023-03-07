@@ -146,7 +146,7 @@ class ContentListingView(ListingView):
             # append workflow info
             self._folder_item_workflow(obj, item)
             # append sample specific info
-            self._folder_item_sample(obj, item)
+            self._folder_item_batch(obj, item)
 
             items.append(self.folderitem(obj, item, num))
 
@@ -176,10 +176,9 @@ class ContentListingView(ListingView):
         item["review_state"] = review_state
         item["state_class"] = "state-{}".format(review_state)
 
-    def _folder_item_sample(self, obj, item):
+    def _folder_item_batch(self, obj, item):
         """Add sample specific information
         """
-        # sample point
         client = obj.getClient()
         client_url = api.get_url(client)
         client_id = client.getClientID()

@@ -137,7 +137,7 @@ class ReportsListingView(ListingView):
         """Compute the filesize of the PDF
         """
         try:
-            filesize = float(pdf.getSize())
+            filesize = float(pdf.getSize()) if pdf else 0
             return filesize / 1024
         except (POSKeyError, TypeError):
             return 0

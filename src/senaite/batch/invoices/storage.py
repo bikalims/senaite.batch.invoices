@@ -58,32 +58,23 @@ class PdfReportStorageAdapter(PRSA):
         # Manually update the view on the database to avoid conflict errors
         parent._p_jar.sync()
         today = DateTime()
-
-        if not kwargs.get("batch_invoice_number"):
-            query = {
-                'portal_type': 'BatchInvoice',
-            }
-            brains = api.search(query, 'portal_catalog')
-            batch_invoice_number = 'Inv{:02d}'.format(len(brains) + 1)
-        else:
-            batch_invoice_number = kwargss.get("batch_invoice_number")
+        batch_invoice_number = kwargs.get("batch_invoice_number")
 
         # Create the report object
-        filename = u"{}.pdf".format(coa_num)
+        filename = u"{}.pdf".format(batch_invoice_number)
         report = api.create(
-                parent, "BatchInvoice",
-                title=batch_invoice_number,
-                batch=api.get_uid(parent),
-                containedbatcheinvoices=uids,
-                client=parent.getClient().UID(),
-                subtotal=kwargs.get("sub_total"),
-                vat=kwargs.get("total_VAT"),
-                total=kwargs.get("total_amount"),
-                )
-        report.invoice_pdf = NamedBlobFile(data=pdf, contentType='application/pdf',filename=filename)
-            # Html=html,
-            # CSV=csv_text,
-            # Metadata=metadata)
+            parent, "BatchInvoice",
+            title=batch_invoice_number,
+            batch=api.get_uid(parent),
+            containedbatcheinvoices=uids,
+            client=parent.getClient().UID(),
+            subtotal=kwargs.get("sub_total"),
+            vat=kwargs.get("total_VAT"),
+            total=kwargs.get("total_amount"),
+            # invoice_date=today.Date(),
+        )
+        report.invoice_pdf = NamedBlobFile(
+            data=pdf, contentType='application/pdf', filename=filename)
         transaction.commit()
         logger.info("Create Report for {} [DONE]".format(parent_id))
 

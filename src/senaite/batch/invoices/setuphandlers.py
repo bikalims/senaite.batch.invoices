@@ -55,6 +55,7 @@ def post_install(portal_setup):
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
     setup_id_formatting(portal)
+    allow_batch_invoices_on_batch(portal)
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
@@ -133,6 +134,19 @@ def setup_handler(context):
     # portal = context.getSite()
 
     logger.info("{} setup handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
+def allow_batch_invoices_on_batch(portal):
+    pt = api.get_tool("portal_types", context=portal)
+    fti = pt.get("Batch")
+
+    # add to allowed types
+    allowed_types = fti.allowed_content_types
+    allowed_types = list(allowed_types)
+    if "BatchInvoice" not in allowed_types:
+        allowed_types.append("BatchInvoice")
+        fti.allowed_content_types = allowed_types
+        logger.info("Added BatchInvoice on allowed types for Batches")
 
 
 def remove_batch_invoice_action(portal):

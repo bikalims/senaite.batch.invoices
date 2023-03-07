@@ -9,7 +9,6 @@
     <title i18n:translate="">SENAITE IMPRESS BATCH INVOICES</title>
     <!-- SENAITE IMPRESS HTML head -->
     <div tal:replace="structure provider:senaite.batch.invoices.htmlhead" />
-    <div tal:replace="structure provider:senaite.impress.publishhead" />
     <!-- SENANITE IMPRESS Custom HTML head (after impress core resources)  -->
     <div tal:replace="structure provider:senaite.impress.publishcustomhead" />
     <!-- /END -->

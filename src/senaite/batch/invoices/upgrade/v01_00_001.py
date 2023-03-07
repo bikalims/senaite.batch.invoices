@@ -54,7 +54,6 @@ def upgrade(tool):
     setup.runImportStepFromProfile(PROFILE_ID, "plone.app.registry")
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
-    add_batchinvoiced_client_index(portal)
     remove_batch_invoices_on_setup(portal)
     add_sample_invoiced_state(portal)
     add_batch_invoiced_state(portal)
@@ -72,7 +71,7 @@ def add_batch_invoiced_state(portal):
     batches = api.search(query, SENAITE_CATALOG)
     total = len(batches)
     for num, batch in enumerate(batches):
-        if num and num % 10 == 0:
+        if num and num % 100 == 0:
             logger.info("Processed batches: {}/{}".format(num, total))
 
         # Extract the parent(s) from this batch
@@ -93,7 +92,7 @@ def add_sample_invoiced_state(portal):
     samples = api.search(query, SAMPLE_CATALOG)
     total = len(samples)
     for num, sample in enumerate(samples):
-        if num and num % 10 == 0:
+        if num and num % 100 == 0:
             logger.info("Processed samples: {}/{}".format(num, total))
 
         # Extract the parent(s) from this sample
@@ -118,7 +117,7 @@ def add_batchinvoiced_client_index(portal):
     batches = api.search(query, "portal_catalog")
     total = len(batches)
     for num, batch in enumerate(batches):
-        if num and num % 10 == 0:
+        if num and num % 100 == 0:
             logger.info("Processed batches: {}/{}".format(num, total))
 
         # Extract the parent(s) from this batch

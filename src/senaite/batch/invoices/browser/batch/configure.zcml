@@ -53,6 +53,15 @@
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
       />
 
+  <!-- Listing view for publish contents -->
+  <browser:page
+      for="bika.lims.interfaces.IBatchFolder"
+      name="publish_content_listing"
+      class=".publishcontent.ContentListingView"
+      permission="zope2.View"
+      layer="senaite.impress.interfaces.ISenaiteImpressLayer"
+      />
+
   <!-- Email View -->
   <browser:page
       for="bika.lims.interfaces.IBatchFolder"
