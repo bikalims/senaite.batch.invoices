@@ -3,6 +3,5 @@
  <property name="title">Controls available content types in senaite</property>
  <object name="BatchInvoice" meta_type="Dexterity FTI"/>
  <object name="BatchInvoices" meta_type="Dexterity FTI"/>
- <object name="Batch" meta_type="Factory-based Type Information with dynamic views"/>
  <!-- -*- extra stuff goes here -*- -->
 </object>

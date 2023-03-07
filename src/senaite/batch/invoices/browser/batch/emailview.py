@@ -329,7 +329,6 @@ class EmailView(EV):
         if not body:
             return self.context.translate(_(self.email_template(self)))
 
-        recipients = self.email_recipients_and_responsibles
         template_context = {
             "client_name": self.client_name,
             "lab_name": self.lab_name,

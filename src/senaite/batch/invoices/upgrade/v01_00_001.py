@@ -24,7 +24,9 @@ from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
 from senaite.batch.invoices.setuphandlers import add_dexterity_setup_items
+from senaite.batch.invoices.setuphandlers import add_batch_invoice_list_to_client
 from senaite.batch.invoices.setuphandlers import setup_catalogs
+from senaite.batch.invoices.setuphandlers import remove_batch_invoice_action
 
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -53,8 +55,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(PROFILE_ID, "plone.app.registry")
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
-    add_sample_invoiced_state(portal)
-    add_batch_invoiced_state(portal)
+    #add_sample_invoiced_state(portal)
+    #add_batch_invoiced_state(portal)
+    add_batch_invoice_list_to_client(portal)
+    remove_batch_invoice_action(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
