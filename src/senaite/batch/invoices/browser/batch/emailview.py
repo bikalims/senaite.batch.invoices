@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
-# import six
-# from collections import OrderedDict
+import six
 import transaction
+
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-# from plone.memoize import view
+
+from collections import OrderedDict
+from plone.memoize import view
+from string import Template
 from zope.interface import implements
 from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse
@@ -31,6 +34,26 @@ class EmailView(EV):
 
     def __init__(self, context, request):
         super(EmailView, self).__init__(context, request)
+
+    @property
+    @view.memoize
+    def batches(self):
+        """Return the objects from the UIDs given in the request
+        """
+        # Create a mapping of source ARs for copy
+        uids = self.request.form.get("uids", [])
+        # handle 'uids' GET parameter coming from a redirect
+        if isinstance(uids, six.string_types):
+            uids = uids.split(",")
+        uids = filter(api.is_uid, uids)
+        unique_uids = OrderedDict().fromkeys(uids).keys()
+        batch_invoices = map(self.get_object_by_uid, unique_uids)
+        batches = []
+        for ba in batch_invoices:
+            batch = api.get_object_by_uid(ba.batch)
+            if IBatch.providedBy(batch):
+                batches.append(batch)
+        return batches
 
     @property
     def exit_url(self):
@@ -211,9 +234,8 @@ class EmailView(EV):
 
         # collect primary + contained samples of the reports
         # invoice all batches + their samples
-        for report in self.reports:
-            batch = api.get_object(report.batch)
-            self.invoice_batch(batch)
+        for report in self.batches:
+            self.invoice_batch(report)
 
     def invoice_batch(self, batch):
         """Set status to prepublished/published/republished
@@ -286,3 +308,58 @@ class EmailView(EV):
 
         self.request.response.redirect(self.exit_url)
 
+    @property
+    def client_name(self):
+        """Returns the client name
+        """
+        return safe_unicode(self.batches[0].getClient().Title())
+
+    @property
+    def email_body(self):
+        """Email body text to be used in the template
+        """
+        # request parameter has precedence
+        body = self.request.get("body", None)
+        if body is not None:
+            return body
+
+        setup = api.get_setup()
+        schema = setup.Schema()
+        body = schema['InvoiceEmailBody'].getAccessor(setup)()
+        if not body:
+            return self.context.translate(_(self.email_template(self)))
+
+        recipients = self.email_recipients_and_responsibles
+        template_context = {
+            "client_name": self.client_name,
+            "lab_name": self.lab_name,
+            "lab_address": self.lab_address,
+            "batches": ",".join([b.getId() for b in self.batches]),
+        }
+        rendered_body = self.render_email_template(
+            body, template_context=template_context)
+        return rendered_body
+
+    def render_email_template(self, template, template_context=None):
+        """Return the rendered email template
+
+        This method interpolates the $recipients variable with the selected
+        recipients from the email form.
+
+        :params template: Email body text
+        :returns: Rendered email template
+        """
+
+        # allow to add translation for initial template
+        template = self.context.translate(_(template))
+        recipients = self.email_recipients_and_responsibles
+        if template_context is None:
+            template_context = {
+                "recipients": "<br/>".join(recipients),
+                "batches": ",".join([b.getId() for b in self.batches]),
+            }
+
+        email_template = Template(safe_unicode(template)).safe_substitute(
+            **template_context)
+
+        return email_template

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import RichWidget
 from archetypes.schemaextender.interfaces import IBrowserLayerAwareExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from zope.component import adapts
 from zope.interface import implementer
 
-from .fields import ExtBooleanField
+from .fields import ExtBooleanField, ExtTextField
 from bika.lims.interfaces import IBikaSetup
 from senaite.batch.invoices import _
 from senaite.batch.invoices.interfaces import ISenaiteBatchInvoicesLayer
@@ -41,6 +42,30 @@ email_invoices_field = ExtBooleanField(
     )
 )
 
+invoice_email_body_field = ExtTextField(
+    "InvoiceEmailBody",
+    mode="rw",
+    default_content_type="text/html",
+    default_output_type="text/x-html-safe",
+    schemata="Accounting",
+    # Needed to fetch the default value from the registry
+    widget=RichWidget(
+        label=_(
+            "label_bikasetup_invoice_email_body",
+            "Email body for Batch Invoicing notifications"),
+        description=_(
+            "description_bikasetup_invoice_email_body",
+            default="Set the email body text to be used by default when "
+            "sending out result reports to the selected recipients. "
+            "You can use reserved keywords: "
+            "$client_name, $recipients, $lab_name, $lab_address, $batches"),
+        default_mime_type="text/x-html",
+        output_mime_type="text/x-html",
+        allow_file_upload=False,
+        rows=15,
+    ),
+)
+
 
 @implementer(ISchemaExtender, IBrowserLayerAwareExtender)
 class BikaSetupSchemaExtender(object):
@@ -51,6 +76,7 @@ class BikaSetupSchemaExtender(object):
         financials_field,
         email_invoices_field,
         invoiceforpublishedsamplesonly_field,
+        invoice_email_body_field,
     ]
 
     def __init__(self, context):

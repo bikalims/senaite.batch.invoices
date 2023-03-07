@@ -21,7 +21,7 @@
 
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Send Analysis Reports via Email
+        Send Invoices via Email
       </h1>
     </metal:title>
     <metal:description fill-slot="content-description">
