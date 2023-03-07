@@ -155,7 +155,7 @@ def add_batch_invoice_list_to_client(portal):
         fti.addAction(
             id="batch_invoices",
             name="BatchInvoices",
-            permission="View",
+            permission="Manage Users",
             category="object",
             visible=True,
             action="string:${object_url}/batch_invoices",
