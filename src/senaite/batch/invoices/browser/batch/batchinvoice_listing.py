@@ -86,19 +86,38 @@ class ReportsListingView(ListingView):
                 "toggle": True},),
             ("BatchInvoice", {
                 "title": _("Batch Invoice"),
+                "index": "sortable_title",
+                "toggle": True},),
+            ("BatchInvoiceID", {
+                "title": _("Batch Invoice ID"),
+                "index": "sortable_title",
+                "toggle": True},),
+            ("Client", {
+                "title": _("Client"),
                 "index": "sortable_title"},),
+            ("Batches", {
+                "title": _("Batches"),
+                "index": "sortable_title",
+                "toggle": False},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
                 "title": _("Download PDF")},),
             ("FileSize", {
                 "title": _("Filesize")},),
+            ("Subtotal", {
+                "title": _("Subtotal")},),
+            ("VAT", {
+                "title": _("VAT")},),
+            ("Total", {
+                "title": _("Total")},),
             ("Date", {
-                "title": _("Published Date")},),
+                "title": _("Invoiced Date")},),
             ("PublishedBy", {
-                "title": _("Published By")},),
+                "title": _("Invoiced By")},),
             ("Recipients", {
-                "title": _("Recipients")},),
+                "title": _("Recipients"),
+                "toggle": False},),
         ))
 
         self.review_states = [
@@ -142,7 +161,6 @@ class ReportsListingView(ListingView):
         """
 
         obj = api.get_object(obj)
-        # ar = obj.getAnalysisRequest()
         uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(obj)
         status_title = review_state.capitalize().replace("_", " ")
@@ -150,12 +168,19 @@ class ReportsListingView(ListingView):
         # Report Info Popup
         # see: bika.lims.site.coffee for the attached event handler
         item["Info"] = get_link(
-            "analysisreport_info?report_uid={}".format(uid),
+            "batchinvoice_info?report_uid={}".format(uid),
             value="<i class='fas fa-info-circle'></i>",
             css_class="service_info")
 
         item["replace"]["BatchInvoice"] = get_link(
             obj.absolute_url(), value=obj.Title()
+        )
+        item["replace"]["BatchInvoiceID"] = get_link(
+            obj.absolute_url(), value=obj.id
+        )
+        client = obj.getClient()
+        item["replace"]["Client"] = get_link(
+            client.absolute_url(), value=client.Title()
         )
 
         pdf = self.get_pdf(obj)
