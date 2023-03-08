@@ -53,7 +53,6 @@ def post_install(portal_setup):
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
     setup_id_formatting(portal)
-    add_batch_invoice_list_to_client(portal)
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
@@ -134,43 +133,6 @@ def setup_handler(context):
     # portal = context.getSite()
 
     logger.info("{} setup handler [DONE]".format(PRODUCT_NAME.upper()))
-
-
-def add_batch_invoice_list_to_client(portal):
-    pt = api.get_tool("portal_types", context=portal)
-    fti = pt.get("Client")
-    # Added location listing
-    actions = fti.listActions()
-    action_ids = [a.id for a in actions]
-    if "batch_invoices" in action_ids:
-        for idx, action in enumerate(actions):
-            if action.id == "batch_invoices":
-                fti.deleteActions(
-                    [
-                        idx,
-                    ]
-                )
-
-    if "batch_invoices" not in action_ids:
-        fti.addAction(
-            id="batch_invoices",
-            name="BatchInvoices",
-            permission="Manage Users",
-            category="object",
-            visible=True,
-            action="string:${object_url}/batch_invoices",
-            condition="",
-            link_target="",
-        )
-
-    # add to allowed types
-    allowed_types = fti.allowed_content_types
-    if allowed_types:
-        allowed_types = list(allowed_types)
-        if "BatchInvoices" not in allowed_types:
-            allowed_types.append("BatchInvoices")
-            fti.allowed_content_types = allowed_types
-            logger.info("Add BatchInvoices from Client's allowed types")
 
 
 def remove_batch_invoice_action(portal):

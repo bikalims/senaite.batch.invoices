@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<object name="Client"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="senaite.core"
+        purge="True">
+
+  <action title="Batch Invoices"
+          action_id="batch_invoices"
+          category="object"
+          icon_expr="string:${portal_url}/images/invoiced.png"
+          url_expr="string:${object_url}/batch_invoices"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="Manage Users"/>
+  </action>
+
+
+</object>
