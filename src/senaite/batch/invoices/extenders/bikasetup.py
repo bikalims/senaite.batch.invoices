@@ -68,7 +68,7 @@ invoice_email_body_field = ExtTextField(
 )
 
 send_invoice_copies_to = ExtStringField(
-    "SendInvoiceCopies",
+    "SendInvoiceCopiesTo",
     mode="rw",
     schemata="Accounting",
     vocabulary=[(_(u'yes'), _(u'Client invoice email address')),
