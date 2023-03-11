@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.Widget import RichWidget
 from archetypes.schemaextender.interfaces import IBrowserLayerAwareExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from zope.component import adapts
 from zope.interface import implementer
 
-from .fields import ExtBooleanField, ExtTextField
+from .fields import ExtBooleanField, ExtTextField, ExtStringField
 from bika.lims.interfaces import IBikaSetup
 from senaite.batch.invoices import _
 from senaite.batch.invoices.interfaces import ISenaiteBatchInvoicesLayer
@@ -66,6 +67,18 @@ invoice_email_body_field = ExtTextField(
     ),
 )
 
+send_invoice_copies_to = ExtStringField(
+    "SendInvoiceCopies",
+    mode="rw",
+    schemata="Accounting",
+    vocabulary=[(_(u'yes'), _(u'Client invoice email address')),
+                (_(u'no'), _(u'Lab accounts email address'))],
+    widget=SelectionWidget(
+        label=_(u"Send Invoice copies to:"),
+        description=_(u""),
+    )
+)
+
 
 @implementer(ISchemaExtender, IBrowserLayerAwareExtender)
 class BikaSetupSchemaExtender(object):
@@ -76,6 +89,7 @@ class BikaSetupSchemaExtender(object):
         financials_field,
         email_invoices_field,
         invoiceforpublishedsamplesonly_field,
+        send_invoice_copies_to,
         invoice_email_body_field,
     ]
 
