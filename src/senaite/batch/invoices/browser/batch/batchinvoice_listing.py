@@ -81,15 +81,12 @@ class ReportsListingView(ListingView):
         }
 
         self.columns = collections.OrderedDict((
-            ("Info", {
-                "title": "",
-                "toggle": True},),
-            ("BatchInvoice", {
-                "title": _("Batch Invoice"),
-                "index": "sortable_title",
-                "toggle": True},),
             ("BatchInvoiceID", {
                 "title": _("Batch Invoice ID"),
+                "index": "sortable_title",
+                "toggle": True},),
+            ("Batches", {
+                "title": _("Batches"),
                 "index": "sortable_title",
                 "toggle": True},),
             ("Client", {
@@ -112,7 +109,7 @@ class ReportsListingView(ListingView):
             ("Total", {
                 "title": _("Total")},),
             ("Date", {
-                "title": _("Invoiced Date")},),
+                "title": _("Invoice Date")},),
             ("PublishedBy", {
                 "title": _("Invoiced By")},),
             ("Recipients", {
@@ -165,16 +162,6 @@ class ReportsListingView(ListingView):
         review_state = api.get_workflow_status_of(obj)
         status_title = review_state.capitalize().replace("_", " ")
 
-        # Report Info Popup
-        # see: bika.lims.site.coffee for the attached event handler
-        item["Info"] = get_link(
-            "batchinvoice_info?report_uid={}".format(uid),
-            value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
-
-        item["replace"]["BatchInvoice"] = get_link(
-            obj.absolute_url(), value=obj.Title()
-        )
         item["replace"]["BatchInvoiceID"] = get_link(
             obj.absolute_url(), value=obj.id
         )
