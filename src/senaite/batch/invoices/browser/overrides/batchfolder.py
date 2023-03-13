@@ -19,10 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 
-from Products.CMFCore.permissions import ModifyPortalContent
-
 from bika.lims import api
-from bika.lims.api.security import check_permission
 from bika.lims.utils import t
 from bika.lims.utils import get_image
 from bika.lims.browser.batchfolder import BatchFolderContentsView as BFCV
@@ -38,8 +35,7 @@ class BatchFolderContentsView(BFCV):
 
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        can_view = check_permission(ModifyPortalContent, context)
-        if finacials and can_view:
+        if finacials:
             invoiced = {"id": "invoiced",
                         "title": get_image("invoiced.png",
                                            title=t(_("Invoiced"))),
