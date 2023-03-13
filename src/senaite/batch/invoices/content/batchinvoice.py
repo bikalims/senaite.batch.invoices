@@ -58,7 +58,7 @@ class IRecipientSchema(Interface):
 
 class IBatchInvoiceSchema(model.Schema):
     invoice_pdf = NamedBlobFile(title=_(u"Batch Invoice PDF"), required=False)
-    invoice_html = schema.TextLine(title=_(u"Email Attachments"), required=False,)
+    invoice_html = schema.TextLine(title=_(u"Batch Invoice HTML"), required=False,)
     client = RelationChoice(
         title=_(u"Client"),
         source=ObjPathSourceBinder(object_provides=IClient.__identifier__),
@@ -71,7 +71,7 @@ class IBatchInvoiceSchema(model.Schema):
     )
     containedbatcheinvoices = UIDReferenceField(
         title=_(u"Container Type"),
-        allowed_types=("Batches",),
+        allowed_types=("Batch",),
         multi_valued=True,
         required=False,
     )
