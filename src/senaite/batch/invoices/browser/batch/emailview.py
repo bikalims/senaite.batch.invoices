@@ -73,37 +73,8 @@ class EmailView(EV):
             return []
 
         recipients = []
-        recipient_names = []
         setup = api.get_setup()
 
-        samples = []
-        for batch in batches:
-            samples.extend(batch.getAnalysisRequests())
-
-        for num, sample in enumerate(samples):
-            report_recipient_names = []
-            for recipient in super(EmailView, self).get_recipients(sample):
-                name = recipient.get("Fullname")
-                email = recipient.get("EmailAddress")
-                address = mailapi.to_email_address(email, name=name)
-                record = {
-                    "name": name,
-                    "email": email,
-                    "address": address,
-                    "valid": True,
-                }
-                if record not in recipients:
-                    recipients.append(record)
-                # remember the name of the recipient for this sample
-                report_recipient_names.append(name)
-            recipient_names.append(report_recipient_names)
-
-        # recipient names, which all of the reports have in common
-        common_names = set(recipient_names[0]).intersection(*recipient_names)
-        # mark recipients not in common
-        for recipient in recipients:
-            if recipient.get("name") not in common_names:
-                recipient["valid"] = False
         lab_billing_email = self.laboratory.Schema()['BillingEmailAddress'].getAccessor(self.laboratory)()
         if lab_billing_email:
             address = mailapi.to_email_address(lab_billing_email, name="Laboratory Billing EmailAddress")
@@ -115,21 +86,19 @@ class EmailView(EV):
             }
             recipients.append(record)
 
-        for sample in samples:
-            # get client from the sample
-            client_billing_email = sample.aq_parent.Schema()['BillingEmailAddress'].getAccessor(sample.aq_parent)()
-            email_invoices = setup.Schema()['EmailInvoices'].getAccessor(setup)()
-            if client_billing_email and email_invoices:
-                name = "{} Billing EmailAddress".format(sample.getName())
-                address = mailapi.to_email_address(client_billing_email, name=name)
-                record = {
-                    "name": name,
-                    "email": client_billing_email,
-                    "address": address,
-                    "valid": True,
-                }
-                recipients.append(record)
-                break
+        client = self.batches[0].getClient()
+        client_billing_email = client.Schema()['BillingEmailAddress'].getAccessor(client)()
+        email_invoices = setup.Schema()['EmailInvoices'].getAccessor(setup)()
+        if client_billing_email and email_invoices:
+            name = "{} Client Billing EmailAddress".format(client_billing_email)
+            address = mailapi.to_email_address(client_billing_email, name=name)
+            record = {
+                "name": name,
+                "email": client_billing_email,
+                "address": address,
+                "valid": True,
+            }
+            recipients.append(record)
         return recipients
 
     def get_responsibles_data(self, batches):
