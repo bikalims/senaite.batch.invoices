@@ -75,30 +75,35 @@ class EmailView(EV):
         recipients = []
         setup = api.get_setup()
 
-        lab_billing_email = self.laboratory.Schema()['BillingEmailAddress'].getAccessor(self.laboratory)()
-        if lab_billing_email:
-            address = mailapi.to_email_address(lab_billing_email, name="Laboratory Billing EmailAddress")
-            record = {
-                "name": "Laboratory Billing EmailAddress",
-                "email": lab_billing_email,
-                "address": address,
-                "valid": True,
-            }
-            recipients.append(record)
+        send_copy_to = setup.Schema()['SendInvoiceCopiesTo'].getAccessor(setup)()
+        for copy in send_copy_to:
+            if copy == "ClientInvoiceEAddr":
+                client = self.batches[0].getClient()
+                client_billing_email = client.Schema()['BillingEmailAddress'].getAccessor(client)()
+                if client_billing_email:
+                    name = "{} Client Billing EmailAddress".format(client_billing_email)
+                    address = mailapi.to_email_address(client_billing_email, name=name)
+                    record = {
+                        "name": name,
+                        "email": client_billing_email,
+                        "address": address,
+                        "valid": True,
+                    }
+                    recipients.append(record)
 
-        client = self.batches[0].getClient()
-        client_billing_email = client.Schema()['BillingEmailAddress'].getAccessor(client)()
-        email_invoices = setup.Schema()['EmailInvoices'].getAccessor(setup)()
-        if client_billing_email and email_invoices:
-            name = "{} Client Billing EmailAddress".format(client_billing_email)
-            address = mailapi.to_email_address(client_billing_email, name=name)
-            record = {
-                "name": name,
-                "email": client_billing_email,
-                "address": address,
-                "valid": True,
-            }
-            recipients.append(record)
+            if copy == "LabAccEAddr":
+                lab_billing_email = self.laboratory.Schema()['BillingEmailAddress'].getAccessor(self.laboratory)()
+                if lab_billing_email:
+                    name = "Laboratory Billing EmailAddress"
+                    address = mailapi.to_email_address(lab_billing_email, name=name)
+                    record = {
+                        "name": name,
+                        "email": lab_billing_email,
+                        "address": address,
+                        "valid": True,
+                    }
+                    recipients.append(record)
+
         return recipients
 
     def get_responsibles_data(self, batches):

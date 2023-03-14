@@ -2,13 +2,14 @@
 
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.Widget import RichWidget
 from archetypes.schemaextender.interfaces import IBrowserLayerAwareExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from zope.component import adapts
 from zope.interface import implementer
 
-from .fields import ExtBooleanField, ExtTextField, ExtStringField
+from .fields import ExtBooleanField, ExtTextField, ExtStringField, ExtLinesField
 from bika.lims.interfaces import IBikaSetup
 from senaite.batch.invoices import _
 from senaite.batch.invoices.interfaces import ISenaiteBatchInvoicesLayer
@@ -30,16 +31,6 @@ invoiceforpublishedsamplesonly_field = ExtBooleanField(
     widget=BooleanWidget(
         label=_(u"Invoice for published samples only"),
         description=_(u"If left disabled, samples will be invoiced after registration"),
-    )
-)
-
-email_invoices_field = ExtBooleanField(
-    "EmailInvoices",
-    mode="rw",
-    schemata="Accounting",
-    widget=BooleanWidget(
-        label=_(u"Email Invoices to Client Y/N"),
-        description=_(u"Enable emailing invoices directly to the client's billing email address"),
     )
 )
 
@@ -67,15 +58,17 @@ invoice_email_body_field = ExtTextField(
     ),
 )
 
-send_invoice_copies_to = ExtStringField(
+send_invoice_copies_to = ExtLinesField(
     "SendInvoiceCopiesTo",
     mode="rw",
     schemata="Accounting",
-    vocabulary=[(_(u'yes'), _(u'Client invoice email address')),
-                (_(u'no'), _(u'Lab accounts email address'))],
-    widget=SelectionWidget(
+    vocabulary=[(_(u'ClientInvoiceEAddr'), _(u'Client invoice email address')),
+                (_(u'LabAccEAddr'), _(u'Lab accounts email address'))],
+    widget=MultiSelectionWidget(
         label=_(u"Send Invoice copies to:"),
-        description=_(u""),
+        description=_(u"Select who to send invoices to. \n"
+                      u"Press Ctrl also to select multiple values"),
+        select_format="checkbox"
     )
 )
 
@@ -87,7 +80,6 @@ class BikaSetupSchemaExtender(object):
 
     fields = [
         financials_field,
-        email_invoices_field,
         invoiceforpublishedsamplesonly_field,
         send_invoice_copies_to,
         invoice_email_body_field,

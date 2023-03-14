@@ -45,7 +45,7 @@ class PdfReportStorageAdapter(PRSA):
 
 
     @synchronized(max_connections=1)
-    def create_report(self, parent, pdf, html, uid, metadata, csv_text=None, coa_num=None):
+    def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
         """Create a new batchinvoice object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
@@ -81,7 +81,10 @@ class PdfReportStorageAdapter(PRSA):
         params = {"client":parent.getClient()}
         report = api.create(
                 parent, "BatchInvoice",
-                title=coa_num, batch=api.get_uid(parent),)
+                title=coa_num,
+                batch=api.get_uid(parent),
+                containedbatcheinvoices=uids,
+                )
         report.invoice_pdf = NamedBlobFile(data=pdf, contentType='application/pdf',filename=filename)
             # Html=html,
             # CSV=csv_text,

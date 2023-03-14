@@ -70,7 +70,7 @@ class IBatchInvoiceSchema(model.Schema):
         required=False,
     )
     containedbatcheinvoices = UIDReferenceField(
-        title=_(u"Container Type"),
+        title=_(u"Batches"),
         allowed_types=("Batch",),
         multi_valued=True,
         required=False,
