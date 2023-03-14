@@ -170,6 +170,14 @@ class ReportsListingView(ListingView):
             client.absolute_url(), value=client.Title()
         )
 
+        if obj.containedbatcheinvoices is not None:
+            batch_links = []
+            for batch in obj.containedbatcheinvoices:
+                batch = api.get_object_by_uid(batch)
+                batch_link = get_link(batch.absolute_url(), value=batch.id)
+                batch_links.append(batch_link)
+            item["replace"]["Batches"] = ", ".join(batch_links)
+
         pdf = self.get_pdf(obj)
         filesize = self.get_filesize(pdf)
         if filesize > 0:
