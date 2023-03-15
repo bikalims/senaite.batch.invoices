@@ -35,6 +35,13 @@ class EmailView(EV):
     def __init__(self, context, request):
         super(EmailView, self).__init__(context, request)
 
+    def store_multireports_individually(self):
+        """Returns the configured setting from the registry
+        """
+        store_individually = api.get_registry_record(
+            "senaite.impress.store_multireports_individually")
+        return store_individually
+
     @property
     @view.memoize
     def batches(self):
@@ -51,7 +58,12 @@ class EmailView(EV):
         batches = []
         for ba in batch_invoices:
             batch = api.get_object_by_uid(ba.batch)
-            if IBatch.providedBy(batch):
+            if not IBatch.providedBy(batch):
+                continue
+            if not self.store_multireports_individually():
+                batches.extend(map(self.get_object_by_uid, ba.containedbatcheinvoices))
+                break
+            else:
                 batches.append(batch)
         return batches
 
