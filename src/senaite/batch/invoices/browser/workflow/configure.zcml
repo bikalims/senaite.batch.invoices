@@ -9,7 +9,15 @@
   regardless of the context (Analysis Requests listing, Client folder, etc.) -->
   <adapter
     name="workflow_action_invoice"
-    for="*
+    for="bika.lims.interfaces.IClient
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".batch.WorkflowActionInvoiceAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <adapter
+    name="workflow_action_invoice"
+    for="bika.lims.interfaces.IBatch
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".batch.WorkflowActionInvoiceAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
