@@ -7,7 +7,7 @@
              initial_state="open"
              manager_bypass="False"
              purge="False"
-             i18n:domain="senaite.core">
+             i18n:domain="senaite.batch.invoices">
 
   <!--
   Workflow for Batch objects.

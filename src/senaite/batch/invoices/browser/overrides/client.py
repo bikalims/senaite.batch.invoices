@@ -18,7 +18,11 @@
 # Copyright 2018-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .batchfolder import BatchFolderContentsView
+from bika.lims import api
+from bika.lims.utils import t
+from bika.lims.utils import get_image
+from bika.lims.browser.batchfolder import BatchFolderContentsView
+from senaite.batch.invoices import _
 
 
 class ClientBatchesView(BatchFolderContentsView):
@@ -27,3 +31,20 @@ class ClientBatchesView(BatchFolderContentsView):
         super(ClientBatchesView, self).__init__(context, request)
         self.view_url = self.context.absolute_url() + "/batches"
         self.contentFilter['getClientUID'] = self.context.UID()
+        setup = api.get_setup()
+        finacials = setup.Schema()['Financials'].getAccessor(setup)()
+        if finacials:
+            invoiced = {"id": "invoiced",
+                        "title": get_image("invoiced.png",
+                                           title=t(_("Invoiced"))),
+                        "columns": self.columns.keys(),
+                        "contentFilter": {"batch_invoiced_state": "invoiced"}
+                        }
+            to_be_invoiced = {"id": "uninvoiced",
+                              "title": get_image("uninvoiced.png",
+                                                 title=t(_("To be invoiced"))),
+                              "columns": self.columns.keys(),
+                              "contentFilter": {"batch_invoiced_state": "uninvoiced"}
+                              }
+            self.review_states.append(invoiced)
+            self.review_states.append(to_be_invoiced)

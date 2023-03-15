@@ -48,5 +48,32 @@ class BatchFolderContentsView(BFCV):
                               "columns": self.columns.keys(),
                               "contentFilter": {"batch_invoiced_state": "uninvoiced"}
                               }
+            self.review_states = [
+                {
+                    "id": "default",
+                    "contentFilter": {"review_state": "open"},
+                    "title": _("Open"),
+                    "transitions": [{"id": "close"}, {"id": "cancel"}],
+                    "columns": self.columns.keys(),
+                }, {
+                    "id": "closed",
+                    "contentFilter": {"review_state": "closed"},
+                    "title": _("Closed"),
+                    "transitions": [{"id": "open"}],
+                    "columns": self.columns.keys(),
+                }, {
+                    "id": "cancelled",
+                    "title": _("Cancelled"),
+                    "transitions": [{"id": "reinstate"}],
+                    "contentFilter": {"is_active": False},
+                    "columns": self.columns.keys(),
+                }, {
+                    "id": "all",
+                    "title": _("All"),
+                    "transitions": [{"id": "reinstate"}, {"id": "open"},
+                                    {"id": "close"}, {"id": "cancel"}],
+                    "columns": self.columns.keys(),
+                },
+            ]
             self.review_states.append(invoiced)
             self.review_states.append(to_be_invoiced)
