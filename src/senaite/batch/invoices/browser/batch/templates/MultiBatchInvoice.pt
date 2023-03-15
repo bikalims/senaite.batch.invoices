@@ -2,6 +2,11 @@
   i18n:domain="senaite.impress"
   define="collection view/collection;
           laboratory view/laboratory;
+          invoice_data python:view.get_invoice_lines(collection);
+          batch_data invoice_data/batch_data;
+          total_VAT invoice_data/total_VAT;
+          total_amount invoice_data/total_amount;
+          b_keys python: batch_data.keys();
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           show_remarks python:bool(report_options.get('show_remarks', False));
@@ -166,7 +171,9 @@
   <div class="row section-info no-gutters">
     <div class="w-100" style="text-align: center">
         <!--
-        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
+        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span>
+        </div>
+
         -->
     </div>
     </div>
@@ -196,129 +203,99 @@
       <div class="w-100">
         <!-- Point of Capture -->
         <tal:poc>
-
             <!-- Analysis in POC and Category -->
             <table class="table table-sm table-condensed">
               <colgroup>
                 <!-- Counter -->
                 <col style="width: 5%;">
-                <!-- Client SID -->
-                <col style="width: 15%;">
-                <!-- Sample ID -->
-                <col style="width: 15%;">
-                <!-- Sample Type -->
-                <col style="width: 15%;">
-                <!-- Date Received -->
-                <col style="width: 20%">
+                <!-- Qty -->
+                <col style="width: 10%;">
                 <!-- Description -->
+                <col style="width: 45%">
+                <!-- Price -->
                 <col style="width: 20%">
                 <!-- Amount -->
+                <col style="width: 20%">
               </colgroup>
               <thead>
                 <tr class="small">
-                  <th>
-                  &nbsp;
-                  </th>
                   <th class="">
-                    <span class="font-weight-bold" >Client SID</span>
+                    <span class="font-weight-bold" >Item</span>
                   </th>
-                  <th class="text-right result">
-                    <span i18n:translate="">Sample ID</span>
+                  <th class="text-center result">
+                    <span i18n:translate="">Qty</span>
                   </th>
-                  <th class="text-left unit">
-                    <span i18n:translate="">Sample Type</span>
-                  </th>
-                  <th class="specs">
-                    <span i18n:translate="">Date Received</span>
-                  </th>
-                  <th class="outofrange">
+                  <th class="text-center">
                     <span i18n:translate="">Description</span>
                   </th>
-                  <th class="outofrange">
+                  <th class="text-center">
+                    <span i18n:translate="">Price</span>
+                  </th>
+                  <th class="text-center result">
                     <span i18n:translate="">Amount</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <!--
-                <tal:analyses tal:repeat="sample samples">
+                <tal:analyses tal:repeat="b_key b_keys">
                   <tr>
-                    <td class="sample">
-                        <span class="font-weight-normal" tal:content="repeat/sample/number"></span>
+                    <td class="text-center align-middle">
+                        <span tal:content="repeat/b_key/number"></span>
+                    </td>
+                    <td class="text-center align-middle">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['qty']"></span>
                     </td>
                     <td class="sample">
-                        <span class="font-weight-normal" tal:content="sample/ClientSID"></span>
+                        <span class="font-weight-normal" tal:content="b_key"></span>
                     </td>
                     <td class="text-right">
-                      <span class="result" tal:content="sample/SampleID">23</span>
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['price']"></span>
                     </td>
-                    <td class="text-left text-muted font-italic">
-                      <span class="units" tal:content="sample/SampleTypeTitle"></span>
-                    </td>
-                    <td class="specs">
-                      <span tal:content="sample/DateReceived">50 - 60</span>
-                    </td>
-                    <td class="text-center align-middle">
-                      <span tal:content="sample/Description">50 - 60</span>
-                    </td>
-                    <td class="text-center align-middle">
-                      <span tal:content="sample/Subtotal">50 - 60</span>
+                    <td class="text-right">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['amount']"></span>
                     </td>
                   </tr>
                 </tal:analyses>
-                -->
+
               </tbody>
               <tfoot>
-                <!--
                 <tr>
-                  <td colspan="6" style="text-align:right">
+                  <td colspan="4" style="text-align:right">
                     <div class="category_comments">
                       <span>Subtotal</span>
                     </div>
                   </td>
-                  <td colspan="1">
+                  <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="batch_data/total_subtotal">50 - 60</span>
+                      <span tal:content="python:invoice_data['sub_total']">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/VAT_label">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/total_VAT">50 - 60</span>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="6" style="text-align:right">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/MemberDiscount">50 - 60</span>
-                    </div>
-                  </td>
-                  <td colspan="1">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/total_discount">50 - 60</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="6" style="text-align:right">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/VAT">50 - 60</span>
-                    </div>
-                  </td>
-                  <td colspan="1">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/total_vat">50 - 60</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="6" style="text-align:right">
+                  <td colspan="4" style="text-align:right">
                     <div class="category_comments">
                       <span>Total</span>
                     </div>
                   </td>
-                  <td colspan="1">
+                  <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="batch_data/total_price">50 - 60</span>
+                      <span tal:content="invoice_data/total_amount">50 - 60</span>
                     </div>
                   </td>
                 </tr>
-              -->
               </tfoot>
             </table>
         </tal:poc>
