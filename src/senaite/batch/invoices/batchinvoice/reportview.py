@@ -127,6 +127,42 @@ class MultiReportView(MRV):
         template = Template(template).safe_substitute(context)
         return MULTI_TEMPLATE.safe_substitute(context, template=template)
 
+    def get_invoice_lines(self, model_or_collection):
+        batch_data = {}
+
+        sub_total = 0
+        total_VAT = 0
+        total_amount = 0
+        for batch in model_or_collection:
+            ars = batch.instance.getAnalysisRequests()
+            for ar in ars:
+                total_VAT += ar.getVATAmount()
+                total_amount += ar.getTotalPrice()
+                analyses = ar.getAnalyses()
+                for a in analyses:
+                    a_title = a.Title
+                    if a_title not in batch_data: 
+                        analysis = a.getObject()
+                        batch_data[a_title] =  {
+                            "qty":0, 
+                            "price": Decimal(analysis.getPrice()), 
+                            }
+                    batch_data[a_title]["qty"] +=1
+                    
+        batch_keys = batch_data.keys()
+        for b_key in batch_keys:
+            batch_data[b_key]["amount"] = batch_data[b_key]["qty"] * batch_data[b_key]["price"]
+
+        invoice_data = {}
+        invoice_data["batch_data"] = batch_data
+        invoice_data["sub_total"] = "{:.2f}".format(total_amount - total_VAT)
+        invoice_data["VAT_label"] =  "{}% VAT".format(self.setup.getVAT())
+        invoice_data["total_VAT"] = "{:.2f}".format(total_VAT)
+
+        invoice_data["total_amount"] = "{:.2f}".format(total_amount)
+
+        return invoice_data
+
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
             num_per_page = 5
