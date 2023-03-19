@@ -55,6 +55,7 @@ def upgrade(tool):
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
     add_batchinvoiced_client_index(portal)
+    remove_batch_invoices_on_setup(portal)
     add_sample_invoiced_state(portal)
     add_batch_invoiced_state(portal)
     remove_batch_invoice_action(portal)
@@ -128,3 +129,10 @@ def add_batchinvoiced_client_index(portal):
         else:
             if not batch.client:
                 batch.reindexObject()
+
+
+def remove_batch_invoices_on_setup(portal):
+    setup = api.get_setup()
+    for s in setup.values():
+        if s.portal_type == "BatchInvoices":
+            setup._delObject(s.id)
