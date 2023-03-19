@@ -46,5 +46,5 @@ class ClientBatchesView(BatchFolderContentsView):
                               "columns": self.columns.keys(),
                               "contentFilter": {"batch_invoiced_state": "uninvoiced"}
                               }
-            self.review_states.append(invoiced)
             self.review_states.append(to_be_invoiced)
+            self.review_states.append(invoiced)

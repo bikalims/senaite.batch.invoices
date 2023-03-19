@@ -75,5 +75,5 @@ class BatchFolderContentsView(BFCV):
                     "columns": self.columns.keys(),
                 },
             ]
-            self.review_states.append(invoiced)
             self.review_states.append(to_be_invoiced)
+            self.review_states.append(invoiced)
