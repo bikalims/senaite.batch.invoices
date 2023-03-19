@@ -14,12 +14,14 @@ from senaite.core.catalog import SAMPLE_CATALOG, SENAITE_CATALOG
 INDEXES = [
     (SAMPLE_CATALOG, "invoiced_state", "", "FieldIndex"),
     (SENAITE_CATALOG, "batch_invoiced_state", "", "FieldIndex"),
+    ("portal_catalog", "client", "", "FieldIndex"),
 ]
 
 # Tuples of (catalog, column_name)
 COLUMNS = [
     (SAMPLE_CATALOG, "invoiced_state"),
     (SENAITE_CATALOG, "batch_invoiced_state"),
+    ("portal_catalog", "client"),
 ]
 
 ID_FORMATTING = [

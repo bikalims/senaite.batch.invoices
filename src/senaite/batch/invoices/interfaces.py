@@ -14,13 +14,22 @@ class IInvoice(Interface):
     """Invoice
     """
 
+
 class IBatchInvoice(Interface):
-    """Marker interface for sample containers
+    """Marker interface for batchinvoice
     """
+
+
+class IBatchInvoices(Interface):
+    """Marker interface for batchinvoices
+    """
+
 
 class IInvoices(Interface):
     """Invoice
     """
+
+
 class ISenaiteImpressBatchInvoiceHtmlHead(IViewletManager):
     """Invoice
     """

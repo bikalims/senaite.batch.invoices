@@ -7,9 +7,15 @@
 
   <!-- Batch Invoices -->
   <browser:page
-      for="senaite.batch.invoices.content.batchinvoices.IBatchInvoices"
+      for="senaite.batch.invoices.interfaces.IBatchInvoices"
       name="view"
       class=".batchinvoices.BatchInvoicesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="batch_invoices"
+      class=".batchinvoices.BatchInvoicesClientView"
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
 

@@ -54,6 +54,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(PROFILE_ID, "plone.app.registry")
     add_dexterity_setup_items(portal)
     setup_catalogs(portal)
+    add_batchinvoiced_client_index(portal)
     add_sample_invoiced_state(portal)
     add_batch_invoiced_state(portal)
     remove_batch_invoice_action(portal)
@@ -106,3 +107,24 @@ def add_sample_invoiced_state(portal):
         else:
             if not sample.invoiced_state:
                 sample.reindexObject()
+
+
+def add_batchinvoiced_client_index(portal):
+    logger.info("Fix BatchInvoice client...")
+    query = {
+        "portal_type": "BatchInvoice",
+    }
+    batches = api.search(query, "portal_catalog")
+    total = len(batches)
+    for num, batch in enumerate(batches):
+        if num and num % 10 == 0:
+            logger.info("Processed batches: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this batch
+        batch = api.get_object(batch)
+        # Reindex both the partition and parent(s)
+        if not hasattr(batch, 'client'):
+            batch.reindexObject()
+        else:
+            if not batch.client:
+                batch.reindexObject()
