@@ -113,7 +113,6 @@ def add_dexterity_setup_items(portal):
     items = [
         ("batch_invoices", "Batch Invoices", "BatchInvoices"),
     ]
-    setup = api.get_setup()
     # ##############ADD ITEMS IN PORTAL NAVIGATION#############
     add_dexterity_items(portal, items)
     # Move BatchInvoices after Methods nav item
@@ -123,7 +122,6 @@ def add_dexterity_setup_items(portal):
 
     # Reindex order
     portal.plone_utils.reindexOnReorder(portal)
-    add_dexterity_items(setup, items)
 
 
 def setup_handler(context):

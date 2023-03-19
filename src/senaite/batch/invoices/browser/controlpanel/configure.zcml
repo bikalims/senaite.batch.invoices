@@ -12,6 +12,7 @@
       class=".batchinvoices.BatchInvoicesView"
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
+
   <browser:page
       for="bika.lims.interfaces.IClient"
       name="batch_invoices"

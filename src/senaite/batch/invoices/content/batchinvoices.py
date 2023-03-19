@@ -8,9 +8,11 @@ from senaite.batch.invoices.interfaces import IBatchInvoices
 
 
 class IBatchInvoicesSchema(model.Schema):
-    pass
+    """A container for sample containers
+    """
 
 
 @implementer(IBatchInvoices, IBatchInvoicesSchema, IHideActionsMenu)
 class BatchInvoices(Container):
-    pass
+    """A container for sample containers
+    """
