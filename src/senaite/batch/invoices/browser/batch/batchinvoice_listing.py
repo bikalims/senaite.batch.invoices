@@ -191,6 +191,9 @@ class ReportsListingView(ListingView):
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
+        item["Subtotal"] = obj.subtotal
+        item["VAT"] = obj.vat
+        item["Total"] = obj.total
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.

@@ -267,7 +267,7 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="python:invoice_data['sub_total']">50 - 60</span>
+                      <span name="sub_total" tal:content="python:invoice_data['sub_total']">50 - 60</span>
                     </div>
                   </td>
                 </tr>
@@ -280,7 +280,7 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="invoice_data/total_VAT">50 - 60</span>
+                      <span name="total_VAT" tal:content="invoice_data/total_VAT">50 - 60</span>
                     </div>
                   </td>
                 </tr>
@@ -292,7 +292,7 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="invoice_data/total_amount">50 - 60</span>
+                      <span name="total_amount" tal:content="invoice_data/total_amount">50 - 60</span>
                     </div>
                   </td>
                 </tr>

@@ -15,7 +15,7 @@ class PdfReportStorageAdapter(PRSA):
     """Storage adapter for PDF batchinvoices
     """
 
-    def store(self, pdf, html, uids, metadata=None):
+    def store(self, pdf, html, uids, metadata=None, **kwargs):
         """Store the PDF
 
         :param pdf: generated PDF report (binary)
@@ -38,14 +38,14 @@ class PdfReportStorageAdapter(PRSA):
         # generate the reports
         reports = []
         for obj in objs:
-            report = self.create_report(obj, pdf, html, uids, metadata)
+            report = self.create_report(obj, pdf, html, uids, metadata, **kwargs)
             reports.append(report)
 
         return reports
 
 
     @synchronized(max_connections=1)
-    def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
+    def create_report(self, parent, pdf, html, uids, metadata, coa_num=None, **kwargs):
         """Create a new batchinvoice object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
@@ -78,12 +78,16 @@ class PdfReportStorageAdapter(PRSA):
 
         # Create the report object
         filename = u"{}.pdf".format(coa_num)
+        import pdb; pdb.set_trace()
         report = api.create(
                 parent, "BatchInvoice",
                 title=coa_num,
                 batch=api.get_uid(parent),
                 containedbatcheinvoices=uids,
-                client=parent.getClient().UID()
+                client=parent.getClient().UID(),
+                subtotal=kwargs.get("total_subtotal"),
+                vat=kwargs.get("total_VAT"),
+                total=kwargs.get("total_amount"),
                 )
         report.invoice_pdf = NamedBlobFile(data=pdf, contentType='application/pdf',filename=filename)
             # Html=html,

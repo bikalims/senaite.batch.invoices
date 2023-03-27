@@ -123,6 +123,25 @@ class AjaxPublishView(AP):
         # get the selected orientation
         orientation = data.get("orientation", "portrait")
 
+        # get the publisher instance
+        publisher = self.publisher
+        # get INVOICE number
+        parser = publisher.get_parser(html)
+        total_VAT = parser.find_all(attrs={'name': 'total_VAT'})
+        total_VAT = total_VAT.pop()
+        total_VAT = total_VAT.text.strip()
+        kwargs = {"total_VAT": float(total_VAT)}
+        # VAT, S
+        total_amount = parser.find_all(attrs={'name': 'total_amount'})
+        total_amount = total_amount.pop()
+        total_amount = total_amount.text.strip()
+        kwargs["total_amount"] = float(total_amount)
+        # sub_total
+        sub_total = parser.find_all(attrs={'name': 'sub_total'})
+        sub_total = sub_total.pop()
+        sub_total = sub_total.text.strip()
+        kwargs["sub_total"] = float(sub_total)
+
         # get a timestamp
         timestamp = DateTime().ISO()
 
@@ -168,7 +187,7 @@ class AjaxPublishView(AP):
             metadata = report.get_metadata(
                 contained_requests=uids, timestamp=timestamp)
             # store the report(s)
-            objs = storage.store(report.pdf, html, uids, metadata=metadata)
+            objs = storage.store(report.pdf, html, uids, metadata=metadata, **kwargs)
             # append the generated reports to the list
             report_groups.append(objs)
 
