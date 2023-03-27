@@ -4,14 +4,11 @@ from AccessControl import ClassSecurityInfo
 from plone.dexterity.content import Item
 from plone.supermodel import model
 from plone.namedfile.field import NamedBlobFile
-from plone.formwidget.contenttree import ObjPathSourceBinder
 from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
-from z3c.relationfield.schema import RelationChoice
 
 from bika.lims import api
-from bika.lims.interfaces import IBatch, IClient
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField, DataGridRow
 
