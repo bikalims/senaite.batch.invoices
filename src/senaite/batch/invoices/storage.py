@@ -78,14 +78,13 @@ class PdfReportStorageAdapter(PRSA):
 
         # Create the report object
         filename = u"{}.pdf".format(coa_num)
-        import pdb; pdb.set_trace()
         report = api.create(
                 parent, "BatchInvoice",
                 title=coa_num,
                 batch=api.get_uid(parent),
                 containedbatcheinvoices=uids,
                 client=parent.getClient().UID(),
-                subtotal=kwargs.get("total_subtotal"),
+                subtotal=kwargs.get("sub_total"),
                 vat=kwargs.get("total_VAT"),
                 total=kwargs.get("total_amount"),
                 )
