@@ -3,6 +3,8 @@
 import collections
 from Products.CMFPlone.utils import safe_unicode
 from ZODB.POSException import POSKeyError
+from plone.memoize import view
+from zope.i18n.locales import locales
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
@@ -153,12 +155,37 @@ class ReportsListingView(ListingView):
         except (POSKeyError, TypeError):
             return None
 
+    @view.memoize
+    def get_currency_symbol(self):
+        """Get the currency Symbol
+        """
+        locale = locales.getLocale("en")
+        setup = api.get_setup()
+        currency = setup.getCurrency()
+        return locale.numbers.currencies[currency].symbol
+
+    @view.memoize
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
+
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and currency
+        """
+        # ensure we have a float
+        price = api.to_float(price, default=0.0)
+        dm = self.get_decimal_mark()
+        cur = self.get_currency_symbol()
+        price = "%s %.2f" % (cur, price)
+        return price.replace(".", dm)
+
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
 
         obj = api.get_object(obj)
-        uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(obj)
         status_title = review_state.capitalize().replace("_", " ")
 
@@ -191,9 +218,9 @@ class ReportsListingView(ListingView):
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
-        item["Subtotal"] = obj.subtotal
-        item["VAT"] = obj.vat
-        item["Total"] = obj.total
+        item["Subtotal"] = self.format_price(obj.subtotal)
+        item["VAT"] = self.format_price(obj.vat)
+        item["Total"] = self.format_price(obj.total)
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.
