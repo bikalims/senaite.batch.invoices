@@ -3,12 +3,17 @@
 from string import Template
 from decimal import Decimal
 from DateTime import DateTime
+from plone.memoize import view
+from plone.registry.interfaces import IRegistry
+from zope.component import getUtility
+from zope.i18n.locales import locales
 
 from bika.lims import api
 from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 
+LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 
 SINGLE_TEMPLATE = Template(
     """<!-- Batch Invoice Report -->
@@ -102,10 +107,10 @@ class BatchInvoiceReportView(ReportView):
         num = 1
         if len(brains):
             coa = brains[0]
-            num = coa.Title.split("-INV")[-1]
+            num = coa.Title.split("-Inv")[-1]
             num = int(num)
             num += 1
-        coa_num = "{}-INV{:02d}".format(instance.getId(), num)
+        coa_num = "{}-Inv{:02d}".format(instance.getId(), num)
         return coa_num
 
 
@@ -120,6 +125,42 @@ class MultiReportView(MRV):
         self.collection = collection
         self.request = request
 
+    def get_batch_invoice_number(self, model):
+        query = {"portal_type": "BatchInvoice"}
+        brains = api.search(query, "portal_catalog")
+        coa_num = "Inv-{:04d}".format(len(brains) + 1)
+        return coa_num
+
+    def get_coa_styles(self):
+        registry = getUtility(IRegistry)
+        styles = {}
+        try:
+            ac_style = registry["senaite.coa_logo_accredition_styles"]
+        except (AttributeError, KeyError):
+            styles["ac_styles"] = "max-height:68px;"
+        css = map(lambda ac_style: "{}:{};".format(*ac_style), ac_style.items())
+        css.append("max-width:200px;")
+        styles["ac_styles"] = " ".join(css)
+
+        try:
+            logo_style = registry["senaite.coa_logo_styles"]
+        except (AttributeError, KeyError):
+            styles["logo_styles"] = "height:15px;"
+        css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
+        styles["logo_styles"] = " ".join(css)
+        return styles
+
+    def get_toolbar_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["senaite.toolbar_logo"]
+        except (AttributeError, KeyError):
+            logo = LOGO
+        if not logo:
+            logo = LOGO
+        return portal_url + logo
+
     def render(self, template, **kw):
         """Wrap the template and render
         """
@@ -127,10 +168,35 @@ class MultiReportView(MRV):
         template = Template(template).safe_substitute(context)
         return MULTI_TEMPLATE.safe_substitute(context, template=template)
 
+    @view.memoize
+    def get_currency_symbol(self):
+        """Get the currency Symbol
+        """
+        locale = locales.getLocale("en")
+        setup = api.get_setup()
+        currency = setup.getCurrency()
+        return locale.numbers.currencies[currency].symbol
+
+    @view.memoize
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
+
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and currency
+        """
+        # ensure we have a float
+        price = api.to_float(price, default=0.0)
+        dm = self.get_decimal_mark()
+        cur = self.get_currency_symbol()
+        price = "%s %.2f" % (cur, price)
+        return price.replace(".", dm)
+
     def get_invoice_lines(self, model_or_collection):
         batch_data = {}
 
-        sub_total = 0
         total_VAT = 0
         total_amount = 0
         for batch in model_or_collection:
@@ -141,25 +207,30 @@ class MultiReportView(MRV):
                 analyses = ar.getAnalyses()
                 for a in analyses:
                     a_title = a.Title
-                    if a_title not in batch_data: 
+                    if a_title not in batch_data:
                         analysis = a.getObject()
-                        batch_data[a_title] =  {
-                            "qty":0, 
-                            "price": Decimal(analysis.getPrice()), 
-                            }
-                    batch_data[a_title]["qty"] +=1
-                    
+                        batch_data[a_title] = {
+                            "qty": 0,
+                            "price": Decimal(analysis.getPrice()),
+                            "f_price": self.format_price(analysis.getPrice()),
+                        }
+                    batch_data[a_title]["qty"] += 1
+
         batch_keys = batch_data.keys()
         for b_key in batch_keys:
             batch_data[b_key]["amount"] = batch_data[b_key]["qty"] * batch_data[b_key]["price"]
+            batch_data[b_key]["amount"] = self.format_price(batch_data[b_key]["amount"])
 
         invoice_data = {}
         invoice_data["batch_data"] = batch_data
         invoice_data["sub_total"] = "{:.2f}".format(total_amount - total_VAT)
-        invoice_data["VAT_label"] =  "{}% VAT".format(self.setup.getVAT())
+        invoice_data["f_sub_total"] = self.format_price(total_amount - total_VAT)
+        invoice_data["VAT_label"] = "{}% VAT".format(self.setup.getVAT())
         invoice_data["total_VAT"] = "{:.2f}".format(total_VAT)
+        invoice_data["f_total_VAT"] = self.format_price(total_VAT)
 
         invoice_data["total_amount"] = "{:.2f}".format(total_amount)
+        invoice_data["f_total_amount"] = self.format_price(total_amount)
 
         return invoice_data
 

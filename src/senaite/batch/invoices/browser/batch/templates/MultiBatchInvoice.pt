@@ -3,10 +3,12 @@
   define="collection view/collection;
           laboratory view/laboratory;
           invoice_data python:view.get_invoice_lines(collection);
+          batch_invoice_number python:view.get_batch_invoice_number(collection);
           batch_data invoice_data/batch_data;
           total_VAT invoice_data/total_VAT;
           total_amount invoice_data/total_amount;
           b_keys python: batch_data.keys();
+          styles python:view.get_coa_styles();
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           show_remarks python:bool(report_options.get('show_remarks', False));
@@ -99,8 +101,8 @@
     <div class="row section-header no-gutters">
       <!-- Header Table -->
       <div class="w-100 mb-2">
-              <img class="logo"
-                   tal:attributes="src string:++plone++senaite.core.static/images/senaite.svg"/>
+            <img class="logo text-right"
+                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
       </div>
     </div>
   </tal:render>
@@ -136,6 +138,9 @@
               <div class="lab-email">
                 Email: <span tal:content="laboratory/EmailAddress">Email</span>
               </div>
+              <div class="lab-email">
+                NIF: <span tal:content="laboratory/TaxNumber">TAX #</span>
+              </div>
             </address>
 
           <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
@@ -170,11 +175,7 @@
     <div class="clearfix"></div>
   <div class="row section-info no-gutters">
     <div class="w-100" style="text-align: center">
-        <!--
-        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span>
-        </div>
-
-        -->
+        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
     </div>
     </div>
   </div>
@@ -249,7 +250,7 @@
                         <span class="font-weight-normal" tal:content="b_key"></span>
                     </td>
                     <td class="text-right">
-                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['price']"></span>
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['f_price']"></span>
                     </td>
                     <td class="text-right">
                         <span class="font-weight-normal" tal:content="python:batch_data[b_key]['amount']"></span>
@@ -267,7 +268,8 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span name="sub_total" tal:content="python:invoice_data['sub_total']">50 - 60</span>
+                      <span name="sub_total" tal:content="python:invoice_data['sub_total']" style="display:none">50 - 60</span>
+                      <span tal:content="python:invoice_data['f_sub_total']">50 - 60</span>
                     </div>
                   </td>
                 </tr>
@@ -280,7 +282,8 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span name="total_VAT" tal:content="invoice_data/total_VAT">50 - 60</span>
+                      <span  tal:content="invoice_data/f_total_VAT">50 - 60</span>
+                      <span name="total_VAT" tal:content="invoice_data/total_VAT" style="display:none">50 - 60</span>
                     </div>
                   </td>
                 </tr>
@@ -292,7 +295,8 @@
                   </td>
                   <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span name="total_amount" tal:content="invoice_data/total_amount">50 - 60</span>
+                      <span name="total_amount" tal:content="invoice_data/total_amount" style="display:none">50 - 60</span>
+                      <span tal:content="invoice_data/f_total_amount">50 - 60</span>
                     </div>
                   </td>
                 </tr>
