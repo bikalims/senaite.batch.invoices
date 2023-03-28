@@ -37,7 +37,7 @@
      .report .colon-after:after { content: ":"; }
      .report address { margin: 1rem 0; }
      .report table.noborder td, .report table.noborder th { border: none; }
-     .report table.nopadding td { padding: 0; }
+     .report table.nopadding td { padding: 0; margin:0 }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table { border-color: black; }
      .report table td, .report table th { border: 1px solid black;}
@@ -90,7 +90,7 @@
          margin-top: 2mm;
          font-size: 9pt;
          color: red;
-         content: "<tal:t i18n:translate=''>Confidential</tal:t> ";
+         content: "<tal:t i18n:translate='' condition='python:not footer'>Confidential</tal:t> ";
        }
      }
     </style>
@@ -175,22 +175,13 @@
     <div class="clearfix"></div>
     <div class="row section-info no-gutters">
       <div class="w-100" style="text-align: center">
-        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
+        <h3>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></h3>
       </div>
     </div>
     <div class="clearfix"></div>
     <div class="row section-info no-gutters">
-      <div class="w-100" style="text-align: left">
-        <div>Date <span tal:content="invoice_data/today"></span></div>
-      </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="row section-info no-gutters">
-      <div class="w-100" style="text-align: left">
-        <div>Invoice for the analysis of samples in following Batches</div>
-        <tal:batches>
-
-        </tal:batches>
+      <div class="w-100" style="text-align: left; padding-bottom:3px">
+        <div>Date: <span tal:content="invoice_data/today"></span></div>
       </div>
     </div>
   </div>
@@ -202,15 +193,19 @@
   <tal:render condition="python:True"
               define="reporter python:view.current_user;">
     <div class="row section-summary no-gutters">
-        <!--
-        <div>Date <span tal:content="batch_data/date"></span></div>
+        <div>Invoice for the analysis of samples in following Batches</div>
         <div class="clearfix"></div>
-        <div>Batch: <span tal:content="model/ClientBatchID"></span>,
-          <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
-        </div>
-        <div><span tal:content="model/Description"></span></div>
-        -->
+        <tal:batches>
+                <tal:analyses tal:repeat="model collection">
+                   <span tal:content="model/ClientBatchID"></span>,
+                   <span tal:content="model/getId"></span>,
+                   <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
+                   <div class="clearfix"></div>
+                </tal:analyses>
+        </tal:batches>
+        <h3></h3>
     </div>
+    <div class="clearfix"></div>
   </tal:render>
 
   <!-- BATCH INVOICE -->
@@ -326,15 +321,12 @@
       <strong>Bank Account Details:</strong>
     </div>
     <div>
-      <span tal:content="laboratory/AccountType">Account Type</span>
+      <span tal:content="laboratory/BankName">Account Number</span>
+    <div class="clearfix"></div>
       <span tal:content="laboratory/AccountNumber">Account Number</span>
-    </div>
-  </tal:render>
-  <tal:render condition="python:True">
-    <div class="row section-footer no-gutters"
-        style="background-image:url(++resource++bika.coa.images/bikalimslogo.png);background-repeat:repeat-x; width:100%;height:10px">
-      <!-- Header Table -->
-      .
+    <div class="clearfix"></div>
+      <span tal:content="laboratory/AccountType">Account Type</span>
+    <div class="clearfix"></div>
     </div>
   </tal:render>
 

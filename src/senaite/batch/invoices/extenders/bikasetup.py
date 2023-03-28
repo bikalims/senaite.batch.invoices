@@ -71,6 +71,27 @@ send_invoice_copies_to = ExtLinesField(
         select_format="checkbox"
     )
 )
+invoice_footer_field = ExtTextField(
+    "InvoiceFooter",
+    mode="rw",
+    default_content_type="text/html",
+    default_output_type="text/x-html-safe",
+    schemata="Accounting",
+    # Needed to fetch the default value from the registry
+    widget=RichWidget(
+        label=_(
+            "label_bikasetup_invoice_footer",
+            "Invoice footer for Batch Invoices"),
+        description=_(
+            "description_bikasetup_invoice_footer",
+            default="Set the invoice footer text to be used when "
+            "generating batch invoices."),
+        default_mime_type="text/x-html",
+        output_mime_type="text/x-html",
+        allow_file_upload=False,
+        rows=15,
+    ),
+)
 
 
 @implementer(ISchemaExtender, IBrowserLayerAwareExtender)
@@ -83,6 +104,7 @@ class BikaSetupSchemaExtender(object):
         invoiceforpublishedsamplesonly_field,
         send_invoice_copies_to,
         invoice_email_body_field,
+        invoice_footer_field,
     ]
 
     def __init__(self, context):

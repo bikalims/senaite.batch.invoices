@@ -191,9 +191,18 @@ class MultiReportView(MRV):
         invoice_data["total_amount"] = "{:.2f}".format(total_amount)
         invoice_data["f_total_amount"] = self.format_price(total_amount)
         today = DateTime()
-        invoice_data["today"] = today.Date()
+        invoice_data["today"] = today.strftime("%d %B %Y")
 
         return invoice_data
+
+    def get_footer_text(self):
+        """Returns the footer text from the setup
+        """
+        setup = api.get_setup()
+        schema = setup.Schema()
+        footer = schema['InvoiceFooter'].getAccessor(setup)()
+        return footer
+
 
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
