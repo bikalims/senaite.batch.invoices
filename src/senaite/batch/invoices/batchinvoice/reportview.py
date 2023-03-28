@@ -52,47 +52,6 @@ class BatchInvoiceReportView(ReportView):
         template = Template(template).safe_substitute(context)
         return SINGLE_TEMPLATE.safe_substitute(context, template=template)
 
-    def get_samples(self, model_or_collection):
-        """Returns a flat list of all analyses for the given model or collection
-        """
-        return {}
-        samples = model_or_collection.instance.getAnalysisRequests()
-        data = []
-        batch_data = {
-            "date": self.to_localized_time(self.timestamp, **{"long_format": False}),
-            "total_subtotal": Decimal("0.0"),
-            "total_discount": Decimal("0.0"),
-            "total_vat": Decimal("0.0"),
-            "total_price": Decimal("0.0"),
-            "MemberDiscount": "{}% Discount".format(self.setup.getMemberDiscount()),
-            "VAT": "{}% VAT".format(self.setup.getVAT()),
-        }
-        for sample in samples:
-            sample_data = {
-                "ClientSID": sample.getClientSampleID(),
-                "SampleID": sample.getId(),
-                "SampleTypeTitle": sample.getSampleTypeTitle(),
-                "DateReceived": self.to_localized_time(sample.getDateReceived()),
-                "Description": sample.description,
-                "Subtotal": sample.getSubtotal(),
-                "TotalPrice": sample.getTotalPrice(),
-                "Total": sample.getTotal(),
-                "VATAmount": sample.getVATAmount(),
-                "DiscountAmount": sample.getDiscountAmount(),
-            }
-            data.append(sample_data)
-            batch_data["total_subtotal"] += sample.getSubtotal()
-            batch_data["total_discount"] += sample.getDiscountAmount()
-            batch_data["total_vat"] += sample.getVATAmount()
-            batch_data["total_price"] += sample.getTotalPrice()
-
-        batch_data["total_subtotal"] = "{:.2f}".format(batch_data["total_subtotal"])
-        batch_data["total_discount"] = "{:.2f}".format(batch_data["total_discount"])
-        batch_data["total_vat"] = "{:.2f}".format(batch_data["total_vat"])
-        batch_data["total_price"] = "{:.2f}".format(batch_data["total_price"])
-
-        return {"samples": data, "batch_data": batch_data}
-
     def get_batch_invoice_number(self, model):
         instance = model.instance
         today = DateTime()
@@ -231,6 +190,8 @@ class MultiReportView(MRV):
 
         invoice_data["total_amount"] = "{:.2f}".format(total_amount)
         invoice_data["f_total_amount"] = self.format_price(total_amount)
+        today = DateTime()
+        invoice_data["today"] = today.Date()
 
         return invoice_data
 

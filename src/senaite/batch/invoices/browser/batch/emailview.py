@@ -212,7 +212,7 @@ class EmailView(EV):
         if subject is not None:
             return subject
         subject = self.context.translate(_("Batch Invoice {}"))
-        return subject.format(_(self.reports[0].Title()))
+        return subject.format(_(self.reports[0].getId()))
 
     def publish_samples(self):
         """Invoice all batches of the reports

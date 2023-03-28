@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cStringIO import StringIO
 import transaction
-from plone import api as ploneapi
 from bika.lims import api
 from DateTime import DateTime
 from senaite.impress import logger
@@ -43,9 +41,8 @@ class PdfReportStorageAdapter(PRSA):
 
         return reports
 
-
     @synchronized(max_connections=1)
-    def create_report(self, parent, pdf, html, uids, metadata, coa_num=None, **kwargs):
+    def create_report(self, parent, pdf, html, uids, metadata, **kwargs):
         """Create a new batchinvoice object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
@@ -62,25 +59,20 @@ class PdfReportStorageAdapter(PRSA):
         parent._p_jar.sync()
         today = DateTime()
 
-        if coa_num is None:
+        if not kwargs.get("batch_invoice_number"):
             query = {
                 'portal_type': 'BatchInvoice',
-                'path': {
-                    'query': api.get_path(parent)
-                },
-                'modified': {
-                    'query': today.Date(),
-                    'range': 'min'
-                }
             }
             brains = api.search(query, 'portal_catalog')
-            coa_num = '{}-INV{:02d}'.format(parent.getId(), len(brains) + 1)
+            batch_invoice_number = 'Inv{:02d}'.format(len(brains) + 1)
+        else:
+            batch_invoice_number = kwargss.get("batch_invoice_number")
 
         # Create the report object
         filename = u"{}.pdf".format(coa_num)
         report = api.create(
                 parent, "BatchInvoice",
-                title=coa_num,
+                title=batch_invoice_number,
                 batch=api.get_uid(parent),
                 containedbatcheinvoices=uids,
                 client=parent.getClient().UID(),

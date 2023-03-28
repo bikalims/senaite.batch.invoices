@@ -125,12 +125,16 @@ class AjaxPublishView(AP):
 
         # get the publisher instance
         publisher = self.publisher
-        # get INVOICE number
         parser = publisher.get_parser(html)
+        # get INVOICE number
+        batch_invoice_number = parser.find_all(attrs={'name': 'batch_invoice_number'})
+        batch_invoice_number = batch_invoice_number.pop()
+        batch_invoice_number = batch_invoice_number.text.strip()
+        kwargs = {"batch_invoice_number": batch_invoice_number}
         total_VAT = parser.find_all(attrs={'name': 'total_VAT'})
         total_VAT = total_VAT.pop()
         total_VAT = total_VAT.text.strip()
-        kwargs = {"total_VAT": float(total_VAT)}
+        kwargs["total_VAT"] = float(total_VAT)
         # VAT, S
         total_amount = parser.find_all(attrs={'name': 'total_amount'})
         total_amount = total_amount.pop()
