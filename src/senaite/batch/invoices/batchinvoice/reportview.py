@@ -203,7 +203,6 @@ class MultiReportView(MRV):
         footer = schema['InvoiceFooter'].getAccessor(setup)()
         return footer
 
-
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
             num_per_page = 5

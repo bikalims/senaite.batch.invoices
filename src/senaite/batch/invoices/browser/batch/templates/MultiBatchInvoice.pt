@@ -199,7 +199,7 @@
                 <tal:analyses tal:repeat="model collection">
                    <span tal:content="model/ClientBatchID"></span>,
                    <span tal:content="model/getId"></span>,
-                   <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
+                   <a tal:content="model/title" tal:attributes="href model/absolute_url"></a>
                    <div class="clearfix"></div>
                 </tal:analyses>
         </tal:batches>
@@ -321,11 +321,11 @@
       <strong>Bank Account Details:</strong>
     </div>
     <div>
-      <span tal:content="laboratory/BankName">Account Number</span>
+      <span>BAI: AO06 0040 0000 8567 3998 1018 4</span>
     <div class="clearfix"></div>
-      <span tal:content="laboratory/AccountNumber">Account Number</span>
+      <span>BIC: AO06 0051 0000 5683 0487 1010 7</span>
     <div class="clearfix"></div>
-      <span tal:content="laboratory/AccountType">Account Type</span>
+      <span>BMA: AO06 0055 0000 0615 0443 1017 2</span>
     <div class="clearfix"></div>
     </div>
   </tal:render>
