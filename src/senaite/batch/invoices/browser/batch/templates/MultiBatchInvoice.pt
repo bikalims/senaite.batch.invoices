@@ -147,10 +147,10 @@
       <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
         <address class="client-address" condition="client">
           <div class="client-street">
-            <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
+            <div tal:replace="client/Name|nothing"></div>
           </div>
           <div class="client-street">
-            <div>Client address: <span tal:replace="client/PostalAddress/address|nothing"></span></div>
+            <div tal:replace="client/PostalAddress/address|nothing"></div>
           </div>
           <span class="client-zip">
             <div tal:replace="client/PostalAddress/zip|nothing"></div>
@@ -162,10 +162,10 @@
             <div tal:replace="client/PostalAddress/country|nothing"></div>
           </div>
           <div class="client-street">
-            <div>Client telephone #: <span tal:replace="client/Phone|nothing"></span></div>
+            <div>Tel: <span tal:replace="client/Phone|nothing"></span></div>
           </div>
           <div class="client-street">
-            <div>Client email address: <span tal:replace="client/EmailAddress|nothing"></span></div>
+            <div>Email: <span tal:replace="client/EmailAddress|nothing"></span></div>
           </div>
         </address>
       </tal:by_client>
@@ -176,13 +176,13 @@
     <div class="clearfix"></div>
     <div class="row section-info no-gutters">
       <div class="w-100" style="text-align: center">
-        <h3>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></h3>
+        <h2>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></h2>
       </div>
     </div>
     <div class="clearfix"></div>
     <div class="row section-info no-gutters">
-      <div class="w-100" style="text-align: left; padding-bottom:3px">
-        <div>Date: <span tal:content="invoice_data/today"></span></div>
+      <div class="w-100" style="text-align: left; padding-bottom:10px">
+        <div  tal:content="invoice_data/today"></div>
       </div>
     </div>
   </div>
