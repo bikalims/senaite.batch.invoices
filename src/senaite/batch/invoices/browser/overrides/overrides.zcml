@@ -21,4 +21,20 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <!-- Listing view for publish contents -->
+  <browser:page
+      for="bika.lims.interfaces.IBatchFolder"
+      name="publish_content_listing"
+      class=".publishcontent.ContentListingView"
+      permission="zope2.View"
+      layer="senaite.impress.interfaces.ISenaiteImpressLayer"
+      />
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="publish_content_listing"
+      class=".publishcontent.ContentListingView"
+      permission="zope2.View"
+      layer="senaite.impress.interfaces.ISenaiteImpressLayer"
+      />
+
 </configure>

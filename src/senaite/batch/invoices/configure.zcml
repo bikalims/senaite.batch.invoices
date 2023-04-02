@@ -85,7 +85,7 @@
   <browser:viewlet
       name="senaite.batch.invoices.static"
       manager=".interfaces.ISenaiteImpressBatchInvoiceHtmlHead"
-      class="senaite.impress.resources.ResourcesViewlet"
+      class="senaite.impress.browser.viewlets.resources.ResourcesViewlet"
       permission="zope2.View"
       template="static/resources.pt"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
