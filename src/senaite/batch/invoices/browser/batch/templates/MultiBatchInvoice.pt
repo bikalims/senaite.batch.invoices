@@ -38,7 +38,7 @@
      .report address { margin: 1rem 0; }
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; margin:0 }
-     .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report table td.label {font-weight: bold; }
      .report table { border-color: black; }
      .report table td, .report table th { border: 1px solid black;}
      .report table thead tr th {}
@@ -185,11 +185,11 @@
       </div>
     </div>
   </div>
-  <div class="clearfix"></div>
   </tal:render>
 
 
   <!-- SUMMARY -->
+  <div class="clearfix"></div>
   <tal:render condition="python:True"
               define="reporter python:view.current_user;">
     <div class="row section-summary no-gutters">
@@ -197,15 +197,15 @@
         <div class="clearfix"></div>
         <tal:batches>
                 <tal:analyses tal:repeat="model collection">
-                   <span tal:content="model/ClientBatchID"></span>,
-                   <span tal:content="model/getId"></span>,
+                   <span tal:content="model/ClientBatchID"></span><span tal:condition="model/ClientBatchID">,</span>
+                   <span tal:content="model/getId"></span><span tal:condition="model/getId">,</span>
                    <a tal:content="model/title" tal:attributes="href model/absolute_url"></a>
-                   <div class="clearfix"></div>
+                   <br />
                 </tal:analyses>
         </tal:batches>
         <h3></h3>
     </div>
-    <div class="clearfix"></div>
+  <div class="clearfix"></div>
   </tal:render>
 
   <!-- BATCH INVOICE -->
@@ -315,6 +315,7 @@
         </tal:poc>
       </div>
     </div>
+  <div class="clearfix"></div>
   </tal:render>
   <tal:render condition="python:True">
     <div>
