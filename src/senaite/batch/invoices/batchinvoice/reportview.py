@@ -149,34 +149,129 @@ class MultiReportView(MRV):
         return price.replace(".", dm)
 
     def get_invoice_lines(self, model_or_collection):
-        batch_data = {}
+
+        service_data = {} 
+        profile_data = {} 
+        sort_data = {}
 
         total_VAT = 0
         total_amount = 0
         for batch in model_or_collection:
             ars = batch.instance.getAnalysisRequests()
             for ar in ars:
+                profile_services = []
                 total_VAT += ar.getVATAmount()
                 total_amount += ar.getTotalPrice()
+
+
+                for profile in ar.getProfiles():
+                    p_title = profile.Title()
+                    if p_title not in profile_data:
+                        profile_data[p_title] = {
+                            "qty":0,
+                            "price": Decimal(profile.getPrice()),
+                            "f_price": Decimal(profile.getTotalPrice()),
+                        }
+                    for service in profile.getService():
+                        if service.Title() not in profile_services:
+                            profile_services.append(service.Title())
+
+
+                    profile_data[p_title]["qty"] += 1
+
+
+
                 analyses = ar.getAnalyses()
                 for a in analyses:
                     a_title = a.Title
-                    if a_title not in batch_data:
+                    if a_title in profile_services:
+                        continue
+                        
+                    if a_title not in service_data:
                         analysis = a.getObject()
-                        batch_data[a_title] = {
+                        service_data[a_title] = {
                             "qty": 0,
                             "price": Decimal(analysis.getPrice()),
                             "f_price": self.format_price(analysis.getPrice()),
                         }
-                    batch_data[a_title]["qty"] += 1
+                        sort_key = analysis.getSortKey()
+                        if sort_key in sort_data:
+                            if a_title in sort_data[sort_key]:
+                                next
+                            else:
+                                sort_data[sort_key].append(a_title)
+                        else:
+                            sort_data[sort_key] = [a_title,]
 
-        batch_keys = batch_data.keys()
-        for b_key in batch_keys:
-            batch_data[b_key]["amount"] = batch_data[b_key]["qty"] * batch_data[b_key]["price"]
-            batch_data[b_key]["amount"] = self.format_price(batch_data[b_key]["amount"])
+                    service_data[a_title]["qty"] += 1
+
+
+
 
         invoice_data = {}
-        invoice_data["batch_data"] = batch_data
+        batch_data = []
+        profile_keys = profile_data.keys()
+        profile_keys.sort()
+
+        """ add the profiles in alphabetical order
+        """
+
+        profile_items = []
+        for p_key in profile_keys:
+            profile_data[p_key]["amount"] = profile_data[p_key]["qty"] * profile_data[p_key]["price"]
+            profile_data[p_key]["amount"] = self.format_price(profile_data[p_key]["amount"])
+
+            profile_item = [
+                    p_key, \
+                    profile_data[p_key]["qty"], \
+                    profile_data[p_key]["price"], \
+                    profile_data[p_key]["amount"]]
+            profile_items.append(profile_item)
+
+        
+        """ add the analyses in SortKey order - omit those with no SortKey
+        """
+
+        service_items = []
+        sort_keys = sort_data.keys()
+        sort_keys.sort()
+        for s_key in sort_keys:
+            if s_key == None:
+                continue
+            s_titles = sort_data[s_key]
+            s_titles.sort()
+
+            for s_title in s_titles:
+                service_data[s_title]["amount"] = service_data[s_title]["qty"] * service_data[s_title]["price"]
+                service_data[s_title]["amount"] = self.format_price(service_data[s_title]["amount"])
+                service_item = [
+                    s_title, \
+                    service_data[s_title]["qty"], \
+                    service_data[s_title]["price"], \
+                    service_data[s_title]["amount"], ]
+                service_items.append(service_item)
+
+
+
+        """ now add the analyses without SortKey in alphabetic order
+        """
+
+        s_titles = sort_data[None]
+        s_titles.sort()
+        for s_title in s_titles:
+            service_data[s_title]["amount"] = service_data[s_title]["qty"] * service_data[s_title]["price"]
+            service_data[s_title]["amount"] = self.format_price(service_data[s_title]["amount"])
+            service_item = [
+                s_title, \
+                service_data[s_title]["qty"], \
+                service_data[s_title]["price"], \
+                service_data[s_title]["amount"], ]
+            service_items.append(service_item)
+
+
+
+        profile_items.extend(service_items)
+        invoice_data["batch_data"] = profile_items
         invoice_data["sub_total"] = "{:.2f}".format(total_amount - total_VAT)
         invoice_data["f_sub_total"] = self.format_price(total_amount - total_VAT)
         invoice_data["VAT_label"] = "{}% VAT".format(self.setup.getVAT())
