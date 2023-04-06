@@ -7,7 +7,6 @@
           batch_data invoice_data/batch_data;
           total_VAT invoice_data/total_VAT;
           total_amount invoice_data/total_amount;
-          b_keys python: batch_data.keys();
           styles python:view.get_coa_styles();
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
@@ -248,22 +247,22 @@
                 </tr>
               </thead>
               <tbody>
-                <tal:analyses tal:repeat="b_key b_keys">
+                <tal:analyses tal:repeat="item batch_data">
                   <tr>
                     <td class="text-center align-middle">
-                        <span tal:content="repeat/b_key/number"></span>
+                        <span tal:content="repeat/item/number"></span>
                     </td>
                     <td class="text-center align-middle">
-                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['qty']"></span>
+                        <span class="font-weight-normal" tal:content="python:item[1]"></span>
                     </td>
                     <td class="sample">
-                        <span class="font-weight-normal" tal:content="b_key"></span>
+                        <span class="font-weight-normal" tal:content="python:item[0]"></span>
                     </td>
                     <td class="text-right">
-                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['f_price']"></span>
+                        <span class="font-weight-normal" tal:content="python:item[2]"></span>
                     </td>
                     <td class="text-right">
-                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['amount']"></span>
+                        <span class="font-weight-normal" tal:content="python:item[3]"></span>
                     </td>
                   </tr>
                 </tal:analyses>
