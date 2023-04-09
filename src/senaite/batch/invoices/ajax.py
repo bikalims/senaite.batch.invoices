@@ -123,7 +123,7 @@ class AjaxPublishView(AP):
             if hasattr(parent, "getClient"):
                 clients.append(parent.getClient())
             report_uids.append(api.get_uid(report))
-            parent_titles.append(api.get_title(parent))
+            parent_titles.append(parent.getId())
 
         # generate status message
         message = _("Generated an invoice for: {}".format(
