@@ -6,7 +6,7 @@
 
  <property name="title" i18n:translate="">BatchInvoice</property>
  <property name="description" i18n:translate="">Batch Invoice</property>
- <property name="icon_expr">string:${portal_url}/invoiced.png</property>
+ <property name="icon_expr">string:${portal_url}/invoiced</property>
  <property name="factory">BatchInvoice</property>
  <property
     name="add_view_expr">string:${folder_url}/++add++BatchInvoice</property>
@@ -45,7 +45,7 @@
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/edit"
-    visible="True">
+    visible="False">
   <permission value="Manage Users"/>
  </action>
 </object>

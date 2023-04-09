@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
+from DateTime import DateTime
 from collections import OrderedDict
 from pkg_resources import resource_filename
-from senaite.impress.ajax import AjaxPublishView as AP
-from senaite.impress.interfaces import IMultiReportView
-from senaite.impress.interfaces import IReportWrapper
-from senaite.impress.decorators import timeit
 from zope.component import getMultiAdapter
 from zope.component import queryMultiAdapter
-from DateTime import DateTime
-from senaite.impress import logger
-from senaite.impress.interfaces import IPdfReportStorage
+
 from bika.lims import api
+from senaite.batch.invoices import _
+from senaite.batch.invoices import logger
+from senaite.impress.ajax import AjaxPublishView as AP
+from senaite.impress.interfaces import IMultiReportView
+from senaite.impress.interfaces import IPdfReportStorage
+from senaite.impress.interfaces import IReportWrapper
+from senaite.impress.decorators import timeit
 
 
 class AjaxPublishView(AP):
@@ -97,6 +99,45 @@ class AjaxPublishView(AP):
         # However, we can later easy provide with this mechanism reports for
         # any other content type as well.
         return self.request.form.get("type", "Batch")
+
+    def get_exit_url_for(self, reports, action="save"):
+        """Handle the response for the generated reports
+
+        This method determines based on the generated reports where the browser
+        should redirect the user and what status message to display.
+
+        :param reports: List of report objects
+        :returns: A single redirect URL
+        """
+
+        # view endpoint
+        endpoint = action == "email" and "email" or "batch_invoices"
+
+        # get the report uids
+        clients = []
+        report_uids = []
+        parent_titles = []
+
+        for report in reports:
+            parent = api.get_parent(report)
+            if hasattr(parent, "getClient"):
+                clients.append(parent.getClient())
+            report_uids.append(api.get_uid(report))
+            parent_titles.append(api.get_title(parent))
+
+        # generate status message
+        message = _("Generated an invoice for: {}".format(
+            ", ".join(parent_titles)))
+        self.add_status_message(message, level="info")
+
+        # generate exit URL
+        exit_url = self.context.absolute_url()
+        if clients:
+            exit_url = api.get_url(clients[0])
+
+        exit_url = "{}/{}?uids={}".format(exit_url, endpoint,
+                                          ",".join(report_uids))
+        return exit_url
 
     @timeit()
     def ajax_save_reports(self):
