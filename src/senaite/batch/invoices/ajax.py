@@ -213,5 +213,7 @@ class AjaxPublishView(AP):
             base_path, uids = url.split("?uids=")
             path_uids = groups.get(base_path, "")
             groups[base_path] = ",".join(filter(None, [path_uids, uids]))
+        if action == "save":
+            action = "batch_invoices"
         exit_url = "{}/{}?uids={}".format(api.get_url(self.context), action, uids)
         return exit_url
