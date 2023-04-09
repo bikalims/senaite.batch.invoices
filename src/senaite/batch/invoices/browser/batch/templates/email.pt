@@ -55,6 +55,7 @@
           <div class="form-group">
             <label i18n:translate="" for="recipients">Recipients</label>
             <tal:emails repeat="recipient view/recipients_data">
+            <div class="col-12">
               <span tal:define="name recipient/name;
                                 email recipient/email;
                                 address recipient/address;
@@ -76,6 +77,7 @@
                   tal:attributes="title email;"
                   tal:content="name|email" />
               </span>
+            </div>
             </tal:emails>
           </div>
 

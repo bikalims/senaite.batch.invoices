@@ -93,7 +93,7 @@ class EmailView(EV):
                 client = self.batches[0].getClient()
                 client_billing_email = client.Schema()['BillingEmailAddress'].getAccessor(client)()
                 if client_billing_email:
-                    name = "{} Client Billing EmailAddress".format(client_billing_email)
+                    name = "Client Billing email address <{}>".format(client_billing_email)
                     address = mailapi.to_email_address(client_billing_email, name=name)
                     record = {
                         "name": name,
@@ -106,7 +106,7 @@ class EmailView(EV):
             if copy == "LabAccEAddr":
                 lab_billing_email = self.laboratory.Schema()['BillingEmailAddress'].getAccessor(self.laboratory)()
                 if lab_billing_email:
-                    name = "Laboratory Billing EmailAddress"
+                    name = "Laboratory Billing email address <{}>".format(lab_billing_email)
                     address = mailapi.to_email_address(lab_billing_email, name=name)
                     record = {
                         "name": name,
