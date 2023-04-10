@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from AccessControl import ClassSecurityInfo
+from plone.autoform import directives as form
 from plone.dexterity.content import Item
 from plone.supermodel import model
 from plone.namedfile.field import NamedBlobFile
@@ -56,6 +57,8 @@ class IRecipientSchema(Interface):
 class IBatchInvoiceSchema(model.Schema):
     invoice_pdf = NamedBlobFile(title=_(u"Batch Invoice PDF"), required=False)
     invoice_html = schema.TextLine(title=_(u"Batch Invoice HTML"), required=False,)
+    form.mode(invoice_html='hidden')
+
     client = UIDReferenceField(
         title=_(u"Client"),
         allowed_types=("Client",),
@@ -68,6 +71,8 @@ class IBatchInvoiceSchema(model.Schema):
         multi_valued=False,
         required=False,
     )
+    form.mode(batch='hidden')
+
     containedbatcheinvoices = UIDReferenceField(
         title=_(u"Batches"),
         allowed_types=("Batch",),
@@ -81,12 +86,14 @@ class IBatchInvoiceSchema(model.Schema):
         default=[],
         required=False,
     )
+    form.mode(metadata='hidden')
     sendlog = DataGridField(
         title=_("SendLog"),
         value_type=DataGridRow(title=u"Table", schema=ISendLogSchema),
         default=[],
         required=False,
     )
+    form.mode(sendlog='hidden')
     recipients = DataGridField(
         title=_("Recipients"),
         value_type=DataGridRow(title=u"Table", schema=IRecipientSchema),
