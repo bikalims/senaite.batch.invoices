@@ -19,8 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 
-from bika.lims.api.security import check_permission
-
 from zope.component import adapts
 from zope.interface import implements
 
@@ -33,7 +31,7 @@ from senaite.batch.invoices import _
 from senaite.batch.invoices import is_installed
 
 
-class BatchFolderViewAdapter(object):
+class BatchesListingViewAdapter(object):
     adapts(IListingView)
     implements(IListingViewAdapter)
 
@@ -41,32 +39,28 @@ class BatchFolderViewAdapter(object):
         self.listing = listing
         self.context = context
 
-    def update(self):
-        """Before template render hook
-        """
-        import pdb; pdb.set_trace()
+    def before_render(self):
+        if not is_installed():
+            return
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        can_view = True  # check_permission(ModifyPortalContent, self.context)
-        if is_installed and finacials and can_view:
+        if is_installed and finacials:
             invoiced = {"id": "invoiced",
                         "title": get_image("invoiced.png",
                                            title=t(_("Invoiced"))),
-                        "columns": self.columns.keys(),
+                        "columns": self.listing.columns.keys(),
                         "contentFilter": {"batch_invoiced_state": "invoiced"}
                         }
             to_be_invoiced = {"id": "uninvoiced",
                               "title": get_image("uninvoiced.png",
                                                  title=t(_("To be invoiced"))),
-                              "columns": self.columns.keys(),
+                              "columns": self.listing.columns.keys(),
                               "contentFilter": {"batch_invoiced_state": "uninvoiced"}
                               }
             self.listing.review_states.append(invoiced)
             self.listing.review_states.append(to_be_invoiced)
 
-
     def folder_item(self, obj, item, index):
         if not is_installed():
             return item
-        super(BatchFolderViewAdapter, self).update(obj, item, index)
         return item
