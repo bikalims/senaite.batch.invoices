@@ -7,21 +7,24 @@ from bika.lims import api
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
-from senaite.core.setuphandlers import add_dexterity_items, setup_other_catalogs
-from senaite.core.catalog import SAMPLE_CATALOG, SENAITE_CATALOG
+from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_other_catalogs
+from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 
 # Tuples of (catalog, index_name, index_attribute, index_type)
 INDEXES = [
     (SAMPLE_CATALOG, "invoiced_state", "", "FieldIndex"),
     (SENAITE_CATALOG, "batch_invoiced_state", "", "FieldIndex"),
-    ("portal_catalog", "client", "", "FieldIndex"),
+    (CLIENT_CATALOG, "client", "", "FieldIndex"),
 ]
 
 # Tuples of (catalog, column_name)
 COLUMNS = [
     (SAMPLE_CATALOG, "invoiced_state"),
     (SENAITE_CATALOG, "batch_invoiced_state"),
-    ("portal_catalog", "client"),
+    (CLIENT_CATALOG, "client"),
 ]
 
 ID_FORMATTING = [

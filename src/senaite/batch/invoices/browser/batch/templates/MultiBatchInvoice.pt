@@ -198,8 +198,12 @@
         <div class="clearfix"></div>
         <tal:batches>
                 <tal:analyses tal:repeat="model collection">
-                   <span tal:content="model/ClientBatchID"></span><span tal:condition="model/ClientBatchID">,</span>
-                   <span tal:content="model/getId"></span><span tal:condition="model/getId">,</span>
+                   <span tal:condition="model/ClientBatchID"
+                         tal:content="string:${model/ClientBatchID},">
+                   </span>
+                   <span tal:condition="model/getId"
+                         tal:content="string:${model/getId},">
+                   </span>
                    <a tal:content="model/title" tal:attributes="href model/absolute_url"></a>
                    <br />
                 </tal:analyses>

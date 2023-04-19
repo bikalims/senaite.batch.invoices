@@ -44,7 +44,7 @@ class BatchesListingViewAdapter(object):
             return
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        if is_installed and finacials:
+        if finacials:
             invoiced = {"id": "invoiced",
                         "title": get_image("invoiced.png",
                                            title=t(_("Invoiced"))),

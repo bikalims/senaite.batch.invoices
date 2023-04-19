@@ -4,15 +4,14 @@ import six
 from collections import OrderedDict
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
-from zope.interface import alsoProvides
 
 from bika.lims import api
-from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.workflow import ActionHandlerPool
 
 from senaite.batch.invoices import _
 from senaite.batch.invoices import logger
+from senaite.batch.invoices import is_installed
 from senaite.batch.invoices.utils.analysisrequest import \
     create_analysisrequest as crar
 
@@ -187,7 +186,10 @@ def ajax_submit(self):
 
     actions.resume()
 
-    batch_msg = transition_batch(self.context)
+    if not is_installed:
+        batch_msg = ""
+    else:
+        batch_msg = transition_batch(self.context)
     level = "info"
     if len(ARs) == 0:
         message = _('No Samples could be created.')

@@ -25,7 +25,7 @@ class SamplesListingViewAdapter(object):
             return
         setup = api.get_setup()
         finacials = setup.Schema()['Financials'].getAccessor(setup)()
-        if is_installed and finacials:
+        if finacials:
             invoice_allowed_states = ("sample_due", "sample_received")
             invoiced = {"id": "invoiced",
                         "title": get_image("invoiced.png",

@@ -70,6 +70,7 @@ class MultiReportView(MRV):
                  "sort_order": "descending",
                  }
         brains = api.search(query, "portal_catalog")
+        coa_num = u"Inv-{:05d}".format(1)
         if len(brains):
             coa = brains[0]
             title_split = coa.getId.split("-")
@@ -77,7 +78,7 @@ class MultiReportView(MRV):
                 string = title_split[0]
                 num = int(title_split[-1])
                 num += 1
-                coa_num = u"{}-{:04d}".format(string, num)
+                coa_num = u"{}-{:05d}".format(string, num)
             else:
                 coa_num = "Invalid Number, please check IDServer"
         return coa_num
