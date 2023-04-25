@@ -67,6 +67,14 @@ class EmailView(EV):
                 batches.append(batch)
         return batches
 
+
+    @property
+    def reports_data(self):
+        """Returns a list of report data dictionaries
+        """
+        reports = [self.reports[0]] # only get one report as per LIMS-323
+        return map(self.get_report_data, reports)
+
     @property
     def exit_url(self):
         """Exit URL for redirect
