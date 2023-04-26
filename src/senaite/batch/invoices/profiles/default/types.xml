@@ -4,5 +4,6 @@
  <object name="BatchInvoice" meta_type="Dexterity FTI"/>
  <object name="BatchInvoices" meta_type="Dexterity FTI"/>
  <!-- -*- extra stuff goes here -*- -->
+ <object name="Batch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
 </object>

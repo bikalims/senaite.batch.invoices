@@ -28,10 +28,8 @@ class PdfReportStorageAdapter(PRSA):
         # get the contained objects
         objs = map(api.get_object_by_uid, uids)
 
-        # # handle primary object storage
-        # if not self.store_multireports_individually():
-        #     # reduce the list to the primary object only
-        #     objs = [self.get_primary_report(objs)]
+        # reduce the list to the primary object only
+        objs = [self.get_primary_report(objs)]
 
         # generate the reports
         reports = []

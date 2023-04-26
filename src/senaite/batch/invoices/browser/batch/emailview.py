@@ -54,26 +54,9 @@ class EmailView(EV):
             uids = uids.split(",")
         uids = filter(api.is_uid, uids)
         unique_uids = OrderedDict().fromkeys(uids).keys()
-        batch_invoices = map(self.get_object_by_uid, unique_uids)
-        batches = []
-        for ba in batch_invoices:
-            batch = api.get_object_by_uid(ba.batch)
-            if not IBatch.providedBy(batch):
-                continue
-            if not self.store_multireports_individually():
-                batches.extend(map(self.get_object_by_uid, ba.containedbatcheinvoices))
-                break
-            else:
-                batches.append(batch)
+        b_inv = map(self.get_object_by_uid, unique_uids)[0]  # 1 report
+        batches = map(self.get_object_by_uid, b_inv.containedbatcheinvoices)
         return batches
-
-
-    @property
-    def reports_data(self):
-        """Returns a list of report data dictionaries
-        """
-        reports = [self.reports[0]] # only get one report as per LIMS-323
-        return map(self.get_report_data, reports)
 
     @property
     def exit_url(self):
