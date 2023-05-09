@@ -186,7 +186,7 @@ def ajax_submit(self):
 
     actions.resume()
 
-    if not is_installed:
+    if not is_installed():
         batch_msg = ""
     else:
         batch_msg = transition_batch(self.context)

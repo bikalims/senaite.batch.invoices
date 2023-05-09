@@ -30,7 +30,7 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     ar = crar(client, request, values, analyses=None,
               results_ranges=None, prices=None)
-    if not is_installed:
+    if not is_installed():
         return ar
 
     setup = api.get_setup()
