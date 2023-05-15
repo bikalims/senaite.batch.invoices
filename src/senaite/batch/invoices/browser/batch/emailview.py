@@ -221,9 +221,9 @@ class EmailView(EV):
         try:
             # Manually update the view on the database to avoid conflict errors
             batch.getClient()._p_jar.sync()
+            self.do_action_to_samples(batch)
             batch.batch_invoiced_state = "invoiced"
             batch.reindexObject()
-            self.do_action_to_samples(batch)
             # Commit the changes
             transaction.commit()
         except WorkflowException as e:
