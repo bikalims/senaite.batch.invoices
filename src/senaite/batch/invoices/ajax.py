@@ -124,10 +124,14 @@ class AjaxPublishView(AP):
                 clients.append(parent.getClient())
             report_uids.append(api.get_uid(report))
             parent_titles.append(parent.getId())
+            batches = report.containedbatcheinvoices
+            for batch in batches:
+                obj = api.get_object_by_uid(batch)
+                parent_titles.append(obj.getId())
 
         # generate status message
         message = _("Generated an invoice for: {}".format(
-            ", ".join(parent_titles)))
+            ", ".join(list(set(parent_titles)))))
         self.add_status_message(message, level="info")
 
         # generate exit URL
