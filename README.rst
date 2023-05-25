@@ -78,7 +78,7 @@ and then running ``bin/buildout``
 Contribute
 ----------
 
-Issue Tracker: https://jira.bikalabs.com/
+Issue Tracker: https://bika.atlassian.net/jira/dashboards/10000
 
 Documentation: https://www.bikalims.org/manual/17-billing
 
