@@ -2,7 +2,7 @@
 """Init and utils."""
 import logging
 from zope.i18nmessageid import MessageFactory
-from senaite.api import get_request
+from bika.lims.api import get_request
 from senaite.batch.invoices.interfaces import ISenaiteBatchInvoicesLayer
 
 PRODUCT_NAME = "senaite.batch.invoices"
