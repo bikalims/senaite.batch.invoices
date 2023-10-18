@@ -1,0 +1,8 @@
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.batch.invoices">
+  <adapter name="invoiced_state" factory=".sample.invoiced_state"/>
+  <adapter name="batch_invoiced_state" factory=".batch.batch_invoiced_state"/>
+  <adapter name="client" factory=".batchinvoice.client"/>
+</configure>

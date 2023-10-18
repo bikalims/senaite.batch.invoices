@@ -9,6 +9,8 @@
 
   <include package=".batch" />
   <include package=".workflow"/>
+  <include package=".controlpanel" />
+  <include package=".listingview" />
 
   <browser:jbot
       directory="overrides"

@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import collections
+from Products.CMFPlone.utils import safe_unicode
+from ZODB.POSException import POSKeyError
+from plone.memoize import view
+from zope.i18n.locales import locales
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
 from bika.lims.utils import to_utf8
-from Products.CMFPlone.utils import safe_unicode
-from ZODB.POSException import POSKeyError
+from senaite.app.listing import ListingView
 
 
-class ReportsListingView(BikaListingView):
+class ReportsListingView(ListingView):
     """Listing view of all generated reports
     """
 
@@ -28,13 +30,13 @@ class ReportsListingView(BikaListingView):
             "sort_on": "created",
             "sort_order": "descending",
         }
-
         self.form_id = "batchinvoice_listing"
-        self.title = _("Batch Invoices")
 
+        t = self.context.translate
+        self.title = t(_("Batch Invoices"))
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/report_big.png"
+            "++resource++bika.lims.images/invoiced.png"
         )
         self.context_actions = {}
 
@@ -81,24 +83,40 @@ class ReportsListingView(BikaListingView):
         }
 
         self.columns = collections.OrderedDict((
-            ("Info", {
-                "title": "",
+            ("BatchInvoiceID", {
+                "title": _("Batch Invoice ID"),
+                "index": "sortable_title",
                 "toggle": True},),
-            ("BatchInvoice", {
-                "title": _("Batch Invoice"),
+            ("Batches", {
+                "title": _("Batches"),
+                "index": "sortable_title",
+                "toggle": True},),
+            ("Client", {
+                "title": _("Client"),
                 "index": "sortable_title"},),
+            ("Batches", {
+                "title": _("Batches"),
+                "index": "sortable_title",
+                "toggle": False},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
                 "title": _("Download PDF")},),
             ("FileSize", {
                 "title": _("Filesize")},),
+            ("Subtotal", {
+                "title": _("Subtotal")},),
+            ("VAT", {
+                "title": _("VAT")},),
+            ("Total", {
+                "title": _("Total")},),
             ("Date", {
-                "title": _("Published Date")},),
+                "title": _("Invoice Date")},),
             ("PublishedBy", {
-                "title": _("Published By")},),
+                "title": _("Invoiced By")},),
             ("Recipients", {
-                "title": _("Recipients")},),
+                "title": _("Recipients"),
+                "toggle": False},),
         ))
 
         self.review_states = [
@@ -119,7 +137,7 @@ class ReportsListingView(BikaListingView):
         """Compute the filesize of the PDF
         """
         try:
-            filesize = float(pdf.get_size())
+            filesize = float(pdf.getSize()) if pdf else 0
             return filesize / 1024
         except (POSKeyError, TypeError):
             return 0
@@ -133,44 +151,76 @@ class ReportsListingView(BikaListingView):
         """Get the report PDF
         """
         try:
-            return obj.batch_invoice_pdf # obj.getPdf()
+            return obj.invoice_pdf  # obj.getPdf()
         except (POSKeyError, TypeError):
             return None
+
+    @view.memoize
+    def get_currency_symbol(self):
+        """Get the currency Symbol
+        """
+        locale = locales.getLocale("en")
+        setup = api.get_setup()
+        currency = setup.getCurrency()
+        return locale.numbers.currencies[currency].symbol
+
+    @view.memoize
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
+
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and currency
+        """
+        # ensure we have a float
+        price = api.to_float(price, default=0.0)
+        dm = self.get_decimal_mark()
+        cur = self.get_currency_symbol()
+        price = "%s %.2f" % (cur, price)
+        return price.replace(".", dm)
 
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
 
         obj = api.get_object(obj)
-        # ar = obj.getAnalysisRequest()
-        uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(obj)
         status_title = review_state.capitalize().replace("_", " ")
 
-        # Report Info Popup
-        # see: bika.lims.site.coffee for the attached event handler
-        item["Info"] = get_link(
-            "analysisreport_info?report_uid={}".format(uid),
-            value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
-
-        item["replace"]["BatchInvoice"] = get_link(
-            obj.absolute_url(), value=obj.Title()
+        item["replace"]["BatchInvoiceID"] = get_link(
+            obj.absolute_url(), value=obj.id
+        )
+        client = obj.getClient()
+        item["replace"]["Client"] = get_link(
+            client.absolute_url(), value=client.Title()
         )
 
-        # pdf = self.get_pdf(obj)
-        # filesize = self.get_filesize(pdf)
-        # if filesize > 0:
-        #     url = "{}/download_pdf".format(obj.absolute_url())
-        #     item["replace"]["PDF"] = get_link(
-        #         url, value="PDF", target="_blank")
+        if obj.containedbatcheinvoices is not None:
+            batch_links = []
+            for batch in obj.containedbatcheinvoices:
+                batch = api.get_object_by_uid(batch)
+                batch_link = get_link(batch.absolute_url(), value=batch.id)
+                batch_links.append(batch_link)
+            item["replace"]["Batches"] = ", ".join(batch_links)
+
+        pdf = self.get_pdf(obj)
+        filesize = self.get_filesize(pdf)
+        if filesize > 0:
+            url = "{}/@@download/invoice_pdf".format(obj.absolute_url())
+            item["replace"]["PDF"] = get_link(
+                url, value="PDF", target="_blank")
 
         item["State"] = _BMF(status_title)
         item["state_class"] = "state-{}".format(review_state)
-        # item["FileSize"] = "{:.2f} Kb".format(filesize)
+        item["FileSize"] = "{:.2f} Kb".format(filesize)
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
+        item["Subtotal"] = self.format_price(obj.subtotal)
+        item["VAT"] = self.format_price(obj.vat)
+        item["Total"] = self.format_price(obj.total)
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.

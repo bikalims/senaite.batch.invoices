@@ -4,5 +4,12 @@
     i18n:domain="senaite.batch.invoices">
 
 <!-- -*- extra stuff goes here -*- -->
+  <!-- Types to display in navigation -->
+  <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types" purge="False">
+    <value purge="False">
+      <!-- Work Items -->
+      <element>BatchInvoices</element>
+    </value>
+  </record>
 
 </registry>

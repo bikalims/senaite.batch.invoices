@@ -6,7 +6,7 @@
 
  <property name="title" i18n:translate="">BatchInvoice</property>
  <property name="description" i18n:translate="">Batch Invoice</property>
- <property name="icon_expr">string:${portal_url}/document_icon.png</property>
+ <property name="icon_expr">string:${portal_url}/invoiced</property>
  <property name="factory">BatchInvoice</property>
  <property
     name="add_view_expr">string:${folder_url}/++add++BatchInvoice</property>
@@ -24,11 +24,8 @@
 
  <property name="default_view_fallback">False</property>
  <property name="add_permission">cmf.AddPortalContent</property>
+ <property name="schema">senaite.batch.invoices.content.batchinvoice.IBatchInvoiceSchema</property>
  <property name="klass">senaite.batch.invoices.content.batchinvoice.BatchInvoice</property>
- <property
-    name="schema">senaite.batch.invoices.content.batchinvoice.IBatchInvoice</property>
- <property name="model_source"></property>
- <property name="model_file"></property>
 
  <property name="behaviors">
   <element value="bika.lims.interfaces.IAutoGenerateID"/>
@@ -44,11 +41,11 @@
  <action title="View" action_id="view" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}"
     visible="True">
-  <permission value="View"/>
+  <permission value="Manage Users"/>
  </action>
  <action title="Edit" action_id="edit" category="object" condition_expr=""
     icon_expr="" link_target="" url_expr="string:${object_url}/edit"
-    visible="True">
-  <permission value="Modify portal content"/>
+    visible="False">
+  <permission value="Manage Users"/>
  </action>
 </object>

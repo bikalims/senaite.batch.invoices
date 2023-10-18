@@ -15,15 +15,29 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2023 by it's authors.
+# Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .batchfolder import BatchFolderContentsView
+from zope.lifecycleevent import modified
+
+from bika.lims import api
+from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from senaite.batch.invoices import is_installed
 
 
-class ClientBatchesView(BatchFolderContentsView):
+def create_analysisrequest(client, request, values, analyses=None,
+                           results_ranges=None, prices=None):
 
-    def __init__(self, context, request):
-        super(ClientBatchesView, self).__init__(context, request)
-        self.view_url = self.context.absolute_url() + "/batches"
-        self.contentFilter['getClientUID'] = self.context.UID()
+    ar = crar(client, request, values, analyses=None,
+              results_ranges=None, prices=None)
+    if not is_installed():
+        return ar
+
+    setup = api.get_setup()
+    schema = setup.Schema()
+    financials = schema['Financials'].getAccessor(setup)()
+    if financials:
+        ar.invoiced_state = "uninvoiced"
+        modified(ar)
+
+    return ar

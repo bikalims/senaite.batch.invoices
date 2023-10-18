@@ -1,9 +1,31 @@
 # -*- coding: utf-8 -*-
+
 from Products.CMFPlone.interfaces import INonInstallable
 from zope.interface import implementer
+
+from bika.lims import api
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
+from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_other_catalogs
+from senaite.core.catalog import CLIENT_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
+
+# Tuples of (catalog, index_name, index_attribute, index_type)
+INDEXES = [
+    (SAMPLE_CATALOG, "invoiced_state", "", "FieldIndex"),
+    (SENAITE_CATALOG, "batch_invoiced_state", "", "FieldIndex"),
+    (CLIENT_CATALOG, "client", "", "FieldIndex"),
+]
+
+# Tuples of (catalog, column_name)
+COLUMNS = [
+    (SAMPLE_CATALOG, "invoiced_state"),
+    (SENAITE_CATALOG, "batch_invoiced_state"),
+    (CLIENT_CATALOG, "client"),
+]
 
 ID_FORMATTING = [
     # An array of dicts. Each dict represents an ID formatting configuration
@@ -33,13 +55,21 @@ def post_install(portal_setup):
     context = portal_setup._getImportContext(PROFILE_ID)
     portal = context.getSite()  # noqa
 
+    add_dexterity_setup_items(portal)
+    setup_catalogs(portal)
     setup_id_formatting(portal)
+    allow_batch_invoices_on_batch(portal)
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
 def uninstall(context):
     """Uninstall script"""
     # Do something at the end of the uninstallation of this package.
+
+
+def setup_catalogs(portal):
+    """Setup catalogs"""
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
 
 
 def setup_id_formatting(portal, format=None):
@@ -75,3 +105,63 @@ def setup_id_formatting(portal, format=None):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def add_dexterity_setup_items(portal):
+    """Adds the Dexterity Container in the Setup Folder
+
+    N.B.: We do this in code, because adding this as Generic Setup Profile in
+          `profiles/default/structure` flushes the contents on every import.
+    """
+    # Tuples of ID, Title, FTI
+    items = [
+        ("batch_invoices", "Batch Invoices", "BatchInvoices"),
+    ]
+    # ##############ADD ITEMS IN PORTAL NAVIGATION#############
+    add_dexterity_items(portal, items)
+    # Move BatchInvoices after Methods nav item
+    position = portal.getObjectPosition("methods")
+    portal.moveObjectToPosition("batch_invoices", position + 1)
+    ###########################################################
+
+    # Reindex order
+    portal.plone_utils.reindexOnReorder(portal)
+
+
+def setup_handler(context):
+    """Generic setup handler"""
+    if context.readDataFile("{}.txt".format(PRODUCT_NAME)) is None:
+        return
+
+    logger.info("{} setup handler [BEGIN]".format(PRODUCT_NAME.upper()))
+    # portal = context.getSite()
+
+    logger.info("{} setup handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
+def allow_batch_invoices_on_batch(portal):
+    pt = api.get_tool("portal_types", context=portal)
+    fti = pt.get("Batch")
+
+    # add to allowed types
+    allowed_types = fti.allowed_content_types
+    allowed_types = list(allowed_types)
+    if "BatchInvoice" not in allowed_types:
+        allowed_types.append("BatchInvoice")
+        fti.allowed_content_types = allowed_types
+        logger.info("Added BatchInvoice on allowed types for Batches")
+
+
+def remove_batch_invoice_action(portal):
+    pt = api.get_tool("portal_types", context=portal)
+    fti = pt.get("Batch")
+
+    # removed location listing
+    actions = fti.listActions()
+    for idx, action in enumerate(actions):
+        if action.id == "invoice":
+            fti.deleteActions(
+                [
+                    idx,
+                ]
+            )

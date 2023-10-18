@@ -2,7 +2,15 @@
   i18n:domain="senaite.impress"
   define="collection view/collection;
           laboratory view/laboratory;
-          footer python:view.get_footer_text();
+          invoice_data python:view.get_invoice_lines(collection);
+          batch_invoice_number python:view.get_batch_invoice_number(collection);
+          batch_data invoice_data/batch_data;
+          total_VAT invoice_data/total_VAT;
+          total_amount invoice_data/total_amount;
+          b_keys python: batch_data.keys();
+          styles python:view.get_coa_styles();
+          disclamer python:view.get_footer_text();
+          footer python:False;
           report_options python:options.get('report_options', {});
           show_remarks python:bool(report_options.get('show_remarks', False));
           page_width options/page_width|nothing;
@@ -30,8 +38,8 @@
      .report .colon-after:after { content: ":"; }
      .report address { margin: 1rem 0; }
      .report table.noborder td, .report table.noborder th { border: none; }
-     .report table.nopadding td { padding: 0; }
-     .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report table.nopadding td { padding: 0; margin:0 }
+     .report table td.label {font-weight: bold; }
      .report table { border-color: black; }
      .report table td, .report table th { border: 1px solid black;}
      .report table thead tr th {}
@@ -94,8 +102,8 @@
     <div class="row section-header no-gutters">
       <!-- Header Table -->
       <div class="w-100 mb-2">
-              <img class="logo"
-                   tal:attributes="src string:++plone++senaite.core.static/images/senaite.svg"/>
+            <img class="logo text-right"
+                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
       </div>
     </div>
   </tal:render>
@@ -104,90 +112,105 @@
   <!-- INFO -->
   <tal:render condition="python:True">
   <div class="row section-info no-gutters">
-    <div class="w-100">
-      <!-- Client Info -->
-            <!-- Laboratory Info -->
-            <address class="laboratory-address">
-              <div class="lab-title font-weight-bold">
-                <div tal:replace="laboratory/title|nothing"/>
-              </div>
-              <div class="lab-address">
-                <div class="lab-street">
-                  <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
-                </div>
-                <span class="lab-zip">
-                  <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
-                </span>
-                <span class="lab-city">
-                  <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
-                </span>
-                <div class="lab-country">
-                  <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
-                </div>
-              </div>
-              <div class="lab-tel">
-                Tel: <span tal:content="laboratory/Phone">Tel:</span>
-              </div>
-              <div class="lab-email">
-                Email: <span tal:content="laboratory/EmailAddress">Email</span>
-              </div>
-            </address>
+    <div class="w-50 col-6">
+      <address class="laboratory-address">
+        <div class="lab-title font-weight-bold">
+          <div tal:replace="laboratory/title|nothing"/>
+        </div>
+        <div class="lab-address">
+          <div class="lab-street">
+            <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
+          </div>
+          <span class="lab-zip">
+            <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
+          </span>
+          <span class="lab-city">
+            <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
+          </span>
+          <div class="lab-country">
+            <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
+          </div>
+        </div>
+        <div class="lab-tel">
+          Tel: <span tal:content="laboratory/Phone">Tel:</span>
+        </div>
+        <div class="lab-email">
+          Email: <span tal:content="laboratory/EmailAddress">Email</span>
+        </div>
+        <div class="lab-email">
+          NIF: <span tal:content="laboratory/TaxNumber">TAX #</span>
+        </div>
+      </address>
+    </div>
+    <div class="w-50 col-6">
 
-          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-            <address class="client-address" condition="client">
-              <div class="client-street">
-                <div>Client name: <span tal:replace="client/Name|nothing"></span></div>
-              </div>
-              <div class="client-street">
-                <div>Client address: <span tal:replace="client/PostalAddress/address|nothing"></span></div>
-              </div>
-              <span class="client-zip">
-                <div tal:replace="client/PostalAddress/zip|nothing"></div>
-              </span>
-              <span class="client-city">
-                <div tal:replace="client/PostalAddress/city|nothing"></div>
-              </span>
-              <div class="client-country">
-                <div tal:replace="client/PostalAddress/country|nothing"></div>
-              </div>
-              <div class="client-street">
-                <div>Client telephone #: <span tal:replace="client/Phone|nothing"></span></div>
-              </div>
-              <div class="client-street">
-                <div>Client email address: <span tal:replace="client/EmailAddress|nothing"></span></div>
-              </div>
-            </address>
-          </tal:by_client>
+      <tal:by_client define="client python:view.get_client( collection)">
+        <address class="client-address" condition="client">
+          <div class="client-street">
+            <div tal:content="client/Name|nothing"></div>
+          </div>
+          <div class="client-street">
+            <div tal:replace="client/PostalAddress/address|nothing"></div>
+          </div>
+          <span class="client-zip">
+            <div tal:replace="client/PostalAddress/zip|nothing"></div>
+          </span>
+          <span class="client-city">
+            <div tal:replace="client/PostalAddress/city|nothing"></div>
+          </span>
+          <div class="client-country">
+            <div tal:replace="client/PostalAddress/country|nothing"></div>
+          </div>
+          <div class="client-street">
+            <div>Tel: <span  tal:replace="client/Phone|nothing"></span></div>
+          </div>
+          <div class="client-street">
+            <div tal:replace="client/EmailAddress|nothing"></div>
+          </div>
+        </address>
+      </tal:by_client>
     </div>
     <!-- Clear Floats
          https://github.com/Kozea/WeasyPrint/issues/36
     -->
     <div class="clearfix"></div>
-  <div class="row section-info no-gutters">
-    <div class="w-100" style="text-align: center">
-        <!--
-        <div>Tax Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></div>
-        -->
+    <div class="row section-info no-gutters">
+      <div class="w-100" style="text-align: center">
+        <h2>Proforma Invoice <span name="batch_invoice_number" tal:content="batch_invoice_number"></span></h2>
+      </div>
     </div>
+    <div class="clearfix"></div>
+    <div class="row section-info no-gutters">
+      <div class="w-100" style="text-align: left; padding-bottom:10px">
+        <div tal:content="invoice_data/today"></div>
+      </div>
     </div>
   </div>
-    <div class="clearfix"></div>
   </tal:render>
 
 
   <!-- SUMMARY -->
+  <div class="clearfix"></div>
   <tal:render condition="python:True"
               define="reporter python:view.current_user;">
     <div class="row section-summary no-gutters">
-        <!--
-        <div>Date <span tal:content="batch_data/date"></span></div>
+        <div>Invoice for the analysis of samples in following Batches</div>
         <div class="clearfix"></div>
-        <div>Batch: <span tal:content="model/ClientBatchID"></span>,
-          <a tal:content="model/getId" tal:attributes="href model/absolute_url"></a>
-        </div>
-        <div><span tal:content="model/Description"></span></div>
-        -->
+        <tal:batches>
+                <tal:analyses tal:repeat="model collection">
+                   <span tal:condition="model/ClientBatchID"
+                         tal:content="string:${model/ClientBatchID},">
+                   </span>
+                   <span tal:condition="model/getId"
+                         tal:content="string:${model/getId},">
+                   </span>
+                   <a tal:content="model/title" tal:attributes="href model/absolute_url"></a>
+                   <br />
+                </tal:analyses>
+        </tal:batches>
+        <h3></h3>
     </div>
+  <div class="clearfix"></div>
   </tal:render>
 
   <!-- BATCH INVOICE -->
@@ -196,159 +219,125 @@
       <div class="w-100">
         <!-- Point of Capture -->
         <tal:poc>
-
             <!-- Analysis in POC and Category -->
             <table class="table table-sm table-condensed">
               <colgroup>
                 <!-- Counter -->
                 <col style="width: 5%;">
-                <!-- Client SID -->
-                <col style="width: 15%;">
-                <!-- Sample ID -->
-                <col style="width: 15%;">
-                <!-- Sample Type -->
-                <col style="width: 15%;">
-                <!-- Date Received -->
-                <col style="width: 20%">
+                <!-- Qty -->
+                <col style="width: 10%;">
                 <!-- Description -->
+                <col style="width: 45%">
+                <!-- Price -->
                 <col style="width: 20%">
                 <!-- Amount -->
+                <col style="width: 20%">
               </colgroup>
               <thead>
                 <tr class="small">
-                  <th>
-                  &nbsp;
-                  </th>
                   <th class="">
-                    <span class="font-weight-bold" >Client SID</span>
+                    <span class="font-weight-bold" >Item</span>
                   </th>
-                  <th class="text-right result">
-                    <span i18n:translate="">Sample ID</span>
+                  <th class="text-center result">
+                    <span i18n:translate="">Qty</span>
                   </th>
-                  <th class="text-left unit">
-                    <span i18n:translate="">Sample Type</span>
-                  </th>
-                  <th class="specs">
-                    <span i18n:translate="">Date Received</span>
-                  </th>
-                  <th class="outofrange">
+                  <th class="text-center">
                     <span i18n:translate="">Description</span>
                   </th>
-                  <th class="outofrange">
+                  <th class="text-center">
+                    <span i18n:translate="">Price</span>
+                  </th>
+                  <th class="text-center result">
                     <span i18n:translate="">Amount</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <!--
-                <tal:analyses tal:repeat="sample samples">
+                <tal:analyses tal:repeat="b_key b_keys">
                   <tr>
-                    <td class="sample">
-                        <span class="font-weight-normal" tal:content="repeat/sample/number"></span>
+                    <td class="text-center align-middle">
+                        <span tal:content="repeat/b_key/number"></span>
+                    </td>
+                    <td class="text-center align-middle">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['qty']"></span>
                     </td>
                     <td class="sample">
-                        <span class="font-weight-normal" tal:content="sample/ClientSID"></span>
+                        <span class="font-weight-normal" tal:content="b_key"></span>
                     </td>
                     <td class="text-right">
-                      <span class="result" tal:content="sample/SampleID">23</span>
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['f_price']"></span>
                     </td>
-                    <td class="text-left text-muted font-italic">
-                      <span class="units" tal:content="sample/SampleTypeTitle"></span>
-                    </td>
-                    <td class="specs">
-                      <span tal:content="sample/DateReceived">50 - 60</span>
-                    </td>
-                    <td class="text-center align-middle">
-                      <span tal:content="sample/Description">50 - 60</span>
-                    </td>
-                    <td class="text-center align-middle">
-                      <span tal:content="sample/Subtotal">50 - 60</span>
+                    <td class="text-right">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['amount']"></span>
                     </td>
                   </tr>
                 </tal:analyses>
-                -->
+
               </tbody>
               <tfoot>
-                <!--
                 <tr>
-                  <td colspan="6" style="text-align:right">
+                  <td colspan="4" style="text-align:right">
                     <div class="category_comments">
                       <span>Subtotal</span>
                     </div>
                   </td>
-                  <td colspan="1">
+                  <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="batch_data/total_subtotal">50 - 60</span>
+                      <span name="sub_total" tal:content="python:invoice_data['sub_total']" style="display:none">50 - 60</span>
+                      <span tal:content="python:invoice_data['f_sub_total']">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/VAT_label">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span  tal:content="invoice_data/f_total_VAT">50 - 60</span>
+                      <span name="total_VAT" tal:content="invoice_data/total_VAT" style="display:none">50 - 60</span>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="6" style="text-align:right">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/MemberDiscount">50 - 60</span>
-                    </div>
-                  </td>
-                  <td colspan="1">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/total_discount">50 - 60</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="6" style="text-align:right">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/VAT">50 - 60</span>
-                    </div>
-                  </td>
-                  <td colspan="1">
-                    <div class="category_comments">
-                      <span tal:content="batch_data/total_vat">50 - 60</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="6" style="text-align:right">
+                  <td colspan="4" style="text-align:right">
                     <div class="category_comments">
                       <span>Total</span>
                     </div>
                   </td>
-                  <td colspan="1">
+                  <td colspan="1" style="text-align:right">
                     <div class="category_comments">
-                      <span tal:content="batch_data/total_price">50 - 60</span>
+                      <span name="total_amount" tal:content="invoice_data/total_amount" style="display:none">50 - 60</span>
+                      <span tal:content="invoice_data/f_total_amount">50 - 60</span>
                     </div>
                   </td>
                 </tr>
-              -->
               </tfoot>
             </table>
         </tal:poc>
       </div>
     </div>
+  <div class="clearfix"></div>
   </tal:render>
   <tal:render condition="python:True">
     <div>
       <strong>Bank Account Details:</strong>
     </div>
     <div>
-      <span tal:content="laboratory/AccountType">Account Type</span>
-      <span tal:content="laboratory/AccountNumber">Account Number</span>
+      <span>BAI: AO06 0040 0000 8567 3998 1018 4</span>
+    <div class="clearfix"></div>
+      <span>BIC: AO06 0051 0000 5683 0487 1010 7</span>
+    <div class="clearfix"></div>
+      <span>BMA: AO06 0055 0000 0615 0443 1017 2</span>
+    <div class="clearfix"></div>
     </div>
-  </tal:render>
-  <tal:render condition="python:True">
-    <div class="row section-footer no-gutters"
-        style="background-image:url(++resource++bika.coa.images/bikalimslogo.png);background-repeat:repeat-x; width:100%;height:10px">
-      <!-- Header Table -->
-      .
+    <div class="row no-gutters" style="margin-top:10px">
+      <div tal:replace="structure disclamer"/>
     </div>
   </tal:render>
 
-  <!-- CUSTOM FOOTER -->
-  <tal:render condition="python:footer">
-    <div class="row section-footer no-gutters">
-      <!-- Footer Line -->
-      <div id="footer-line"></div>
-      <div tal:replace="structure footer"/>
-    </div>
-  </tal:render>
 
 </tal:report>

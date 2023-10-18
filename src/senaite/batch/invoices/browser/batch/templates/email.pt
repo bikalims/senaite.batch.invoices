@@ -2,7 +2,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="senaite.core">
+      i18n:domain="senaite.invoices.batch">
   <head>
     <metal:block fill-slot="javascript_head_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
@@ -21,7 +21,7 @@
 
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Send Analysis Reports via Email
+        Send Invoices via Email
       </h1>
     </metal:title>
     <metal:description fill-slot="content-description">
@@ -55,6 +55,7 @@
           <div class="form-group">
             <label i18n:translate="" for="recipients">Recipients</label>
             <tal:emails repeat="recipient view/recipients_data">
+            <div class="col-12">
               <span tal:define="name recipient/name;
                                 email recipient/email;
                                 address recipient/address;
@@ -76,34 +77,8 @@
                   tal:attributes="title email;"
                   tal:content="name|email" />
               </span>
+            </div>
             </tal:emails>
-          </div>
-
-          <div class="form-group">
-            <label i18n:translate="" for="responsibles">Responsibles</label>
-            <tal:responsibles repeat="recipient view/responsibles_data">
-              <span tal:define="name recipient/name;
-                                email recipient/email;
-                                address recipient/address;
-                                valid recipient/valid;
-                                valid_cls python:valid and 'valid' or 'invalid';"
-                    tal:attributes="class string:recipient ${valid_cls}">
-
-                <input type="hidden"
-                       tal:condition="email"
-                       tal:attributes="value string:${address};"
-                       name="responsibles:list"/>
-
-                <span tal:condition="not: email"
-                      class="text-danger discreet"
-                      title="No Email Address"
-                      i18n:attributes="title">⚠</span>
-
-                <span
-                  tal:attributes="title email;"
-                  tal:content="name|email" />
-              </span>
-            </tal:responsibles>
           </div>
 
           <div class="form-group">
@@ -146,7 +121,7 @@
                   <a href="#"
                      class="report-link"
                      target="_blank"
-                     tal:attributes="href string:${report/obj/absolute_url}/@@download/batch_invoice_pdf/${report/obj/batch_invoice_pdf/filename}">
+                    >
                     <img tal:attributes="alt report/filename;
                                          title string:${report/filename}(${report/filesize})"
                          src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />

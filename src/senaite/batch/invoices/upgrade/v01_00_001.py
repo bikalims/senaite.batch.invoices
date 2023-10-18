@@ -18,9 +18,14 @@
 # Copyright 2019-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from senaite.core.catalog import SAMPLE_CATALOG, SENAITE_CATALOG
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
+from senaite.batch.invoices.setuphandlers import add_dexterity_setup_items
+from senaite.batch.invoices.setuphandlers import setup_catalogs
+from senaite.batch.invoices.setuphandlers import remove_batch_invoice_action
 
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -44,8 +49,89 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
-    # Remove queue dispatcher utility, that is no longer used
     setup.runImportStepFromProfile(PROFILE_ID, "typeinfo")
+    setup.runImportStepFromProfile(PROFILE_ID, "workflow")
+    setup.runImportStepFromProfile(PROFILE_ID, "plone.app.registry")
+    add_dexterity_setup_items(portal)
+    setup_catalogs(portal)
+    remove_batch_invoices_on_setup(portal)
+    add_sample_invoiced_state(portal)
+    add_batch_invoiced_state(portal)
+    remove_batch_invoice_action(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
+
+
+def add_batch_invoiced_state(portal):
+    logger.info("Fix Batches...")
+    query = {
+        "portal_type": "Batch",
+    }
+    batches = api.search(query, SENAITE_CATALOG)
+    total = len(batches)
+    for num, batch in enumerate(batches):
+        if num and num % 100 == 0:
+            logger.info("Processed batches: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this batch
+        batch = api.get_object(batch)
+        # Reindex both the partition and parent(s)
+        if not hasattr(batch, 'batch_invoiced_state'):
+            batch.reindexObject()
+        else:
+            if not batch.batch_invoiced_state:
+                batch.reindexObject()
+
+
+def add_sample_invoiced_state(portal):
+    logger.info("Fix AnalysisRequests PrimaryAnalysisRequest ...")
+    query = {
+        "portal_type": "AnalysisRequest",
+    }
+    samples = api.search(query, SAMPLE_CATALOG)
+    total = len(samples)
+    for num, sample in enumerate(samples):
+        if num and num % 100 == 0:
+            logger.info("Processed samples: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this sample
+        sample = api.get_object(sample)
+        batch = sample.getBatch()
+        if not batch:
+            # Not in a batch Processed already
+            continue
+        # Reindex both the partition and parent(s)
+        if not hasattr(sample, 'invoiced_state'):
+            sample.reindexObject()
+        else:
+            if not sample.invoiced_state:
+                sample.reindexObject()
+
+
+def add_batchinvoiced_client_index(portal):
+    logger.info("Fix BatchInvoice client...")
+    query = {
+        "portal_type": "BatchInvoice",
+    }
+    batches = api.search(query, "portal_catalog")
+    total = len(batches)
+    for num, batch in enumerate(batches):
+        if num and num % 100 == 0:
+            logger.info("Processed batches: {}/{}".format(num, total))
+
+        # Extract the parent(s) from this batch
+        batch = api.get_object(batch)
+        # Reindex both the partition and parent(s)
+        if not hasattr(batch, 'client'):
+            batch.reindexObject()
+        else:
+            if not batch.client:
+                batch.reindexObject()
+
+
+def remove_batch_invoices_on_setup(portal):
+    setup = api.get_setup()
+    for s in setup.values():
+        if s.portal_type == "BatchInvoices":
+            setup._delObject(s.id)

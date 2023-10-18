@@ -18,6 +18,11 @@
   <include package=".content"/>
   <include package=".extenders"/>
   <include package=".upgrade"/>
+  <include package=".monkeys" />
+  <include package=".catalog" />
+  <!--
+      <include package=".workflow"/>
+  -->
 
   <include file="permissions.zcml" />
 
@@ -39,6 +44,15 @@
       post_handler=".setuphandlers.uninstall"
       />
 
+  <genericsetup:importStep
+    name="senaite.batch.invoices.setup_handler"
+    title="SENAITE BATCH INVOICES: Setup Handler"
+    description="Run various configuration actions"
+    handler=".setuphandlers.setup_handler">
+    <depends name="typeinfo"/>
+    <depends name="workflow"/>
+  </genericsetup:importStep>
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="senaite.batch.invoices-hiddenprofiles"
@@ -52,6 +66,15 @@
       name="Batch"
       factory="senaite.batch.invoices.batchinvoice.model.SuperModel"/>
 
+  <!-- PDF Report Storage Adapter -->
+  <adapter
+      for="bika.lims.interfaces.IBatchFolder
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".storage.PdfReportStorageAdapter"
+      provides="senaite.impress.interfaces.IPdfReportStorage"
+      permission="zope2.View"/>
+
+
   <!-- Needed for bika.lims.ManageBika permission -->
   <include package="bika.lims" file="permissions.zcml" />
 
@@ -62,7 +85,7 @@
   <browser:viewlet
       name="senaite.batch.invoices.static"
       manager=".interfaces.ISenaiteImpressBatchInvoiceHtmlHead"
-      class="senaite.impress.resources.ResourcesViewlet"
+      class="senaite.impress.browser.viewlets.resources.ResourcesViewlet"
       permission="zope2.View"
       template="static/resources.pt"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"
