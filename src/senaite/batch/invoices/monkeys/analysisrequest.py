@@ -7,7 +7,6 @@ from zope.component import getAdapters
 
 from bika.lims import api
 from bika.lims.interfaces import IAddSampleRecordsValidator
-from bika.lims.workflow import ActionHandlerPool
 
 from senaite.batch.invoices import _
 from senaite.batch.invoices import logger
@@ -151,15 +150,12 @@ def ajax_submit(self):
             return {"errors": validation_err}
 
     # Process Form
-    actions = ActionHandlerPool.get_instance()
-    actions.queue_pool()
     ARs = OrderedDict()
     for n, record in enumerate(valid_records):
         client_uid = record.get("Client")
         client = self.get_object_by_uid(client_uid)
 
         if not client:
-            actions.resume()
             raise RuntimeError("No client found")
 
         # Create the Analysis Request
@@ -170,7 +166,6 @@ def ajax_submit(self):
                 record,
             )
         except Exception as e:
-            actions.resume()
             errors["message"] = str(e)
             logger.error(e, exc_info=True)
             return {"errors": errors}
@@ -184,7 +179,6 @@ def ajax_submit(self):
         for attachment_record in ar_attachments:
             self.create_attachment(ar, attachment_record)
 
-    actions.resume()
 
     if not is_installed():
         batch_msg = ""
