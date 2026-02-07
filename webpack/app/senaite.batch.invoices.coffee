@@ -2,7 +2,7 @@
  * ReactJS controlled component
 ###
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from 'react-dom/client';
 
 import PublishAPI from "./api.coffee"
 
@@ -20,8 +20,14 @@ import Modal from "./components/Modal.js"
 # DOCUMENT READY ENTRY POINT
 document.addEventListener "DOMContentLoaded", ->
   console.debug "*** SENAITE.IMPRESS::DOMContentLoaded: --> Loading ReactJS Controller"
-  # gather the <div> container from publish.pt and load the component
-  controller = ReactDOM.render <PublishController />, document.getElementById "publish_controller"
+  window.senaite ?= {}
+  window.senaite.core ?= {}
+  window.senaite.core.controllers ?= {}
+
+  el = document.getElementById "publish_controller"
+  if not el._reactRootContainer?
+    el._reactRootContainer = createRoot(el)
+  controller = el._reactRootContainer.render <PublishController root_el={el} />
 
 
 class PublishController extends React.Component
@@ -78,6 +84,9 @@ class PublishController extends React.Component
     # render the barcodes
     @api.render_barcodes()
 
+    # render the qr codes
+    @api.render_qrcodes()
+
     # render range graphs
     @api.render_ranges()
 
@@ -118,6 +127,9 @@ class PublishController extends React.Component
      * N.B. This step is necessary, so that JS can modify the DOM before
      *      generating the Preview/PDF from it
     ###
+
+    # Ensure custom scripts from the reports are executed
+    @loadScripts()
 
     # ensure that the rendered HTML has the right format/orientation CSS classes
     el = document.getElementById "reports"
