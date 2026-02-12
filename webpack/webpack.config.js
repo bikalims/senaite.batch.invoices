@@ -128,9 +128,6 @@ module.exports = {
     }),
   ],
   externals: {
-    // https://webpack.js.org/configuration/externals
-    react: "React",
-    "react-dom": "ReactDOM",
     $: "jQuery",
     jquery: "jQuery",
   }
