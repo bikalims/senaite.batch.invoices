@@ -34,6 +34,5 @@ class WorkflowActionInvoiceAdapter(RequestContextAware):
         uids = ",".join(uids)
         portal = api.get_portal()
         portal_url = api.get_url(portal)
-        import pdb; pdb.set_trace()
         url = "{}/batches/invoice?items={}".format(portal_url, uids)
         return self.redirect(redirect_url=url)

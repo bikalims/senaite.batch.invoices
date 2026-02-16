@@ -22,7 +22,6 @@ class AjaxPublishView(AP):
         self.context = context
         self.request = request
         self.traverse_subpath = []
-        import pdb; pdb.set_trace()
 
     def get_report_template(self, template=None):
         """Returns the path of report template
