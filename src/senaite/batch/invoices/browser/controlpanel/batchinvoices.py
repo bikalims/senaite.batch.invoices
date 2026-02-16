@@ -10,12 +10,6 @@ class BatchInvoicesView(ReportsListingView):
     def __init__(self, context, request):
         super(BatchInvoicesView, self).__init__(context, request)
 
-        self.contentFilter = {
-            "portal_type": "BatchInvoice",
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-
 
 class BatchInvoicesClientView(BatchInvoicesView):
     """Displays all available sample containers in a table

@@ -20,4 +20,11 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
 
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="batch_invoices"
+      class=".batchinvoices.BatchInvoicesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.batch.invoices.interfaces.ISenaiteBatchInvoicesLayer"/>
+
 </configure>
