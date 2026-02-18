@@ -327,11 +327,9 @@
       <strong>Bank Account Details:</strong>
     </div>
     <div>
-      <span>BAI: AO06 0040 0000 8567 3998 1018 4</span>
+      <span tal:content="laboratory/AccountType">Account Type</span>
     <div class="clearfix"></div>
-      <span>BIC: AO06 0051 0000 5683 0487 1010 7</span>
-    <div class="clearfix"></div>
-      <span>BMA: AO06 0055 0000 0615 0443 1017 2</span>
+      <span tal:content="laboratory/AccountNumber">Account Number</span>
     <div class="clearfix"></div>
     </div>
     <div class="row no-gutters" style="margin-top:10px">
