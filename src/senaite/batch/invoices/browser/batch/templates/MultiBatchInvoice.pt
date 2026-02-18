@@ -43,6 +43,9 @@
      .report table { border-color: black; }
      .report table td, .report table th { border: 1px solid black;}
      .report table thead tr th {}
+     .nowrap{white-space: nowrap;}
+     .report table .nowrap thead tr th { white-space: nowrap;}
+     .report table .nowrap tbody tr td { white-space: nowrap;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { height: 35px; margin: 20px 0; }
@@ -323,15 +326,37 @@
   <div class="clearfix"></div>
   </tal:render>
   <tal:render condition="python:True">
-    <div>
-      <strong>Bank Account Details:</strong>
-    </div>
-    <div>
-      <span tal:content="laboratory/AccountType">Account Type</span>
-    <div class="clearfix"></div>
-      <span tal:content="laboratory/AccountNumber">Account Number</span>
-    <div class="clearfix"></div>
-    </div>
+    <table class="nowrap noborder">
+      <thead>
+        <tr>
+          <th colspan="2">
+              Bank Account Details
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Account Name: </td>
+          <td tal:content="laboratory/Name"></td>
+        </tr>
+        <tr>
+          <td>Account Number: </td>
+          <td><span tal:content="laboratory/AccountNumber"/></td>
+        </tr>
+        <tr>
+          <td>Account Type: </td>
+          <td><span tal:content="laboratory/AccountType"/></td>
+        </tr>
+        <tr>
+          <td>Bank Name: </td>
+          <td><span tal:content="laboratory/BankName"/></td>
+        </tr>
+        <tr>
+          <td>Branch: </td>
+          <td><span tal:content="laboratory/BankBranch"/></td>
+        </tr>
+      </tbody>
+    </table>
     <div class="row no-gutters" style="margin-top:10px">
       <div tal:replace="structure disclamer"/>
     </div>
