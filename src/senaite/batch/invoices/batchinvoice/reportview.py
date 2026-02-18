@@ -157,13 +157,16 @@ class MultiReportView(MRV):
         for batch in model_or_collection:
             ars = batch.instance.getAnalysisRequests()
             for ar in ars:
+                review_state = api.get_review_status(ar)
+                if review_state in ['retracted', 'rejected', 'cancelled']:
+                    continue
                 total_VAT += ar.getVATAmount()
                 total_amount += ar.getTotalPrice()
-                analyses = ar.getAnalyses()
+                analyses = ar.getBillableItems()
                 for a in analyses:
                     a_title = a.Title
                     if a_title not in batch_data:
-                        analysis = a.getObject()
+                        analysis = a
                         batch_data[a_title] = {
                             "qty": 0,
                             "price": Decimal(analysis.getPrice()),
