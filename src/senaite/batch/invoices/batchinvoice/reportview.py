@@ -164,7 +164,7 @@ class MultiReportView(MRV):
                 total_amount += ar.getTotalPrice()
                 analyses = ar.getBillableItems()
                 for a in analyses:
-                    a_title = a.Title
+                    a_title = a.Title()
                     if a_title not in batch_data:
                         analysis = a
                         batch_data[a_title] = {
