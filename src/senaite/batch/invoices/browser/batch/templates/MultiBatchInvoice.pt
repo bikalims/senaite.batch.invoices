@@ -239,7 +239,7 @@
               <thead>
                 <tr class="small">
                   <th class="">
-                    <span class="font-weight-bold" >Item</span>
+                    <span class="font-weight-bold" >Item  </span>
                   </th>
                   <th class="text-center result">
                     <span i18n:translate="">Qty</span>
@@ -278,6 +278,18 @@
 
               </tbody>
               <tfoot>
+                <tr tal:condition="invoice_data/MembershipDiscount_label|nothing">
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/MembershipDiscount_label|nothing">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="python:invoice_data['f_membership_discount'] or ''">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
                 <tr>
                   <td colspan="4" style="text-align:right">
                     <div class="category_comments">

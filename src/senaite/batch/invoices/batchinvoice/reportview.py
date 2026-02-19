@@ -154,6 +154,7 @@ class MultiReportView(MRV):
 
         total_VAT = 0
         total_amount = 0
+        discount_amount = 0
         for batch in model_or_collection:
             ars = batch.instance.getAnalysisRequests()
             for ar in ars:
@@ -162,6 +163,8 @@ class MultiReportView(MRV):
                     continue
                 total_VAT += ar.getVATAmount()
                 total_amount += ar.getTotalPrice()
+
+                discount_amount += ar.getDiscountAmount()
                 analyses = ar.getBillableItems()
                 for a in analyses:
                     a_title = a.Title()
@@ -181,6 +184,16 @@ class MultiReportView(MRV):
 
         invoice_data = {}
         invoice_data["batch_data"] = batch_data
+        invoice_data["membership_discount"] = ""
+        invoice_data["f_membership_discount"] = ""
+        if discount_amount:
+            membership_discount = self.setup.getMemberDiscount()
+            invoice_data["MembershipDiscount_label"] = \
+                "Membership Discount {}%".format(membership_discount)
+            invoice_data["membership_discount"] = \
+                "{:.2f}".format(discount_amount)
+            invoice_data["f_membership_discount"] = \
+                self.format_price(discount_amount)
         invoice_data["sub_total"] = "{:.2f}".format(total_amount - total_VAT)
         invoice_data["f_sub_total"] = self.format_price(total_amount - total_VAT)
         invoice_data["VAT_label"] = "{}% VAT".format(self.setup.getVAT())
