@@ -17,10 +17,4 @@ class BatchInvoicesClientView(BatchInvoicesView):
 
     def __init__(self, context, request):
         super(BatchInvoicesClientView, self).__init__(context, request)
-
-        self.contentFilter = {
-            "portal_type": "BatchInvoice",
-            "sort_on": "created",
-            "sort_order": "descending",
-            "client": self.context.UID(),
-        }
+        self.contentFilter["client"] = self.context.UID()
