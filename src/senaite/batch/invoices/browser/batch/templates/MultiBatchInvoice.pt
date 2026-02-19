@@ -338,6 +338,9 @@
   <div class="clearfix"></div>
   </tal:render>
   <tal:render condition="python:True">
+    <div class="row no-gutters">
+      <div tal:replace="structure disclamer"/>
+    </div>
     <table class="nowrap noborder">
       <thead>
         <tr>
@@ -369,9 +372,6 @@
         </tr>
       </tbody>
     </table>
-    <div class="row no-gutters" style="margin-top:10px">
-      <div tal:replace="structure disclamer"/>
-    </div>
   </tal:render>
 
 
