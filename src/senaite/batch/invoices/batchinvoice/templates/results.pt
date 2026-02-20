@@ -28,19 +28,19 @@
               <thead>
                 <tr class="small">
                   <th class="">
-                    <span class="font-weight-bold" >Item  </span>
+                    Item
                   </th>
-                  <th class="text-center result">
-                    <span i18n:translate="">Qty</span>
+                  <th class="text-center result" i18n:translate="">
+                    Qty
                   </th>
-                  <th class="text-center">
-                    <span i18n:translate="">Description</span>
+                  <th class="text-center" i18n:translate="">
+                    Description
                   </th>
-                  <th class="text-center">
-                    <span i18n:translate="">Price</span>
+                  <th class="text-center" i18n:translate="">
+                    Price
                   </th>
-                  <th class="text-center result">
-                    <span i18n:translate="">Amount</span>
+                  <th class="text-center result" i18n:translate="">
+                    Amount
                   </th>
                 </tr>
               </thead>
