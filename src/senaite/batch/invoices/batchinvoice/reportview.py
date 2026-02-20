@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile as PT
 from string import Template
 from decimal import Decimal
 from DateTime import DateTime
@@ -56,6 +57,21 @@ class BatchInvoiceReportView(ReportView):
 class MultiReportView(MRV):
     """View for Multi Reports
     """
+    JS_TEMPLATE = PT("templates/js.pt")
+    CSS_TEMPLATE = PT("templates/css.pt")
+    CONTROLS_TEMPLATE = PT("templates/controls.pt")
+    HEADER_TEMPLATE = PT("templates/header.pt")
+    INFO_TEMPLATE = PT("templates/info.pt")
+    ALERTS_TEMPLATE = PT("templates/alerts.pt")
+    SUMMARY_TEMPLATE = PT("templates/summary.pt")
+    RESULTS_TEMPLATE = PT("templates/results.pt")
+    RESULTS_TRANSPOSED_TEMPLATE = PT("templates/results_transposed.pt")
+    INTERPRETATIONS_TEMPLATE = PT("templates/interpretations.pt")
+    REMARKS_TEMPLATE = PT("templates/remarks.pt")
+    ATTACHMENTS_TEMPLATE = PT("templates/attachments.pt")
+    SIGNATURE_TEMPLATE = PT("templates/signatures.pt")
+    DISCREETER_TEMPLATE = PT("templates/discreeter.pt")
+    FOOTER_TEMPLATE = PT("templates/footer.pt")
 
     def __init__(self, collection, request):
         logger.info("MultiReportView::__init__:collection={}"
