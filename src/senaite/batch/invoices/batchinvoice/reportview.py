@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile as PT
+from collections import OrderedDict
 from string import Template
 from decimal import Decimal
 from DateTime import DateTime
@@ -190,6 +191,7 @@ class MultiReportView(MRV):
                             "qty": 0,
                             "price": Decimal(analysis.getPrice()),
                             "f_price": self.format_price(analysis.getPrice()),
+                            "analysis_type": analysis.portal_type,
                         }
                     batch_data[a_title]["qty"] += 1
 
@@ -198,8 +200,20 @@ class MultiReportView(MRV):
             batch_data[b_key]["amount"] = batch_data[b_key]["qty"] * batch_data[b_key]["price"]
             batch_data[b_key]["amount"] = self.format_price(batch_data[b_key]["amount"])
 
+        ordered_batch_data = OrderedDict(
+            sorted(
+                batch_data.items(),
+                key=lambda item: (
+                    {'AnalysisProfile': 0, 'Analysis': 1}.get(
+                        item[1].get('analysis_type'), 99
+                    ),
+                    item[0].lower()
+                )
+            )
+        )
+
         invoice_data = {}
-        invoice_data["batch_data"] = batch_data
+        invoice_data["batch_data"] = ordered_batch_data
         invoice_data["membership_discount"] = ""
         invoice_data["f_membership_discount"] = ""
         if discount_amount:
