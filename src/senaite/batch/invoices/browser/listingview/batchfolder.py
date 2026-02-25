@@ -49,7 +49,7 @@ class BatchesListingViewAdapter(object):
                         "title": get_image("invoiced.png",
                                            title=t(_("Invoiced"))),
                         "columns": self.listing.columns.keys(),
-                        "contentFilter": {"review_state": "invoiced"}
+                        "contentFilter": {"batch_invoiced_state": "invoiced"}
                         }
             to_be_invoiced = {"id": "uninvoiced",
                               "title": get_image("uninvoiced.png",
