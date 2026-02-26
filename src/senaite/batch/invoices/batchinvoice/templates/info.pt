@@ -79,29 +79,6 @@
       </div>
     </div>
   </div>
-
-
-  <!-- SUMMARY -->
-  <div class="clearfix"></div>
-  <tal:render condition="python:True"
-              define="reporter python:view.current_user;">
-    <div class="row section-summary no-gutters">
-        <div>Invoice for the analysis of samples in following Batches</div>
-        <div class="clearfix"></div>
-        <tal:batches>
-                <tal:analyses tal:repeat="model collection">
-                   <span tal:condition="model/ClientBatchID"
-                         tal:content="string:${model/ClientBatchID},">
-                   </span>
-                   <span tal:condition="model/getId"
-                         tal:content="string:${model/getId},">
-                   </span>
-                   <a tal:content="model/title" tal:attributes="href model/absolute_url"></a>
-                   <br />
-                </tal:analyses>
-        </tal:batches>
-        <h3></h3>
-    </div>
   <div class="clearfix"></div>
   </tal:render>
 </tal:t>

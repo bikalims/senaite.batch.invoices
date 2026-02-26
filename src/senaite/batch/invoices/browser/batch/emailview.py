@@ -208,9 +208,11 @@ class EmailView(EV):
     def publish_samples(self):
         """Invoice all batches of the reports
         """
+        # super(EmailView, self).publish_samples()
 
         # collect primary + contained samples of the reports
         # invoice all batches + their samples
+        import pdb; pdb.set_trace()
         for report in self.batches:
             self.invoice_batch(report)
 
