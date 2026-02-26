@@ -2,9 +2,12 @@
   define="styles python:view.get_coa_styles();">
    <div class="row section-header no-gutters">
      <!-- Header Table -->
-     <div class="w-100 mb-2">
-           <img class="logo text-right"
-                tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
+    <div class="w-50 col-6">
+      <span style="color:white">.</span>
      </div>
+    <div class="w-50 col-6">
+           <img class="logo"
+                tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
+    </div>
    </div>
 </tal:t>
