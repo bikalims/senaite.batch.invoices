@@ -80,5 +80,4 @@
     </div>
   </div>
   <div class="clearfix"></div>
-  </tal:render>
 </tal:t>
