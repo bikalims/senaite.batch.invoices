@@ -6,6 +6,33 @@
 
   <div class="row section-info no-gutters">
     <div class="w-50 col-6">
+      <tal:by_client define="client python:view.get_client(collection)">
+        <address class="client-address" condition="client">
+          <div class="client-street">
+            <div tal:content="client/Name|nothing"></div>
+          </div>
+          <div class="client-street">
+            <div tal:replace="client/PostalAddress/address|nothing"></div>
+          </div>
+          <span class="client-zip">
+            <div tal:replace="client/PostalAddress/zip|nothing"></div>
+          </span>
+          <span class="client-city">
+            <div tal:replace="client/PostalAddress/city|nothing"></div>
+          </span>
+          <div class="client-country">
+            <div tal:replace="client/PostalAddress/country|nothing"></div>
+          </div>
+          <div class="client-street">
+            <div>Tel: <span  tal:replace="client/Phone|nothing"></span></div>
+          </div>
+          <div class="client-street">
+            <div tal:replace="client/EmailAddress|nothing"></div>
+          </div>
+        </address>
+      </tal:by_client>
+    </div>
+    <div class="w-50 col-6">
       <address class="laboratory-address">
         <div class="lab-title font-weight-bold">
           <div tal:replace="laboratory/title|nothing"/>
@@ -34,34 +61,6 @@
           NIF: <span tal:content="laboratory/TaxNumber">TAX #</span>
         </div>
       </address>
-    </div>
-    <div class="w-50 col-6">
-
-      <tal:by_client define="client python:view.get_client(collection)">
-        <address class="client-address" condition="client">
-          <div class="client-street">
-            <div tal:content="client/Name|nothing"></div>
-          </div>
-          <div class="client-street">
-            <div tal:replace="client/PostalAddress/address|nothing"></div>
-          </div>
-          <span class="client-zip">
-            <div tal:replace="client/PostalAddress/zip|nothing"></div>
-          </span>
-          <span class="client-city">
-            <div tal:replace="client/PostalAddress/city|nothing"></div>
-          </span>
-          <div class="client-country">
-            <div tal:replace="client/PostalAddress/country|nothing"></div>
-          </div>
-          <div class="client-street">
-            <div>Tel: <span  tal:replace="client/Phone|nothing"></span></div>
-          </div>
-          <div class="client-street">
-            <div tal:replace="client/EmailAddress|nothing"></div>
-          </div>
-        </address>
-      </tal:by_client>
     </div>
     <!-- Clear Floats
          https://github.com/Kozea/WeasyPrint/issues/36
