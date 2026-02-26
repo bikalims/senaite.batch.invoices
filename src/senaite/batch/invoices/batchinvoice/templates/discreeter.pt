@@ -3,11 +3,6 @@
                disclamer python:view.get_footer_text();"
        i18n:domain="senaite.batches.invoices">
 
-  <div class="row section-discreeter no-gutters">
-    <div class="w-100 text-muted font-weight-light small">
-      <div tal:replace="structure disclamer"/>
-    </div>
-  </div>
 
   <table class="nowrap noborder">
     <thead>

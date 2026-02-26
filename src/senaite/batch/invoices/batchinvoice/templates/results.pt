@@ -4,6 +4,7 @@
                total_VAT invoice_data/total_VAT;
                batch_data invoice_data/batch_data;
                b_keys python: batch_data.keys();
+               disclamer python:view.get_footer_text();
                "
        i18n:domain="senaite.impress">
 
@@ -12,7 +13,7 @@
         <!-- Point of Capture -->
         <tal:poc>
             <!-- Analysis in POC and Category -->
-            <table class="table table-sm table-condensed">
+            <table class="table table-sm table-condensed" style="margin-bottom: 0 !important">
               <colgroup>
                 <!-- Counter -->
                 <col style="width: 5%;">
@@ -121,6 +122,9 @@
                 </tr>
               </tfoot>
             </table>
+            <div class="w-100 text-muted font-weight-light small">
+              <div tal:replace="structure disclamer"/>
+            </div>
         </tal:poc>
       </div>
     </div>
