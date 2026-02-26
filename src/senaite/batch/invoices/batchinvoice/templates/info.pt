@@ -33,7 +33,7 @@
       </tal:by_client>
     </div>
     <div class="w-50 col-6">
-      <address class="laboratory-address">
+      <address class="laboratory-address" style="padding-left: 1cm">
         <div class="lab-title font-weight-bold">
           <div tal:replace="laboratory/title|nothing"/>
         </div>
