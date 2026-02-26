@@ -58,7 +58,7 @@
           Email: <span tal:content="laboratory/EmailAddress">Email</span>
         </div>
         <div class="lab-email">
-          NIF: <span tal:content="laboratory/TaxNumber">TAX #</span>
+          VAT nr: <span tal:content="laboratory/TaxNumber">TAX #</span>
         </div>
       </address>
     </div>
