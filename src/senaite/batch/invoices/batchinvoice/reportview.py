@@ -11,6 +11,7 @@ from zope.component import getUtility
 from zope.i18n.locales import locales
 
 from bika.lims import api
+from bika.lims.idserver import generateUniqueId
 from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
@@ -82,23 +83,17 @@ class MultiReportView(MRV):
         self.request = request
 
     def get_batch_invoice_number(self, model):
-        query = {"portal_type": "BatchInvoice",
-                 "sort_on": "created",
-                 "sort_order": "descending",
-                 }
-        brains = api.search(query, "portal_catalog")
-        coa_num = u"Inv-{:05d}".format(1)
-        if len(brains):
-            coa = brains[0]
-            title_split = coa.getId.split("-")
-            if len(title_split) == 2 and len(title_split[-1]) == 5:
-                string = title_split[0]
-                num = int(title_split[-1])
-                num += 1
-                coa_num = u"{}-{:05d}".format(string, num)
-            else:
-                coa_num = "Invalid Number, please check IDServer"
-        return coa_num
+        if isinstance(model, list):
+            model = model[0]
+        kwargs = {"portal_type": "BatchInvoice",
+                  "dry_run": True,
+                  "container": model.getObject(),
+                  }
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run
 
     def get_client(self, collection):
         return collection[0].getClient()
