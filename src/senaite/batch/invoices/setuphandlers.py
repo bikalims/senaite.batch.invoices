@@ -7,7 +7,7 @@ from bika.lims import api
 from senaite.batch.invoices import PRODUCT_NAME
 from senaite.batch.invoices import PROFILE_ID
 from senaite.batch.invoices import logger
-# from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -113,16 +113,16 @@ def add_dexterity_setup_items(portal):
     N.B.: We do this in code, because adding this as Generic Setup Profile in
           `profiles/default/structure` flushes the contents on every import.
     """
-    # # Tuples of ID, Title, FTI
-    # items = [
-    #     ("batch_invoices", "Batch Invoices", "BatchInvoices"),
-    # ]
-    # # ##############ADD ITEMS IN PORTAL NAVIGATION#############
-    # add_dexterity_items(portal, items)
-    # # Move BatchInvoices after Methods nav item
-    # position = portal.getObjectPosition("methods")
-    # portal.moveObjectToPosition("batch_invoices", position + 1)
-    ###########################################################
+    # Tuples of ID, Title, FTI
+    items = [
+        ("batch_invoices", "Batch Invoices", "BatchInvoices"),
+    ]
+    # ##############ADD ITEMS IN PORTAL NAVIGATION#############
+    add_dexterity_items(portal, items)
+    # Move BatchInvoices after Methods nav item
+    position = portal.getObjectPosition("methods")
+    portal.moveObjectToPosition("batch_invoices", position + 1)
+    #########################################################
 
     # Reindex order
     portal.plone_utils.reindexOnReorder(portal)

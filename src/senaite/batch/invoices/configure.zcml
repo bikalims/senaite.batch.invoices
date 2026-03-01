@@ -80,6 +80,7 @@
 
   <!-- AR specific Reports -->
   <include package=".batchinvoice" />
+  <include package=".behaviors" />
 
   <!-- Static Resources Viewlet -->
   <browser:viewlet
