@@ -9,9 +9,10 @@ class BatchInvoicesView(ReportsListingView):
 
     def __init__(self, context, request):
         super(BatchInvoicesView, self).__init__(context, request)
+        self.contentFilter.pop("path")
 
 
-class BatchInvoicesClientView(BatchInvoicesView):
+class BatchInvoicesClientView(ReportsListingView):
     """Displays all available sample containers in a table
     """
 
