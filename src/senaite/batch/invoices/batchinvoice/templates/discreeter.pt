@@ -3,6 +3,9 @@
                disclamer python:view.get_footer_text();"
        i18n:domain="senaite.batches.invoices">
 
+  <div class="w-100">
+    <div tal:replace="structure disclamer"/>
+  </div>
 
   <table class="nowrap noborder">
     <thead>
