@@ -20,7 +20,6 @@
   <include package=".upgrade"/>
   <include package=".monkeys" />
   <include package=".catalog" />
-  <include package=".behaviors" />
   <!--
       <include package=".workflow"/>
   -->
