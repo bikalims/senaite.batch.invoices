@@ -74,6 +74,11 @@
       provides="senaite.impress.interfaces.IPdfReportStorage"
       permission="zope2.View"/>
 
+  <adapter
+      for="*"
+      factory=".adapters.IDServerGetVariables"
+      provides="senaite.core.interfaces.IIdServerVariables"/>
+
 
   <!-- Needed for bika.lims.ManageBika permission -->
   <include package="bika.lims" file="permissions.zcml" />
