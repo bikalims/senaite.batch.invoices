@@ -16,9 +16,8 @@ class IDServerGetVariables(object):
     def get_variables(context, **kw):
         """Prepares a dictionary of key->value pairs usable for ID formatting
         """
-        # allow portal_type override
-        if kw.get("portal_type") == "BatchInvoice":
-            parent = kw.get("container")
+        parent = kw.get("container")
+        if hasattr(parent, "getClientID"):
             variables = {
                 "clientId": parent.getClientID(),
             }
