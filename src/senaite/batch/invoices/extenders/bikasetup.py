@@ -40,6 +40,14 @@ invoice_email_body_field = ExtTextField(
     default_content_type="text/html",
     default_output_type="text/x-html-safe",
     schemata="Accounting",
+    default="Dear Sir/Madam"
+            "<br/>"
+            "Please find attached an invoice for the analysis of you sample "
+            "batches $batches."
+            "<br/>"
+            "Invoices are payable on presentation"
+            "<br/>"
+            "Best regards, $lab_name",
     # Needed to fetch the default value from the registry
     widget=RichWidget(
         label=_(
@@ -77,6 +85,7 @@ invoice_footer_field = ExtTextField(
     default_content_type="text/html",
     default_output_type="text/x-html-safe",
     schemata="Accounting",
+    default="Invoices are payable on presentation.",
     # Needed to fetch the default value from the registry
     widget=RichWidget(
         label=_(
