@@ -45,19 +45,9 @@ Invoices are issued by clicking the [Invoice] button on the Batch's Invoice tab.
 
 The Invoice is saved to the Client’s Invoices folder where it can be looked up by both the lab and Client
 
-Examples
---------
-
-This add-on can be seen in action at the following sites:
-- Is there a page on the internet where everybody can see the features?
-
-
 Documentation
 -------------
-
-The Batch Invoice feature is discussed in more detail on the manual page https://www.bikalims.org/manual/17-billing
-
-
+The Batch Invoice feature is discussed in more detail on the manual page https://www.bikalims.org/new-manual/billing-invoices
 
 Installation
 ------------
@@ -77,20 +67,14 @@ and then running ``bin/buildout``
 
 Contribute
 ----------
-
 Issue Tracker: https://bika.atlassian.net/jira/dashboards/10000
-
-Documentation: https://www.bikalims.org/manual/17-billing
-
 
 Support
 -------
 
 Please post questions to the Bika Slack channels, request access at info@bikalims.org
 
-User group https://users.bikalims.org/
-
-The project is licensed under the GPLv2 and sponsored by Geoangol, https://www.geoangol.site/ member of the Bika Open Source Collective, https://www.bikalims.org/
+The project is licensed under the GPLv2 by the Bika Open Source Collective, https://www.bikalims.org/
 
 Copyright (C) 2019 Bika Lab Systems https://www.bikalabs.com/
 
