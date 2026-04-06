@@ -1,32 +1,7 @@
-.. This README is meant for consumption by humans and pypi. Pypi can render rst files so please do not use Sphinx features.
-   If you want to learn more about writing documentation, please check out: http://docs.plone.org/about/documentation_styleguide.html
-   This text does not appear on pypi or github. It is a comment.
-
-.. image:: https://travis-ci.org/collective/senaite.batch.invoices.svg?branch=master
-    :target: https://travis-ci.org/collective/senaite.batch.invoices
-
-.. image:: https://coveralls.io/repos/github/collective/senaite.batch.invoices/badge.svg?branch=master
-    :target: https://coveralls.io/github/collective/senaite.batch.invoices?branch=master
-    :alt: Coveralls
-
-.. image:: https://img.shields.io/pypi/v/senaite.batch.invoices.svg
-    :target: https://pypi.python.org/pypi/senaite.batch.invoices/
-    :alt: Latest Version
-
-.. image:: https://img.shields.io/pypi/status/senaite.batch.invoices.svg
-    :target: https://pypi.python.org/pypi/senaite.batch.invoices
-    :alt: Egg Status
-
-.. image:: https://img.shields.io/pypi/pyversions/senaite.batch.invoices.svg?style=plastic   :alt: Supported - Python Versions
-
-.. image:: https://img.shields.io/pypi/l/senaite.batch.invoices.svg
-    :target: https://pypi.python.org/pypi/senaite.batch.invoices/
-    :alt: License
 
 
-======================
-senaite.batch.invoices
-======================
+*** senaite.batch.invoices
+
 
 This function makes it possible for the lab to compile an invoice to the client for a LIMS Batch, keep it current and up to date, email it to the Client and save it to the Client's Invoices folder
 
