@@ -1,12 +1,9 @@
-
-
-*** senaite.batch.invoices
+# senaite.batch.invoices
 
 
 This function makes it possible for the lab to compile an invoice to the client for a LIMS Batch, keep it current and up to date, email it to the Client and save it to the Client's Invoices folder
 
-Features
---------
+## Features
 
 This feature is enabled by checking the box for Batch Invoices  on the Financials tab in the LIMS setup
 
@@ -20,37 +17,21 @@ Invoices are issued by clicking the [Invoice] button on the Batch's Invoice tab.
 
 The Invoice is saved to the Client’s Invoices folder where it can be looked up by both the lab and Client
 
-Documentation
--------------
-The Batch Invoice feature is discussed in more detail on the manual page https://www.bikalims.org/new-manual/billing-invoices
+## Documentation
 
-Installation
-------------
+The Batch Invoice feature is discussed in more detail on the [Invoicing manual page](https://www.bikalims.org/new-manual/billing-invoices)
 
-Install senaite.batch.invoices by adding it to your buildout::
+## Installation
 
-    [buildout]
+Install senaite.batch.invoices by adding it to your buildout.
+Invoicing is included in the [Docker Suite Ingwe Bika LIMS 4.2](https://github.com/bikalims/bika.lims/blob/main/README.md) and after 
 
-    ...
+## Contribute
 
-    eggs =
-        senaite.batch.invoices
+[Issue Tracker](https://bika.atlassian.net/jira/dashboards/10000)
 
-
-and then running ``bin/buildout``
-
-
-Contribute
-----------
-Issue Tracker: https://bika.atlassian.net/jira/dashboards/10000
-
-Support
--------
+## Support
 
 Please post questions to the Bika Slack channels, request access at info@bikalims.org
 
-The project is licensed under the GPLv2 by the Bika Open Source Collective, https://www.bikalims.org/
-
-Copyright (C) 2019 Bika Lab Systems https://www.bikalabs.com/
-
-
+The project is licensed under the GPLv2 by the [Bika Open Source Collective](https://www.bikalims.org/)
