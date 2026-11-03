@@ -119,9 +119,6 @@ def add_dexterity_setup_items(portal):
     ]
     # ##############ADD ITEMS IN PORTAL NAVIGATION#############
     add_dexterity_items(portal, items)
-    # Move BatchInvoices after Methods nav item
-    position = portal.getObjectPosition("methods")
-    portal.moveObjectToPosition("batch_invoices", position + 1)
     ###########################################################
 
     # Reindex order
