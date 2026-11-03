@@ -1,0 +1,42 @@
+<tal:t define="collection view/collection;
+               laboratory python:view.laboratory;
+               disclamer python:view.get_footer_text();"
+       i18n:domain="senaite.batches.invoices">
+
+  <div class="w-100">
+    <div tal:replace="structure disclamer"/>
+  </div>
+
+  <table class="nowrap noborder">
+    <thead>
+      <tr>
+        <th colspan="2">
+            Bank Account Details
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Account Name: </td>
+        <td tal:content="laboratory/Name"></td>
+      </tr>
+      <tr>
+        <td>Account Number: </td>
+        <td><span tal:content="laboratory/AccountNumber"/></td>
+      </tr>
+      <tr>
+        <td>Account Type: </td>
+        <td><span tal:content="laboratory/AccountType"/></td>
+      </tr>
+      <tr>
+        <td>Bank Name: </td>
+        <td><span tal:content="laboratory/BankName"/></td>
+      </tr>
+      <tr>
+        <td>Branch: </td>
+        <td><span tal:content="laboratory/BankBranch"/></td>
+      </tr>
+    </tbody>
+  </table>
+
+</tal:t>

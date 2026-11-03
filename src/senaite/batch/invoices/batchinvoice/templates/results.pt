@@ -1,0 +1,129 @@
+<tal:t define="collection python:view.collection;
+               invoice_data python:view.get_invoice_lines(collection);
+               total_amount invoice_data/total_amount;
+               total_VAT invoice_data/total_VAT;
+               batch_data invoice_data/batch_data;
+               b_keys python: batch_data.keys();
+               disclamer python:view.get_footer_text();
+               "
+       i18n:domain="senaite.impress">
+
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <!-- Point of Capture -->
+        <tal:poc>
+            <!-- Analysis in POC and Category -->
+            <table class="table table-sm table-condensed">
+              <colgroup>
+                <!-- Counter -->
+                <col style="width: 5%;">
+                <!-- Qty -->
+                <col style="width: 10%;">
+                <!-- Description -->
+                <col style="width: 45%">
+                <!-- Price -->
+                <col style="width: 20%">
+                <!-- Amount -->
+                <col style="width: 20%">
+              </colgroup>
+              <thead>
+                <tr class="small">
+                  <th class="">
+                    Item
+                  </th>
+                  <th class="text-center result" i18n:translate="">
+                    Qty
+                  </th>
+                  <th class="text-center" i18n:translate="">
+                    Description
+                  </th>
+                  <th class="text-center" i18n:translate="">
+                    Price
+                  </th>
+                  <th class="text-center result" i18n:translate="">
+                    Amount
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tal:analyses tal:repeat="b_key b_keys">
+                  <tr>
+                    <td class="text-center align-middle">
+                        <span tal:content="repeat/b_key/number"></span>
+                    </td>
+                    <td class="text-center align-middle">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['qty']"></span>
+                    </td>
+                    <td class="sample">
+                        <span class="font-weight-normal" tal:content="b_key"></span>
+                    </td>
+                    <td class="text-right">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['f_price']"></span>
+                    </td>
+                    <td class="text-right">
+                        <span class="font-weight-normal" tal:content="python:batch_data[b_key]['amount']"></span>
+                    </td>
+                  </tr>
+                </tal:analyses>
+
+              </tbody>
+              <tfoot>
+                <tr tal:condition="invoice_data/MembershipDiscount_label|nothing">
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/MembershipDiscount_label|nothing">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="python:invoice_data['f_membership_discount'] or ''">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span>Subtotal</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span name="sub_total" tal:content="python:invoice_data['sub_total']" style="display:none">50 - 60</span>
+                      <span tal:content="python:invoice_data['f_sub_total']">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span tal:content="invoice_data/VAT_label">50 - 60</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span  tal:content="invoice_data/f_total_VAT">50 - 60</span>
+                      <span name="total_VAT" tal:content="invoice_data/total_VAT" style="display:none">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="4" style="text-align:right">
+                    <div class="category_comments">
+                      <span>Total</span>
+                    </div>
+                  </td>
+                  <td colspan="1" style="text-align:right">
+                    <div class="category_comments">
+                      <span name="total_amount" tal:content="invoice_data/total_amount" style="display:none">50 - 60</span>
+                      <span tal:content="invoice_data/f_total_amount">50 - 60</span>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+        </tal:poc>
+      </div>
+    </div>
+  <div class="clearfix"></div>
+</tal:t>

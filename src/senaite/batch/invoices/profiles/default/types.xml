@@ -6,4 +6,5 @@
  <!-- -*- extra stuff goes here -*- -->
  <object name="Batch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Client" meta_type="Factory-based Type Information with dynamic views"/>
+  <object name="ResultsReport" meta_type="Dexterity FTI"/>
 </object>

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile as PT
+from collections import OrderedDict
 from string import Template
 from decimal import Decimal
 from DateTime import DateTime
@@ -9,6 +11,7 @@ from zope.component import getUtility
 from zope.i18n.locales import locales
 
 from bika.lims import api
+from bika.lims.idserver import generateUniqueId
 from senaite.impress import logger
 from senaite.impress.analysisrequest.reportview import ReportView
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
@@ -56,6 +59,21 @@ class BatchInvoiceReportView(ReportView):
 class MultiReportView(MRV):
     """View for Multi Reports
     """
+    JS_TEMPLATE = PT("templates/js.pt")
+    CSS_TEMPLATE = PT("templates/css.pt")
+    CONTROLS_TEMPLATE = PT("templates/controls.pt")
+    HEADER_TEMPLATE = PT("templates/header.pt")
+    INFO_TEMPLATE = PT("templates/info.pt")
+    ALERTS_TEMPLATE = PT("templates/alerts.pt")
+    SUMMARY_TEMPLATE = PT("templates/summary.pt")
+    RESULTS_TEMPLATE = PT("templates/results.pt")
+    RESULTS_TRANSPOSED_TEMPLATE = PT("templates/results_transposed.pt")
+    INTERPRETATIONS_TEMPLATE = PT("templates/interpretations.pt")
+    REMARKS_TEMPLATE = PT("templates/remarks.pt")
+    ATTACHMENTS_TEMPLATE = PT("templates/attachments.pt")
+    SIGNATURE_TEMPLATE = PT("templates/signatures.pt")
+    DISCREETER_TEMPLATE = PT("templates/discreeter.pt")
+    FOOTER_TEMPLATE = PT("templates/footer.pt")
 
     def __init__(self, collection, request):
         logger.info("MultiReportView::__init__:collection={}"
@@ -65,23 +83,17 @@ class MultiReportView(MRV):
         self.request = request
 
     def get_batch_invoice_number(self, model):
-        query = {"portal_type": "BatchInvoice",
-                 "sort_on": "created",
-                 "sort_order": "descending",
-                 }
-        brains = api.search(query, "portal_catalog")
-        coa_num = u"Inv-{:05d}".format(1)
-        if len(brains):
-            coa = brains[0]
-            title_split = coa.getId.split("-")
-            if len(title_split) == 2 and len(title_split[-1]) == 5:
-                string = title_split[0]
-                num = int(title_split[-1])
-                num += 1
-                coa_num = u"{}-{:05d}".format(string, num)
-            else:
-                coa_num = "Invalid Number, please check IDServer"
-        return coa_num
+        if isinstance(model, list):
+            model = model[0]
+        kwargs = {"portal_type": "BatchInvoice",
+                  "dry_run": True,
+                  "container": model.getObject(),
+                  }
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run
 
     def get_client(self, collection):
         return collection[0].getClient()
@@ -154,20 +166,27 @@ class MultiReportView(MRV):
 
         total_VAT = 0
         total_amount = 0
+        discount_amount = 0
         for batch in model_or_collection:
             ars = batch.instance.getAnalysisRequests()
             for ar in ars:
+                review_state = api.get_review_status(ar)
+                if review_state in ['retracted', 'rejected', 'cancelled']:
+                    continue
                 total_VAT += ar.getVATAmount()
                 total_amount += ar.getTotalPrice()
-                analyses = ar.getAnalyses()
+
+                discount_amount += ar.getDiscountAmount()
+                analyses = ar.getBillableItems()
                 for a in analyses:
-                    a_title = a.Title
+                    a_title = a.Title()
                     if a_title not in batch_data:
-                        analysis = a.getObject()
+                        analysis = a
                         batch_data[a_title] = {
                             "qty": 0,
                             "price": Decimal(analysis.getPrice()),
                             "f_price": self.format_price(analysis.getPrice()),
+                            "analysis_type": analysis.portal_type,
                         }
                     batch_data[a_title]["qty"] += 1
 
@@ -176,8 +195,30 @@ class MultiReportView(MRV):
             batch_data[b_key]["amount"] = batch_data[b_key]["qty"] * batch_data[b_key]["price"]
             batch_data[b_key]["amount"] = self.format_price(batch_data[b_key]["amount"])
 
+        ordered_batch_data = OrderedDict(
+            sorted(
+                batch_data.items(),
+                key=lambda item: (
+                    {'AnalysisProfile': 0, 'Analysis': 1}.get(
+                        item[1].get('analysis_type'), 99
+                    ),
+                    item[0].lower()
+                )
+            )
+        )
+
         invoice_data = {}
-        invoice_data["batch_data"] = batch_data
+        invoice_data["batch_data"] = ordered_batch_data
+        invoice_data["membership_discount"] = ""
+        invoice_data["f_membership_discount"] = ""
+        if discount_amount:
+            membership_discount = self.setup.getMemberDiscount()
+            invoice_data["MembershipDiscount_label"] = \
+                "Membership Discount {}%".format(membership_discount)
+            invoice_data["membership_discount"] = \
+                "{:.2f}".format(discount_amount)
+            invoice_data["f_membership_discount"] = \
+                self.format_price(discount_amount)
         invoice_data["sub_total"] = "{:.2f}".format(total_amount - total_VAT)
         invoice_data["f_sub_total"] = self.format_price(total_amount - total_VAT)
         invoice_data["VAT_label"] = "{}% VAT".format(self.setup.getVAT())

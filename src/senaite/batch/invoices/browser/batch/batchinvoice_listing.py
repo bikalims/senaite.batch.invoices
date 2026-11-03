@@ -58,18 +58,6 @@ class ReportsListingView(ListingView):
             "help": help_email_text,
         }
 
-        help_publish_text = _(
-            "Manually publish all contained samples of the selected reports.")
-
-        self.publish_samples_transition = {
-            "id": "publish_samples",
-            "title": _("Publish"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=publish_samples",
-            "css_class": "btn-outline-success",
-            "help": help_publish_text,
-        }
-
         help_download_reports_text = _(
             "Download selected reports")
 
@@ -127,7 +115,6 @@ class ReportsListingView(ListingView):
                 "columns": self.columns.keys(),
                 "custom_transitions": [
                     self.send_email_transition,
-                    self.publish_samples_transition,
                     self.download_reports_transition,
                 ]
             },

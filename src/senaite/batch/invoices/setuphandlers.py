@@ -119,7 +119,6 @@ def add_dexterity_setup_items(portal):
     ]
     # ##############ADD ITEMS IN PORTAL NAVIGATION#############
     add_dexterity_items(portal, items)
-    ###########################################################
 
     # Reindex order
     portal.plone_utils.reindexOnReorder(portal)
@@ -162,3 +161,14 @@ def remove_batch_invoice_action(portal):
                     idx,
                 ]
             )
+
+
+def add_resultsreport_extras_behavior(context):
+    type_name = "ResultsReport"
+    behavior_name = "senaite.batch.invoices.behaviors.resultsreport.IExtendedResultsReport"
+
+    fti = api.get_tool('portal_types')[type_name]
+    behaviors = list(fti.behaviors)
+    if behavior_name not in behaviors:
+        behaviors.append(behavior_name)
+        fti.behaviors = tuple(behaviors)

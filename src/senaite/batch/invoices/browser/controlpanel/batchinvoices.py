@@ -9,24 +9,13 @@ class BatchInvoicesView(ReportsListingView):
 
     def __init__(self, context, request):
         super(BatchInvoicesView, self).__init__(context, request)
-
-        self.contentFilter = {
-            "portal_type": "BatchInvoice",
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
+        self.contentFilter.pop("path")
 
 
-class BatchInvoicesClientView(BatchInvoicesView):
+class BatchInvoicesClientView(ReportsListingView):
     """Displays all available sample containers in a table
     """
 
     def __init__(self, context, request):
         super(BatchInvoicesClientView, self).__init__(context, request)
-
-        self.contentFilter = {
-            "portal_type": "BatchInvoice",
-            "sort_on": "created",
-            "sort_order": "descending",
-            "client": self.context.UID(),
-        }
+        self.contentFilter["client"] = self.context.UID()
